@@ -1,9 +1,39 @@
 {
   "name": "marketing-engine",
   "version": "0.1.0",
-  "description": "Provider-agnostic AI marketing engine",
+  "description": "Provider-agnostic AI marketing engine. CLI that drops into any host project. Pipeline: brief -> script -> creative -> caption -> compliance -> publish -> metrics -> ads. Switch LLM/image/video provider via env, never via skill rewrite.",
   "license": "Apache-2.0",
   "type": "module",
+  "author": "Wesley Simplicio <wesleybob4@gmail.com>",
+  "homepage": "https://github.com/wesleysimplicio/marketing-engine#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wesleysimplicio/marketing-engine.git"
+  },
+  "bugs": {
+    "url": "https://github.com/wesleysimplicio/marketing-engine/issues"
+  },
+  "keywords": [
+    "marketing",
+    "ai",
+    "content-pipeline",
+    "llm",
+    "claude",
+    "openai",
+    "deepseek",
+    "playwright",
+    "provider-agnostic",
+    "cli",
+    "automation",
+    "social-media",
+    "instagram",
+    "tiktok",
+    "linkedin",
+    "ads"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "bin": {
     "marketing-engine": "./bin/marketing-engine.mjs"
   },
