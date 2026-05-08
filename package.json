@@ -1,0 +1,38 @@
+{
+  "name": "marketing-engine",
+  "version": "0.1.0",
+  "description": "Provider-agnostic AI marketing engine",
+  "license": "Apache-2.0",
+  "type": "module",
+  "bin": {
+    "marketing-engine": "./bin/marketing-engine.mjs"
+  },
+  "files": [
+    "bin",
+    "lib",
+    ".skills",
+    ".specs",
+    ".ralph",
+    "playwright.config.ts",
+    "tsconfig.json",
+    ".env.example",
+    "AGENTS.md",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed",
+    "typecheck": "tsc --noEmit",
+    "router:check": "bash .ralph/provider-check.sh",
+    "cli": "node bin/marketing-engine.mjs",
+    "cli:init": "node bin/marketing-engine.mjs init",
+    "cli:check": "node bin/marketing-engine.mjs check"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.48.0",
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0",
+    "dotenv": "^16.4.5"
+  }
+}
