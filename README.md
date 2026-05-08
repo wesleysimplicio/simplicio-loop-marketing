@@ -1,5 +1,8 @@
 # Marketing Engine
 
+> 🇺🇸 English. Leia em português: [README.pt-BR.md](README.pt-BR.md).
+
+
 Provider-agnostic AI marketing engine. Drop into any project, scan it, generate posts, publish across 9 platforms — all configurable via .env.
 
 [![CI](https://github.com/wesleysimplicio/marketing-engine/actions/workflows/ci.yml/badge.svg)](https://github.com/wesleysimplicio/marketing-engine/actions/workflows/ci.yml)
