@@ -11,6 +11,13 @@ Provider-agnostic AI marketing engine. Drop into any project, scan it, generate 
 
 A Remotion-rendered walkthrough of the pipeline and every skill in `.skills/`. Rendered in English; a [Portuguese version](./README.pt-BR.md#veja-o-explainer-das-skills-90s) is also available.
 
+<!--
+  GitHub auto-renders a bare https://github.com/<owner>/<repo>/raw/<branch>/...
+  URL on its own line as an inline <video controls> player. The URL must
+  point at a real branch — using HEAD or a relative path disables the embed.
+  Forks should rewrite this URL to their own owner/repo (or remove it and
+  rely on the <details> fallback below).
+-->
 https://github.com/wesleysimplicio/marketing-engine/raw/main/video/out/marketing-engine-skills-en.mp4
 
 <details>
