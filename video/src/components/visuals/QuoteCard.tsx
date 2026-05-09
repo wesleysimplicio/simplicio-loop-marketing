@@ -1,9 +1,11 @@
 import React from 'react';
 import {interpolate, useCurrentFrame} from 'remotion';
 import {theme} from '../../theme';
+import {useStrings} from '../../i18n';
 
 export const QuoteCard: React.FC = () => {
   const frame = useCurrentFrame();
+  const strings = useStrings();
   const reveal = interpolate(frame, [10, 60], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
@@ -24,16 +26,18 @@ export const QuoteCard: React.FC = () => {
     >
       <Card
         accent={theme.accent4}
-        title="slide 01"
-        big="provider-agnostic"
-        sub="o motor não fala o nome do provider"
+        title={strings.quoteCard.leftTitle}
+        big={strings.quoteCard.leftBig}
+        sub={strings.quoteCard.leftSub}
+        footer={strings.quoteCard.footer}
         progress={reveal}
       />
       <Card
         accent={theme.accent}
-        title="slide 02"
-        big="brief → ads"
-        sub="8 etapas auditáveis"
+        title={strings.quoteCard.rightTitle}
+        big={strings.quoteCard.rightBig}
+        sub={strings.quoteCard.rightSub}
+        footer={strings.quoteCard.footer}
         progress={slide}
       />
     </div>
@@ -45,8 +49,9 @@ const Card: React.FC<{
   title: string;
   big: string;
   sub: string;
+  footer: string;
   progress: number;
-}> = ({accent, title, big, sub, progress}) => {
+}> = ({accent, title, big, sub, footer, progress}) => {
   const op = progress;
   return (
     <div
@@ -117,7 +122,7 @@ const Card: React.FC<{
           position: 'relative',
         }}
       >
-        marketing-engine · gpt-image
+        {footer}
       </div>
     </div>
   );

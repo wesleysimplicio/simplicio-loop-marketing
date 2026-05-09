@@ -1,30 +1,13 @@
 import React from 'react';
 import {interpolate, spring, useCurrentFrame, useVideoConfig} from 'remotion';
 import {channels, theme} from '../../theme';
-
-const VARIANTS: Record<string, {limit: string; sample: string}> = {
-  Instagram: {
-    limit: '2200ch · 30 hashtags',
-    sample: 'Brief vira post auditável.\n\nLink na bio. ✨\n#marketing #ai',
-  },
-  TikTok: {
-    limit: '2200ch · 5 hashtags',
-    sample: 'pov: você roda 8 etapas em 1 prompt 👀\n#fyp #ai',
-  },
-  LinkedIn: {
-    limit: '3000ch · 0 hashtag',
-    sample:
-      'Compartilho algo prático: o brief vira post auditável em minutos. Vale o experimento.',
-  },
-  X: {
-    limit: '280ch · sem link no corpo',
-    sample: 'Brief → post auditável em minutos. Sem provider lock-in.',
-  },
-};
+import {useStrings} from '../../i18n';
 
 export const CaptionFanout: React.FC = () => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
+  const strings = useStrings();
+  const VARIANTS = strings.caption.variants;
   return (
     <div
       style={{

@@ -4,6 +4,7 @@ import {Background} from '../components/Background';
 import {AnimatedText} from '../components/AnimatedText';
 import {SceneFrame} from '../components/Layout';
 import {theme} from '../theme';
+import {useStrings} from '../i18n';
 
 export const Scene01Intro: React.FC = () => {
   const frame = useCurrentFrame();
@@ -12,6 +13,7 @@ export const Scene01Intro: React.FC = () => {
   const logoScale = interpolate(logoSpring, [0, 1], [0.6, 1]);
   const logoOpacity = interpolate(logoSpring, [0, 1], [0, 1]);
   const ringRotate = (frame / 2) % 360;
+  const strings = useStrings();
 
   return (
     <SceneFrame>
@@ -67,9 +69,9 @@ export const Scene01Intro: React.FC = () => {
           </div>
         </div>
 
-        <AnimatedText text="Marketing Engine" delay={6} size={104} weight={800} />
+        <AnimatedText text={strings.intro.title} delay={6} size={104} weight={800} />
         <AnimatedText
-          text="Como usar as Skills"
+          text={strings.intro.subtitle}
           delay={32}
           size={42}
           weight={500}
@@ -88,7 +90,7 @@ export const Scene01Intro: React.FC = () => {
             }),
           }}
         >
-          {['provider-agnostic', 'CLI-first', 'auditável'].map((tag) => (
+          {strings.intro.tags.map((tag) => (
             <span
               key={tag}
               style={{

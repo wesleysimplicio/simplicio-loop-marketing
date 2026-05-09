@@ -1,15 +1,14 @@
 import React from 'react';
 import {interpolate, useCurrentFrame} from 'remotion';
 import {theme} from '../../theme';
+import {useStrings} from '../../i18n';
 
-const ROUTES = [
-  {brief: 'editorial · cinematic reel', target: 'higgsfield', color: theme.accent},
-  {brief: 'avatar UGC · talking head', target: 'topview', color: theme.accent2},
-  {brief: 'A/B hooks · lote barato', target: 'wavespeed', color: theme.accent3},
-];
+const COLORS = [theme.accent, theme.accent2, theme.accent3];
 
 export const VideoDispatcher: React.FC = () => {
   const frame = useCurrentFrame();
+  const strings = useStrings();
+  const ROUTES = strings.dispatcher.routes;
   return (
     <div
       style={{
@@ -31,11 +30,12 @@ export const VideoDispatcher: React.FC = () => {
           marginBottom: 16,
         }}
       >
-        video-prompt-builder · dispatcher
+        {strings.dispatcher.header}
       </div>
 
       <div style={{display: 'flex', flexDirection: 'column', gap: 14}}>
         {ROUTES.map((r, i) => {
+          const color = COLORS[i % COLORS.length];
           const start = 18 + i * 14;
           const o = interpolate(frame, [start, start + 12], [0, 1], {
             extrapolateLeft: 'clamp',
@@ -80,17 +80,17 @@ export const VideoDispatcher: React.FC = () => {
                     position: 'absolute',
                     inset: 0,
                     width: `${w * 100}%`,
-                    background: r.color,
+                    background: color,
                   }}
                 />
               </div>
               <div
                 style={{
-                  color: r.color,
+                  color,
                   fontFamily: theme.mono,
                   fontSize: 18,
-                  border: `1px solid ${r.color}55`,
-                  background: `${r.color}14`,
+                  border: `1px solid ${color}55`,
+                  background: `${color}14`,
                   padding: '10px 16px',
                   borderRadius: 12,
                   textAlign: 'center',

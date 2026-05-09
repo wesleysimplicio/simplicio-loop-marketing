@@ -4,14 +4,29 @@ Vídeo explicativo animado, criado com [Remotion](https://www.remotion.dev/), co
 
 - **Resolução:** 1920×1080 @ 30 fps
 - **Duração:** ~91 segundos (2720 frames)
-- **Composição:** `marketing-engine-skills`
-- **Render mais recente:** [`out/marketing-engine-skills.mp4`](./out/marketing-engine-skills.mp4) · 15.7 MB · [cover](./out/cover.png)
+- **Composições:** `marketing-engine-skills` (pt-BR) · `marketing-engine-skills-en` (en)
+- **Renders publicados:**
+  - 🇧🇷 [`out/marketing-engine-skills.mp4`](./out/marketing-engine-skills.mp4) · cover [`out/cover.png`](./out/cover.png)
+  - 🇺🇸 [`out/marketing-engine-skills-en.mp4`](./out/marketing-engine-skills-en.mp4) · cover [`out/cover-en.png`](./out/cover-en.png)
 
 <p align="center">
+  <a href="./out/marketing-engine-skills-en.mp4">
+    <img src="./out/cover-en.png" alt="cover en" width="360" />
+  </a>
   <a href="./out/marketing-engine-skills.mp4">
-    <img src="./out/cover.png" alt="cover" width="720" />
+    <img src="./out/cover.png" alt="cover pt-BR" width="360" />
   </a>
 </p>
+
+## Idiomas
+
+Todo texto é abstraído em `src/i18n.tsx` e injetado via `LocaleContext`. Cada `Composition` em `Root.tsx` recebe `defaultProps={{locale: 'pt-BR' | 'en'}}`. Para renderizar a versão inglesa, troque o id da composição:
+
+```bash
+npm run build           # pt-BR (composição padrão)
+npm run build:en        # en
+./render-stills.sh en   # 15 stills da versão en
+```
 
 ## Roteiro das cenas
 

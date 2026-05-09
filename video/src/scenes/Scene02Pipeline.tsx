@@ -1,11 +1,12 @@
 import React from 'react';
-import {AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig} from 'remotion';
+import {AbsoluteFill, interpolate, useCurrentFrame} from 'remotion';
 import {Background} from '../components/Background';
 import {AnimatedText} from '../components/AnimatedText';
 import {Pipeline} from '../components/Pipeline';
-import {SceneFrame, SceneTitle} from '../components/Layout';
+import {SceneFrame} from '../components/Layout';
 import {Tag} from '../components/Tag';
 import {theme} from '../theme';
+import {useStrings} from '../i18n';
 
 const HIGHLIGHTS = [
   {at: 30, label: 'brief'},
@@ -20,7 +21,7 @@ const HIGHLIGHTS = [
 
 export const Scene02Pipeline: React.FC = () => {
   const frame = useCurrentFrame();
-  const {fps} = useVideoConfig();
+  const strings = useStrings();
 
   const current = HIGHLIGHTS.reduce(
     (acc, h) => (frame >= h.at ? h.label : acc),
@@ -39,16 +40,16 @@ export const Scene02Pipeline: React.FC = () => {
           padding: 60,
         }}
       >
-        <Tag label="o pipeline" delay={0} color={theme.accent2} />
+        <Tag label={strings.pipeline.tag} delay={0} color={theme.accent2} />
         <AnimatedText
-          text="Um piece atravessa 8 etapas"
+          text={strings.pipeline.headline}
           delay={10}
           size={68}
           weight={800}
           stagger={1.2}
         />
         <AnimatedText
-          text="cada skill é responsável por uma parte do caminho"
+          text={strings.pipeline.subhead}
           delay={28}
           size={26}
           weight={500}
@@ -56,7 +57,15 @@ export const Scene02Pipeline: React.FC = () => {
           stagger={0.6}
         />
 
-        <div style={{marginTop: 20, opacity: interpolate(frame, [22, 38], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'})}}>
+        <div
+          style={{
+            marginTop: 20,
+            opacity: interpolate(frame, [22, 38], [0, 1], {
+              extrapolateLeft: 'clamp',
+              extrapolateRight: 'clamp',
+            }),
+          }}
+        >
           <Pipeline highlight={current} delay={20} />
         </div>
 
@@ -70,7 +79,7 @@ export const Scene02Pipeline: React.FC = () => {
             marginTop: 6,
           }}
         >
-          stage atual: <span style={{color: theme.accent}}>{current}</span>
+          {strings.pipeline.currentStage}: <span style={{color: theme.accent}}>{current}</span>
         </div>
       </AbsoluteFill>
     </SceneFrame>

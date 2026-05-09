@@ -5,6 +5,7 @@ import {AnimatedText} from '../components/AnimatedText';
 import {Tag} from '../components/Tag';
 import {SceneFrame} from '../components/Layout';
 import {theme} from '../theme';
+import {useStrings} from '../i18n';
 
 const PROVIDERS = [
   {name: 'claude', x: -260, y: -10, color: '#FFB070'},
@@ -18,6 +19,7 @@ const PROVIDERS = [
 export const Scene03ProviderAgnostic: React.FC = () => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
+  const strings = useStrings();
 
   return (
     <SceneFrame>
@@ -31,10 +33,10 @@ export const Scene03ProviderAgnostic: React.FC = () => {
           paddingTop: 100,
         }}
       >
-        <Tag label="princípio nº 1" color={theme.accent3} />
-        <AnimatedText text="Provider-agnostic" delay={6} size={92} weight={800} />
+        <Tag label={strings.providerAgnostic.tag} color={theme.accent3} />
+        <AnimatedText text={strings.providerAgnostic.title} delay={6} size={92} weight={800} />
         <AnimatedText
-          text="o llm-router escolhe — a skill nunca cita o provider"
+          text={strings.providerAgnostic.subtitle}
           delay={26}
           size={26}
           weight={500}

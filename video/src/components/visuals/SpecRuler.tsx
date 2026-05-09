@@ -1,18 +1,13 @@
 import React from 'react';
 import {interpolate, spring, useCurrentFrame, useVideoConfig} from 'remotion';
 import {theme} from '../../theme';
-
-const CHECKS = [
-  {label: 'aspect ratio', value: '9:16', expected: '9:16', ok: true},
-  {label: 'duração', value: '6.0s', expected: '≤ 60s', ok: true},
-  {label: 'tamanho', value: '8.4 MB', expected: '≤ 10 MB', ok: true},
-  {label: 'codec', value: 'h264', expected: 'h264 / vp9', ok: true},
-  {label: 'safe area', value: '88%', expected: '≥ 90%', ok: false},
-];
+import {useStrings} from '../../i18n';
 
 export const SpecRuler: React.FC = () => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
+  const strings = useStrings();
+  const CHECKS = strings.specs.checks;
   return (
     <div
       style={{
@@ -54,7 +49,7 @@ export const SpecRuler: React.FC = () => {
             textTransform: 'uppercase',
           }}
         >
-          safe area · 90%
+          {strings.specs.safeArea}
         </div>
         <div
           style={{
@@ -70,7 +65,7 @@ export const SpecRuler: React.FC = () => {
             padding: 18,
           }}
         >
-          texto pode ficar cortado em telas menores
+          {strings.specs.overlay}
         </div>
         <div
           style={{

@@ -1,16 +1,13 @@
 import React from 'react';
 import {interpolate, spring, useCurrentFrame, useVideoConfig} from 'remotion';
 import {theme} from '../../theme';
-
-const VIOLATIONS = [
-  {phrase: '"cura definitiva"', risk: 'medical-claim', verdict: 'BLOCK'},
-  {phrase: '"retorno garantido"', risk: 'financial-guarantee', verdict: 'BLOCK'},
-  {phrase: '"100% melhor que X"', risk: 'deceptive-comparison', verdict: 'WARN'},
-];
+import {useStrings} from '../../i18n';
 
 export const ComplianceShield: React.FC = () => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
+  const strings = useStrings();
+  const VIOLATIONS = strings.compliance.violations;
   const pulse = 1 + 0.04 * Math.sin(frame / 8);
 
   return (
@@ -57,14 +54,12 @@ export const ComplianceShield: React.FC = () => {
               textTransform: 'uppercase',
             }}
           >
-            compliance-generic
+            {strings.compliance.skillName}
           </div>
           <div style={{color: theme.text, fontSize: 28, fontWeight: 700}}>
-            pass: <span style={{color: theme.danger}}>false</span>
+            {strings.compliance.passLabel}: <span style={{color: theme.danger}}>false</span>
           </div>
-          <div style={{color: theme.textDim, fontSize: 16}}>
-            JSON {'{'}pass, violations[], suggestions[]{'}'}
-          </div>
+          <div style={{color: theme.textDim, fontSize: 16}}>{strings.compliance.json}</div>
         </div>
       </div>
 

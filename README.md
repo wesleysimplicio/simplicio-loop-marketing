@@ -9,19 +9,38 @@ Provider-agnostic AI marketing engine. Drop into any project, scan it, generate 
 
 ## Watch the skills explainer (90s)
 
-A Remotion-rendered walkthrough of the pipeline and every skill in `.skills/`.
+A Remotion-rendered walkthrough of the pipeline and every skill in `.skills/`. Rendered in English; a [Portuguese version](./README.pt-BR.md#veja-o-explainer-das-skills-90s) is also available.
 
 <p align="center">
-  <a href="./video/out/marketing-engine-skills.mp4">
-    <img src="./video/out/cover.png" alt="Marketing Engine — skills explainer cover" width="720" />
+  <a href="./video/out/marketing-engine-skills-en.mp4">
+    <img src="./video/out/cover-en.png" alt="Marketing Engine — skills explainer cover" width="720" />
   </a>
 </p>
 
 <p align="center">
-  <a href="./video/out/marketing-engine-skills.mp4"><b>▶︎ Play marketing-engine-skills.mp4</b></a>
+  <a href="./video/out/marketing-engine-skills-en.mp4"><b>▶︎ Play marketing-engine-skills-en.mp4</b></a>
   &nbsp;·&nbsp;
   <a href="./video/README.md">how it was built</a>
 </p>
+
+### Visual tour of each scene
+
+| Stage | Scene |
+|---|---|
+| `pipeline` | <img src="./video/out/02-pipeline-en.png" alt="brief → script → creative → caption → compliance → publish → metrics → ads" width="520" /> |
+| `provider-agnostic` | <img src="./video/out/03-provider-agnostic-en.png" alt="llm-router orbited by claude, codex, deepseek, higgsfield, topview, wavespeed" width="520" /> |
+| `llm-router` | <img src="./video/out/04-llm-router-en.png" alt="task_type resolved into a concrete provider" width="520" /> |
+| `copywriter-curto` | <img src="./video/out/05-copywriter-curto-en.png" alt="hook, caption, headline typewriter with character counter" width="520" /> |
+| `revisao-humanizada` | <img src="./video/out/06-revisao-humanizada-en.png" alt="before/after diff stripping AI fingerprints" width="520" /> |
+| `caption-multi-platform` | <img src="./video/out/07-caption-multi-platform-en.png" alt="one base copy fanned out to Instagram, TikTok, LinkedIn, X" width="520" /> |
+| `higgsfield-prompt-builder` | <img src="./video/out/08-higgsfield-en.png" alt="cinematic viewport with lens, motion, mood parameters" width="520" /> |
+| `topview-prompt-builder` | <img src="./video/out/09-topview-en.png" alt="UGC avatar with spoken script tokens" width="520" /> |
+| `wavespeed-batch` | <img src="./video/out/10-wavespeed-en.png" alt="3x2 A/B variant grid with winner glow" width="520" /> |
+| `gpt-image-prompt-builder` | <img src="./video/out/11-gpt-image-en.png" alt="quote-card carousel slides" width="520" /> |
+| `video-prompt-builder` | <img src="./video/out/12-video-prompt-builder-en.png" alt="brief routed to higgsfield, topview, or wavespeed" width="520" /> |
+| `compliance-generic` | <img src="./video/out/13-compliance-en.png" alt="shield blocking medical claims and financial guarantees" width="520" /> |
+| `qa-tech-specs` | <img src="./video/out/14-qa-tech-specs-en.png" alt="aspect, duration, codec, safe-area checks" width="520" /> |
+| `definition-of-done` | <img src="./video/out/15-dod-outro-en.png" alt="6 gates that must pass before a piece ships" width="520" /> |
 
 ## What it does
 
