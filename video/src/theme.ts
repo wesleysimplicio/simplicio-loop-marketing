@@ -23,8 +23,10 @@ export const channels = [
   {name: 'X', color: '#F5F7FB'},
 ];
 
+import type {SkillId} from './i18n';
+
 export type SkillMeta = {
-  id: string;
+  id: SkillId;
   emoji: string;
   color: string;
   stage: string;

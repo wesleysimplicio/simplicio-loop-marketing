@@ -4,6 +4,24 @@ export type Locale = 'pt-BR' | 'en';
 
 export const LOCALES: Locale[] = ['pt-BR', 'en'];
 
+export const DEFAULT_LOCALE: Locale = 'pt-BR';
+
+export const SKILL_IDS = [
+  'llm-router',
+  'copywriter-curto',
+  'revisao-humanizada',
+  'caption-multi-platform',
+  'higgsfield-prompt-builder',
+  'topview-prompt-builder',
+  'wavespeed-batch',
+  'gpt-image-prompt-builder',
+  'video-prompt-builder',
+  'compliance-generic',
+  'qa-tech-specs',
+] as const;
+
+export type SkillId = (typeof SKILL_IDS)[number];
+
 type Strings = {
   intro: {title: string; subtitle: string; tags: string[]};
   pipeline: {
@@ -88,7 +106,7 @@ type Strings = {
     checks: {label: string; value: string; expected: string; ok: boolean}[];
   };
   skills: Record<
-    string,
+    SkillId,
     {
       tagline: string;
       bullets: string[];
@@ -621,10 +639,17 @@ const STRINGS: Record<Locale, Strings> = {
   en,
 };
 
-export const LocaleContext = React.createContext<Locale>('pt-BR');
+const isLocale = (value: unknown): value is Locale =>
+  typeof value === 'string' && (LOCALES as readonly string[]).includes(value);
 
-export const useLocale = () => React.useContext(LocaleContext);
+const resolveLocale = (value: unknown): Locale =>
+  isLocale(value) ? value : DEFAULT_LOCALE;
 
-export const useStrings = () => STRINGS[useLocale()];
+export const LocaleContext = React.createContext<Locale>(DEFAULT_LOCALE);
 
-export const stringsFor = (locale: Locale) => STRINGS[locale];
+export const useLocale = (): Locale => resolveLocale(React.useContext(LocaleContext));
+
+export const useStrings = (): Strings => STRINGS[useLocale()];
+
+export const stringsFor = (locale: Locale | string): Strings =>
+  STRINGS[resolveLocale(locale)];
