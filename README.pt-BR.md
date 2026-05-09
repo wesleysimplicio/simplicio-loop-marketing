@@ -54,6 +54,25 @@ https://github.com/wesleysimplicio/marketing-engine/raw/main/video/out/marketing
 | `qa-tech-specs` | <img src="./video/out/14-qa-tech-specs.png" alt="aspect, duração, codec e safe-area" width="520" /> |
 | `definition-of-done` | <img src="./video/out/15-dod-outro.png" alt="os 6 gates que um piece precisa passar" width="520" /> |
 
+### Tour visual cena a cena
+
+| Etapa | Cena |
+|---|---|
+| `pipeline` | <img src="./video/out/02-pipeline.png" alt="brief → script → creative → caption → compliance → publish → metrics → ads" width="520" /> |
+| `provider-agnostic` | <img src="./video/out/03-provider-agnostic.png" alt="llm-router orbitado por claude, codex, deepseek, higgsfield, topview, wavespeed" width="520" /> |
+| `llm-router` | <img src="./video/out/04-llm-router.png" alt="task_type resolvida num provider concreto" width="520" /> |
+| `copywriter-curto` | <img src="./video/out/05-copywriter-curto.png" alt="hook, caption, headline com contador de caracteres" width="520" /> |
+| `revisao-humanizada` | <img src="./video/out/06-revisao-humanizada.png" alt="diff antes/depois removendo fingerprints de IA" width="520" /> |
+| `caption-multi-platform` | <img src="./video/out/07-caption-multi-platform.png" alt="uma base copy adaptada para Instagram, TikTok, LinkedIn e X" width="520" /> |
+| `higgsfield-prompt-builder` | <img src="./video/out/08-higgsfield.png" alt="viewport cinematográfico com lente, motion e mood" width="520" /> |
+| `topview-prompt-builder` | <img src="./video/out/09-topview.png" alt="avatar UGC com script falado tokenizado" width="520" /> |
+| `wavespeed-batch` | <img src="./video/out/10-wavespeed.png" alt="grid 3x2 de variantes A/B com winner glow" width="520" /> |
+| `gpt-image-prompt-builder` | <img src="./video/out/11-gpt-image.png" alt="slides de quote-card / carrossel" width="520" /> |
+| `video-prompt-builder` | <img src="./video/out/12-video-prompt-builder.png" alt="brief roteado para higgsfield, topview ou wavespeed" width="520" /> |
+| `compliance-generic` | <img src="./video/out/13-compliance.png" alt="escudo bloqueando claims médicos e garantias financeiras" width="520" /> |
+| `qa-tech-specs` | <img src="./video/out/14-qa-tech-specs.png" alt="aspect, duração, codec e safe-area" width="520" /> |
+| `definition of done` | <img src="./video/out/15-dod-outro.png" alt="os 6 gates que um piece precisa passar" width="520" /> |
+
 ## O que faz
 
 - Escaneia o projeto host (`package.json`, README, árvore de fontes, assets de marca existentes) e rascunha brand, persona e content-pillar specs pra você revisar.
