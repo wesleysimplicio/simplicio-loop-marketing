@@ -1,18 +1,12 @@
 import React from 'react';
 import {interpolate, useCurrentFrame} from 'remotion';
 import {theme} from '../../theme';
-
-const PARAMS = [
-  {k: 'subject', v: 'fundadora caminhando no estúdio'},
-  {k: 'lens', v: '35mm · f/1.8 · close médio'},
-  {k: 'motion', v: 'dolly-in suave, hand-held leve'},
-  {k: 'lighting', v: 'window light + rim quente'},
-  {k: 'mood', v: 'editorial · confiante · íntimo'},
-  {k: 'aspect / dur', v: '9:16 · 6s · soul 2.0'},
-];
+import {useStrings} from '../../i18n';
 
 export const Cinematic: React.FC = () => {
   const frame = useCurrentFrame();
+  const strings = useStrings();
+  const PARAMS = strings.cinematic.params;
   return (
     <div
       style={{
@@ -64,8 +58,8 @@ export const Cinematic: React.FC = () => {
             textTransform: 'uppercase',
           }}
         >
-          <span>● rec</span>
-          <span>higgsfield · soul 2.0</span>
+          <span>{strings.cinematic.headerLeft}</span>
+          <span>{strings.cinematic.headerRight}</span>
         </div>
         <div
           style={{

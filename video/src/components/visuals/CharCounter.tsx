@@ -1,20 +1,12 @@
 import React from 'react';
 import {interpolate, useCurrentFrame} from 'remotion';
 import {theme} from '../../theme';
-
-const SAMPLES = [
-  {label: 'Hook', text: 'Pare de roteirizar no escuro.', limit: 60, color: theme.accent},
-  {
-    label: 'Caption',
-    text: 'Brief vira post auditável em 3 minutos. Sem provider locked-in.',
-    limit: 220,
-    color: theme.accent2,
-  },
-  {label: 'Headline', text: 'Pipeline pronto. Você só aprova.', limit: 40, color: theme.accent3},
-];
+import {useStrings} from '../../i18n';
 
 export const CharCounter: React.FC = () => {
   const frame = useCurrentFrame();
+  const strings = useStrings();
+  const SAMPLES = strings.copy.samples;
   return (
     <div
       style={{

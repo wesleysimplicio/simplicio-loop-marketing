@@ -1,9 +1,11 @@
 import React from 'react';
-import {interpolate, useCurrentFrame} from 'remotion';
+import {useCurrentFrame} from 'remotion';
 import {theme} from '../../theme';
+import {useStrings} from '../../i18n';
 
 export const Avatar: React.FC = () => {
   const frame = useCurrentFrame();
+  const strings = useStrings();
   const blink = Math.floor(frame / 36) % 8 === 0 ? 0.05 : 1;
   const sway = Math.sin(frame / 18) * 4;
 
@@ -58,7 +60,7 @@ export const Avatar: React.FC = () => {
             fill={theme.bg}
             fontWeight="700"
           >
-            BRAND
+            {strings.avatar.badge}
           </text>
         </svg>
         <div
@@ -83,7 +85,7 @@ export const Avatar: React.FC = () => {
               boxShadow: `0 0 10px ${theme.danger}`,
             }}
           />
-          REC
+          {strings.avatar.rec}
         </div>
         <div
           style={{
@@ -97,7 +99,7 @@ export const Avatar: React.FC = () => {
             opacity: 0.8,
           }}
         >
-          topview · ugc · 9:16
+          {strings.avatar.chip}
         </div>
       </div>
       <div
@@ -121,11 +123,11 @@ export const Avatar: React.FC = () => {
             textTransform: 'uppercase',
           }}
         >
-          script falado
+          {strings.avatar.title}
         </div>
-        <Speech text="Olha, eu testei pra você." delay={20} />
-        <Speech text="O brief virou post em 3 minutos." delay={45} />
-        <Speech text="Sem trocar o code-base, só o .env." delay={75} />
+        {strings.avatar.speech.map((line, i) => (
+          <Speech key={i} text={line} delay={20 + i * 25} />
+        ))}
       </div>
     </div>
   );

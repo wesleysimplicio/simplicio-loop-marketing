@@ -1,19 +1,13 @@
 import React from 'react';
 import {interpolate, spring, useCurrentFrame, useVideoConfig} from 'remotion';
 import {theme} from '../../theme';
-
-const VARIANTS = [
-  {hook: 'pare de roteirizar no escuro', cost: '$0.004', winner: false},
-  {hook: 'pipeline pronto. você só aprova.', cost: '$0.004', winner: true},
-  {hook: 'troque o provider, não o código', cost: '$0.004', winner: false},
-  {hook: '8 etapas em 1 prompt', cost: '$0.005', winner: false},
-  {hook: 'brief vira post auditável', cost: '$0.004', winner: false},
-  {hook: 'sem provider lock-in', cost: '$0.004', winner: false},
-];
+import {useStrings} from '../../i18n';
 
 export const BatchGrid: React.FC = () => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
+  const strings = useStrings();
+  const VARIANTS = strings.batch.variants;
   return (
     <div
       style={{
@@ -28,9 +22,7 @@ export const BatchGrid: React.FC = () => {
         const s = spring({frame: frame - 20 - i * 5, fps, config: {damping: 200}});
         const o = interpolate(s, [0, 1], [0, 1], {extrapolateRight: 'clamp'});
         const sc = interpolate(s, [0, 1], [0.85, 1]);
-        const winnerGlow = v.winner
-          ? 0.5 + 0.5 * Math.sin(frame / 6)
-          : 0;
+        const winnerGlow = v.winner ? 0.5 + 0.5 * Math.sin(frame / 6) : 0;
         return (
           <div
             key={i}
@@ -90,7 +82,7 @@ export const BatchGrid: React.FC = () => {
                     fontWeight: 700,
                   }}
                 >
-                  WINNER
+                  {strings.batch.winnerLabel}
                 </div>
               ) : null}
             </div>

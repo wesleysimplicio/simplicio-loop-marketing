@@ -1,17 +1,13 @@
 import React from 'react';
 import {interpolate, spring, useCurrentFrame, useVideoConfig} from 'remotion';
 import {theme} from '../../theme';
-
-const TASKS = [
-  {task: 'caption', provider: 'deepseek', color: '#7CF6C8'},
-  {task: 'script', provider: 'claude', color: '#FFB070'},
-  {task: 'compliance', provider: 'claude', color: '#FFB070'},
-  {task: 'humanize', provider: 'claude', color: '#FFB070'},
-];
+import {useStrings} from '../../i18n';
 
 export const RouterTaskFlow: React.FC = () => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
+  const strings = useStrings();
+  const TASKS = strings.router.tasks;
   return (
     <div
       style={{
@@ -36,8 +32,8 @@ export const RouterTaskFlow: React.FC = () => {
           textTransform: 'uppercase',
         }}
       >
-        <span>task_type</span>
-        <span>provider resolvido</span>
+        <span>{strings.router.headerTask}</span>
+        <span>{strings.router.headerProvider}</span>
       </div>
       {TASKS.map((t, i) => {
         const s = spring({frame: frame - 30 - i * 8, fps, config: {damping: 200}});

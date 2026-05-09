@@ -1,21 +1,11 @@
 import React from 'react';
 import {interpolate, useCurrentFrame} from 'remotion';
 import {theme} from '../../theme';
-
-const BEFORE = [
-  'Em suma, é importante destacar que',
-  'nosso pipeline — robusto, escalável e moderno —',
-  'oferece, de maneira eficiente, uma solução completa.',
-];
-
-const AFTER = [
-  'Olha só o que muda na prática.',
-  'O pipeline cuida do trabalho chato.',
-  'Você só aprova o que vai pro ar.',
-];
+import {useStrings} from '../../i18n';
 
 export const HumanizerDiff: React.FC = () => {
   const frame = useCurrentFrame();
+  const strings = useStrings();
   const fade = interpolate(frame, [40, 70], [0, 1], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
@@ -32,19 +22,26 @@ export const HumanizerDiff: React.FC = () => {
       }}
     >
       <Block
-        title="rascunho do LLM"
+        title={strings.humanizer.beforeTag}
         color={theme.danger}
-        lines={BEFORE}
+        lines={strings.humanizer.before}
         opacity={1 - fade * 0.4}
         strike={fade > 0.3}
       />
-      <div style={{textAlign: 'center', color: theme.textDim, fontFamily: theme.mono, fontSize: 18}}>
-        ↓ revisao-humanizada ↓
+      <div
+        style={{
+          textAlign: 'center',
+          color: theme.textDim,
+          fontFamily: theme.mono,
+          fontSize: 18,
+        }}
+      >
+        {strings.humanizer.arrow}
       </div>
       <Block
-        title="pronto pra publicar"
+        title={strings.humanizer.afterTag}
         color={theme.accent}
-        lines={AFTER}
+        lines={strings.humanizer.after}
         opacity={fade}
       />
     </div>

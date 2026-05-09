@@ -6,27 +6,29 @@ import {CodeBlock} from '../components/CodeBlock';
 import {AnimatedText} from '../components/AnimatedText';
 import {Tag} from '../components/Tag';
 import {SceneFrame} from '../components/Layout';
-import {Skill, theme} from '../theme';
+import {SkillMeta, theme} from '../theme';
+import {useStrings} from '../i18n';
 
 type Token = {text: string; color?: string};
 
 export const SkillSpotlight: React.FC<{
-  skill: Skill;
-  stage: string;
+  meta: SkillMeta;
   index: number;
   total: number;
   visual: React.ReactNode;
   code?: {title: string; lines: Token[][]};
-}> = ({skill, stage, index, total, visual, code}) => {
+}> = ({meta, index, total, visual, code}) => {
   const frame = useCurrentFrame();
   const slide = interpolate(frame, [0, 18], [60, 0], {
     extrapolateLeft: 'clamp',
     extrapolateRight: 'clamp',
   });
+  const strings = useStrings();
+  const skillStrings = strings.skills[meta.id];
 
   return (
     <SceneFrame>
-      <Background tint={skill.color} />
+      <Background tint={meta.color} />
       <AbsoluteFill style={{padding: 80, display: 'flex', flexDirection: 'column'}}>
         <div
           style={{
@@ -36,7 +38,7 @@ export const SkillSpotlight: React.FC<{
             marginBottom: 30,
           }}
         >
-          <Tag label={`stage · ${stage}`} color={skill.color} />
+          <Tag label={`${strings.spotlight.stage} · ${meta.stage}`} color={meta.color} />
           <div
             style={{
               fontFamily: theme.mono,
@@ -46,12 +48,12 @@ export const SkillSpotlight: React.FC<{
               textTransform: 'uppercase',
             }}
           >
-            skill {String(index).padStart(2, '0')} / {String(total).padStart(2, '0')}
+            {strings.spotlight.skillCounter(index, total)}
           </div>
         </div>
 
         <AnimatedText
-          text={skill.name}
+          text={meta.id}
           delay={6}
           size={86}
           weight={800}
@@ -60,7 +62,7 @@ export const SkillSpotlight: React.FC<{
         />
         <div style={{height: 12}} />
         <AnimatedText
-          text={skill.tagline}
+          text={skillStrings.tagline}
           delay={26}
           size={32}
           weight={500}
@@ -81,7 +83,7 @@ export const SkillSpotlight: React.FC<{
           }}
         >
           <div style={{flexShrink: 0}}>
-            <SkillCard skill={skill} delay={32} />
+            <SkillCard meta={meta} delay={32} />
           </div>
           <div
             style={{

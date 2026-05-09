@@ -5,19 +5,12 @@ import {AnimatedText} from '../components/AnimatedText';
 import {Tag} from '../components/Tag';
 import {SceneFrame} from '../components/Layout';
 import {theme} from '../theme';
-
-const DOD = [
-  'Compliance pass: true (ou override logado)',
-  'qa-tech-specs aprovado em todos os canais',
-  'Captions IG · TikTok · LinkedIn · X geradas',
-  'Playwright cobre o pipeline ponta-a-ponta',
-  'data/llm-usage.jsonl + data/runs.jsonl',
-  'manifest.json em outputs/<client>/<date>/<piece>',
-];
+import {useStrings} from '../i18n';
 
 export const Scene99Outro: React.FC = () => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
+  const strings = useStrings();
 
   return (
     <SceneFrame>
@@ -31,9 +24,9 @@ export const Scene99Outro: React.FC = () => {
           padding: 80,
         }}
       >
-        <Tag label="definition of done" color={theme.accent} />
+        <Tag label={strings.outro.tag} color={theme.accent} />
         <AnimatedText
-          text="um piece só está pronto quando"
+          text={strings.outro.pre}
           delay={6}
           size={44}
           weight={500}
@@ -41,7 +34,7 @@ export const Scene99Outro: React.FC = () => {
           stagger={0.6}
         />
         <AnimatedText
-          text="todos os gates passam"
+          text={strings.outro.headline}
           delay={28}
           size={86}
           weight={800}
@@ -57,7 +50,7 @@ export const Scene99Outro: React.FC = () => {
             width: 980,
           }}
         >
-          {DOD.map((d, i) => {
+          {strings.outro.dod.map((d, i) => {
             const s = spring({frame: frame - 50 - i * 7, fps, config: {damping: 200}});
             const o = interpolate(s, [0, 1], [0, 1], {extrapolateRight: 'clamp'});
             const y = interpolate(s, [0, 1], [16, 0]);
@@ -129,7 +122,7 @@ export const Scene99Outro: React.FC = () => {
             textTransform: 'uppercase',
           }}
         >
-          brief → script → creative → caption → compliance → publish → metrics → ads
+          {strings.outro.pipelineCaption}
         </div>
       </AbsoluteFill>
     </SceneFrame>

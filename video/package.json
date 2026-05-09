@@ -7,8 +7,10 @@
   "scripts": {
     "start": "remotion studio src/index.ts",
     "build": "remotion render src/index.ts marketing-engine-skills out/marketing-engine-skills.mp4",
+    "build:en": "remotion render src/index.ts marketing-engine-skills-en out/marketing-engine-skills-en.mp4",
     "build:webm": "remotion render src/index.ts marketing-engine-skills out/marketing-engine-skills.webm --codec=vp9",
     "still": "remotion still src/index.ts marketing-engine-skills out/cover.png --frame=60",
+    "still:en": "remotion still src/index.ts marketing-engine-skills-en out/cover-en.png --frame=60",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
