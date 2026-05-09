@@ -71,7 +71,7 @@ https://github.com/wesleysimplicio/marketing-engine/raw/main/video/out/marketing
 | `video-prompt-builder` | <img src="./video/out/12-video-prompt-builder.png" alt="brief roteado para higgsfield, topview ou wavespeed" width="520" /> |
 | `compliance-generic` | <img src="./video/out/13-compliance.png" alt="escudo bloqueando claims médicos e garantias financeiras" width="520" /> |
 | `qa-tech-specs` | <img src="./video/out/14-qa-tech-specs.png" alt="aspect, duração, codec e safe-area" width="520" /> |
-| `definition of done` | <img src="./video/out/15-dod-outro.png" alt="os 6 gates que um piece precisa passar" width="520" /> |
+| `definition-of-done` | <img src="./video/out/15-dod-outro.png" alt="os 6 gates que um piece precisa passar" width="520" /> |
 
 ## O que faz
 
