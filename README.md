@@ -11,17 +11,23 @@ Provider-agnostic AI marketing engine. Drop into any project, scan it, generate 
 
 A Remotion-rendered walkthrough of the pipeline and every skill in `.skills/`. Rendered in English; a [Portuguese version](./README.pt-BR.md#veja-o-explainer-das-skills-90s) is also available.
 
-<p align="center">
-  <a href="./video/out/marketing-engine-skills-en.mp4">
-    <img src="./video/out/cover-en.png" alt="Marketing Engine — skills explainer cover" width="720" />
-  </a>
-</p>
+https://github.com/wesleysimplicio/marketing-engine/raw/main/video/out/marketing-engine-skills-en.mp4
 
-<p align="center">
-  <a href="./video/out/marketing-engine-skills-en.mp4"><b>▶︎ Play marketing-engine-skills-en.mp4</b></a>
-  &nbsp;·&nbsp;
-  <a href="./video/README.md">how it was built</a>
-</p>
+<details>
+  <summary>Player not loading? Click for the fallback thumbnail / direct download</summary>
+
+  <p align="center">
+    <a href="./video/out/marketing-engine-skills-en.mp4">
+      <img src="./video/out/cover-en.png" alt="Marketing Engine — skills explainer cover" width="720" />
+    </a>
+  </p>
+
+  <p align="center">
+    <a href="./video/out/marketing-engine-skills-en.mp4"><b>▶︎ Open marketing-engine-skills-en.mp4</b></a>
+    &nbsp;·&nbsp;
+    <a href="./video/README.md">how it was built</a>
+  </p>
+</details>
 
 ### Visual tour of each scene
 
