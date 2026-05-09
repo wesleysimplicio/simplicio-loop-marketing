@@ -7,6 +7,22 @@ Provider-agnostic AI marketing engine. Drop into any project, scan it, generate 
 
 [![CI](https://github.com/wesleysimplicio/marketing-engine/actions/workflows/ci.yml/badge.svg)](https://github.com/wesleysimplicio/marketing-engine/actions/workflows/ci.yml)
 
+## Watch the skills explainer (90s)
+
+A Remotion-rendered walkthrough of the pipeline and every skill in `.skills/`.
+
+<p align="center">
+  <a href="./video/out/marketing-engine-skills.mp4">
+    <img src="./video/out/cover.png" alt="Marketing Engine — skills explainer cover" width="720" />
+  </a>
+</p>
+
+<p align="center">
+  <a href="./video/out/marketing-engine-skills.mp4"><b>▶︎ Play marketing-engine-skills.mp4</b></a>
+  &nbsp;·&nbsp;
+  <a href="./video/README.md">how it was built</a>
+</p>
+
 ## What it does
 
 - Scans the host project (package.json, README, source tree, existing brand assets) and drafts brand, persona, and content-pillar specs you can review and edit.

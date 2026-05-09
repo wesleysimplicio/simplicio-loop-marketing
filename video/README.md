@@ -5,6 +5,13 @@ Vídeo explicativo animado, criado com [Remotion](https://www.remotion.dev/), co
 - **Resolução:** 1920×1080 @ 30 fps
 - **Duração:** ~91 segundos (2720 frames)
 - **Composição:** `marketing-engine-skills`
+- **Render mais recente:** [`out/marketing-engine-skills.mp4`](./out/marketing-engine-skills.mp4) · 15.7 MB · [cover](./out/cover.png)
+
+<p align="center">
+  <a href="./out/marketing-engine-skills.mp4">
+    <img src="./out/cover.png" alt="cover" width="720" />
+  </a>
+</p>
 
 ## Roteiro das cenas
 
