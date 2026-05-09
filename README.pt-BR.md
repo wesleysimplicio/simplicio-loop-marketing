@@ -6,6 +6,22 @@ Engine de marketing AI provider-agnostic. Cai em qualquer projeto, escaneia, ger
 
 [![CI](https://github.com/wesleysimplicio/marketing-engine/actions/workflows/ci.yml/badge.svg)](https://github.com/wesleysimplicio/marketing-engine/actions/workflows/ci.yml)
 
+## Veja o explainer das skills (90s)
+
+Um walkthrough renderizado em Remotion do pipeline e de cada skill em `.skills/`.
+
+<p align="center">
+  <a href="./video/out/marketing-engine-skills.mp4">
+    <img src="./video/out/cover.png" alt="Marketing Engine — capa do explainer das skills" width="720" />
+  </a>
+</p>
+
+<p align="center">
+  <a href="./video/out/marketing-engine-skills.mp4"><b>▶︎ Tocar marketing-engine-skills.mp4</b></a>
+  &nbsp;·&nbsp;
+  <a href="./video/README.md">como foi feito</a>
+</p>
+
 ## O que faz
 
 - Escaneia o projeto host (`package.json`, README, árvore de fontes, assets de marca existentes) e rascunha brand, persona e content-pillar specs pra você revisar.
