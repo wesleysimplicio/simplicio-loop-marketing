@@ -1,0 +1,25 @@
+{
+  "name": "marketing-engine-video",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Remotion explainer video covering every Marketing Engine skill",
+  "type": "module",
+  "scripts": {
+    "start": "remotion studio src/index.ts",
+    "build": "remotion render src/index.ts marketing-engine-skills out/marketing-engine-skills.mp4",
+    "build:webm": "remotion render src/index.ts marketing-engine-skills out/marketing-engine-skills.webm --codec=vp9",
+    "still": "remotion still src/index.ts marketing-engine-skills out/cover.png --frame=60",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@remotion/shapes": "4.0.243",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "remotion": "4.0.243"
+  },
+  "devDependencies": {
+    "@types/react": "18.3.12",
+    "@types/react-dom": "18.3.1",
+    "typescript": "5.6.3"
+  }
+}
