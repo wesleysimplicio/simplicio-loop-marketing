@@ -10,17 +10,30 @@ Engine de marketing AI provider-agnostic. Cai em qualquer projeto, escaneia, ger
 
 Um walkthrough renderizado em Remotion do pipeline e de cada skill em `.skills/`. Renderizado em português; uma [versão em inglês](./README.md#watch-the-skills-explainer-90s) também está disponível.
 
-<p align="center">
-  <a href="./video/out/marketing-engine-skills.mp4">
-    <img src="./video/out/cover.png" alt="Marketing Engine — capa do explainer das skills" width="720" />
-  </a>
-</p>
+<!--
+  O GitHub renderiza automaticamente uma URL https://github.com/<owner>/<repo>/raw/<branch>/...
+  numa linha sozinha como um <video controls> inline. A URL precisa apontar
+  pra uma branch real — HEAD ou path relativo desliga o embed. Forks devem
+  reescrever essa URL para o próprio owner/repo (ou removê-la e usar só o
+  fallback do <details> abaixo).
+-->
+https://github.com/wesleysimplicio/marketing-engine/raw/main/video/out/marketing-engine-skills.mp4
 
-<p align="center">
-  <a href="./video/out/marketing-engine-skills.mp4"><b>▶︎ Tocar marketing-engine-skills.mp4</b></a>
-  &nbsp;·&nbsp;
-  <a href="./video/README.md">como foi feito</a>
-</p>
+<details>
+  <summary>Player não carregou? Clique para a thumbnail / download direto</summary>
+
+  <p align="center">
+    <a href="./video/out/marketing-engine-skills.mp4">
+      <img src="./video/out/cover.png" alt="Marketing Engine — capa do explainer das skills" width="720" />
+    </a>
+  </p>
+
+  <p align="center">
+    <a href="./video/out/marketing-engine-skills.mp4"><b>▶︎ Abrir marketing-engine-skills.mp4</b></a>
+    &nbsp;·&nbsp;
+    <a href="./video/README.md">como foi feito</a>
+  </p>
+</details>
 
 ### Tour visual cena a cena
 
