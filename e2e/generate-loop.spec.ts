@@ -75,8 +75,13 @@ test("generate loop processes a draft piece end-to-end with mocks under DRY_RUN"
     });
     expect(Array.isArray(runsLog[0].providers_used)).toBe(true);
     expect(typeof runsLog[0].timestamp).toBe("string");
-    const usage = readFileSync(join(host, "data", "llm-usage.jsonl"), "utf8");
-    expect(usage.length).toBeGreaterThan(0);
+    const usage = readFileSync(join(host, "data", "llm-usage.jsonl"), "utf8")
+      .trim()
+      .split("\n")
+      .map((line) => JSON.parse(line));
+    expect(usage.length).toBeGreaterThanOrEqual(2);
+    expect(usage.map((line) => line.task)).toEqual(["script", "caption"]);
+    expect(usage.every((line) => typeof line.provider === "string")).toBe(true);
     const updated = readFileSync(
       join(piecesDir, "PIECE-test-001.md"),
       "utf8",

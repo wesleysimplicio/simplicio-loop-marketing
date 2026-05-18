@@ -38,25 +38,3 @@ test("init scaffolds .marketing-engine/ tree in a tmp host root", () => {
   expect(gi).toContain(".marketing-engine/.env");
   expect(gi).toContain(".marketing-engine/outputs/*");
 });
-
-test("scan regenerates draft files based on package.json signals", () => {
-  const host = mkdtempSync(join(tmpdir(), "me-scan-"));
-  writeFileSync(
-    join(host, "package.json"),
-    JSON.stringify({
-      name: "scan-target",
-      description: "auto-scanned",
-      keywords: ["ai", "marketing"],
-    }),
-  );
-  writeFileSync(join(host, "README.md"), "# scan-target\n\nA test app.\n");
-  expect(run(["init", "--root", host]).status).toBe(0);
-  const r = run(["scan", "--root", host]);
-  expect(r.status).toBe(0);
-  const draft = readFileSync(
-    join(host, ".marketing-engine", "BRAND.draft.md"),
-    "utf8",
-  );
-  expect(draft).toContain("scan-target");
-  expect(draft).toContain("auto-scanned");
-});

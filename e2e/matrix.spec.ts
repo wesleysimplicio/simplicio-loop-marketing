@@ -1,4 +1,7 @@
 import { test, expect } from "@playwright/test";
+import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import {
   parseProvidersMarkdown,
   loadProviderMatrix,
@@ -7,6 +10,10 @@ import {
   videoRow,
   resetMatrixCache,
 } from "../lib/providers/matrix";
+import { routeImage, routeLLM, routeVideo } from "../lib/router";
+import { getImageProvider } from "../lib/providers/image";
+import { getLLMProvider } from "../lib/providers/llm";
+import { getVideoProvider } from "../lib/providers/video";
 
 test("parses LLM table from PROVIDERS.md markdown", () => {
   const md = `
@@ -57,4 +64,48 @@ test("lookup helpers fall back to safe defaults on unknown task", () => {
   expect(llmRow("unknown" as never).default).toBe("claude");
   expect(imageRow("unknown" as never).default).toBe("gpt-image");
   expect(videoRow("unknown" as never).default).toBe("higgsfield");
+});
+
+test("routing changes when PROVIDERS.md changes, without code edits", () => {
+  const host = mkdtempSync(join(tmpdir(), "me-matrix-"));
+  const architectureDir = join(host, ".specs", "architecture");
+  mkdirSync(architectureDir, { recursive: true });
+  writeFileSync(
+    join(architectureDir, "PROVIDERS.md"),
+    `## LLM Routing
+
+| Task | Default | Fallback | Reason |
+|------|---------|----------|--------|
+| Caption | claude | codex | force test |
+| Script | codex | claude | force test |
+
+## Image Routing
+
+| Task | Provider | Reason |
+|------|----------|--------|
+| Quote card / typography | wavespeed | force test |
+
+## Video Routing
+
+| Task | Provider | Reason |
+|------|----------|--------|
+| Cinematic reel | topview | force test |
+`,
+  );
+
+  const previousCwd = process.cwd();
+  process.chdir(host);
+  try {
+    resetMatrixCache();
+    expect(routeLLM("caption")).toBe("claude");
+    expect(routeLLM("script")).toBe("codex");
+    expect(routeImage("quote-card")).toBe("wavespeed");
+    expect(routeVideo("cinematic-reel")).toBe("topview");
+    expect(getLLMProvider("caption").name).toBe("claude");
+    expect(getImageProvider("quote-card").name).toBe("wavespeed");
+    expect(getVideoProvider("cinematic-reel").name).toBe("topview");
+  } finally {
+    resetMatrixCache();
+    process.chdir(previousCwd);
+  }
 });

@@ -23,4 +23,4 @@ Thanks for the PR. Fill in every section below. Keep it short.
 - [ ] New behavior covered by at least one Playwright spec (or N/A)
 - [ ] Conventional commit message used
 - [ ] ADR added under `.specs/architecture/` if decision is architectural and irreversible
-- [ ] CHANGELOG entry added if release-relevant
+- [ ] CHANGELOG entry added in [`CHANGELOG.md`](../CHANGELOG.md) if release-relevant

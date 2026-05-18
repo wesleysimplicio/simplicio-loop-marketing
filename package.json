@@ -1,6 +1,6 @@
 {
   "name": "marketing-engine",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Provider-agnostic AI marketing engine. CLI that drops into any host project. Pipeline: brief -> script -> creative -> caption -> compliance -> publish -> metrics -> ads. Switch LLM/image/video provider via env, never via skill rewrite.",
   "license": "Apache-2.0",
   "type": "module",

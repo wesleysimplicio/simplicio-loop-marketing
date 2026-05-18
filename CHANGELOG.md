@@ -6,6 +6,26 @@ All notable changes to this project are documented here. Format based on
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-05-18
+
+### Added
+
+- `e2e/provider-factories.spec.ts` exercises the non-`DRY_RUN` factory path so
+  the suite proves the repo returns real provider adapters instead of production
+  mocks.
+
+### Changed
+
+- E2E coverage now mirrors the Sprint 0 acceptance language more closely:
+  `e2e/cli-init.spec.ts` and `e2e/cli-scan.spec.ts` split the host-project
+  scaffold and scan coverage, `e2e/generate-loop.spec.ts` asserts structured
+  usage-log tasks, and `e2e/matrix.spec.ts` proves that editing
+  `.specs/architecture/PROVIDERS.md` changes routing without code edits.
+- `CONTRIBUTING.md` now documents how to update `CHANGELOG.md`, and the PR
+  template links directly to the changelog checklist target.
+
+## [0.2.0] - 2026-05-18
+
 ### Added
 
 - `lib/providers/matrix.ts` parses `.specs/architecture/PROVIDERS.md` as the single

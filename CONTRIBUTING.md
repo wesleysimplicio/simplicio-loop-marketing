@@ -56,6 +56,14 @@ Breaking changes: append `!` after the type/scope and explain in the body, e.g. 
 
 CI enforces these via [.github/workflows/dod.yml](./.github/workflows/dod.yml).
 
+## Updating the changelog
+
+When a PR changes user-facing behavior, add a concise note under
+[CHANGELOG.md](./CHANGELOG.md) in the `Unreleased` section before opening or
+merging the PR. Keep entries grouped under the existing headings (`Added`,
+`Changed`, `Fixed`, `Removed`) and move the finished notes into a dated version
+section when cutting a release.
+
 ## Pull request
 
 Use the template at [.github/PULL_REQUEST_TEMPLATE.md](./.github/PULL_REQUEST_TEMPLATE.md). Fill in summary, changes, and the DoD checklist. Mark draft PRs as `Draft` until DoD is green.
