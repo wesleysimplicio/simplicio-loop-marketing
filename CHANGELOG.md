@@ -6,6 +6,21 @@ All notable changes to this project are documented here. Format based on
 
 ## [Unreleased]
 
+## [0.2.8] - 2026-05-18
+
+### Fixed
+
+- `OllamaProvider` now normalizes `OLLAMA_HOST`, preserves the configured
+  `OLLAMA_MODEL`, and throws a descriptive unreachable-host error that points
+  operators to start Ollama or change the host before the fallback chain moves
+  on.
+- Added local adapter coverage that asserts the Ollama `/api/chat` request
+  payload and retry behavior when the local server is offline.
+- Synchronized the published package metadata version between `package.json`
+  and `package-lock.json`.
+- Added the missing scheduler helper parameter annotations in
+  `lib/schedule/{linux,mac}.ts` so the repo-wide typecheck can complete again.
+
 ## [0.2.7] - 2026-05-18
 
 ### Fixed

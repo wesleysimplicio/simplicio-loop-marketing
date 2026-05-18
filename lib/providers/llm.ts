@@ -172,24 +172,33 @@ export class OllamaProvider extends RealLLMBase {
     const host = process.env.OLLAMA_HOST ?? "http://localhost:11434";
     const model = process.env.OLLAMA_MODEL ?? "llama3.2";
     const t0 = Date.now();
-    const res = await fetch(`${host}/api/chat`, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({
-        model,
-        messages: opts.system
-          ? [
-              { role: "system", content: opts.system },
-              { role: "user", content: prompt },
-            ]
-          : [{ role: "user", content: prompt }],
-        stream: false,
-        options: {
-          temperature: opts.temperature ?? 0.7,
-          num_predict: opts.max_tokens ?? 1024,
-        },
-      }),
-    });
+    const endpoint = `${host.replace(/\/+$/, "")}/api/chat`;
+    let res: Response;
+    try {
+      res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          model,
+          messages: opts.system
+            ? [
+                { role: "system", content: opts.system },
+                { role: "user", content: prompt },
+              ]
+            : [{ role: "user", content: prompt }],
+          stream: false,
+          options: {
+            temperature: opts.temperature ?? 0.7,
+            num_predict: opts.max_tokens ?? 1024,
+          },
+        }),
+      });
+    } catch (err) {
+      const reason = err instanceof Error ? err.message : String(err);
+      throw new Error(
+        `ollama: could not reach ${endpoint} (${reason}). Start Ollama locally or set OLLAMA_HOST to a reachable server.`,
+      );
+    }
     if (!res.ok) {
       throw new Error(`ollama: HTTP ${res.status}: ${await res.text()}`);
     }

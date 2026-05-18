@@ -3,24 +3,29 @@ import { appendFileSync, existsSync, mkdirSync, readFileSync, unlinkSync, writeF
 import { homedir } from "node:os";
 import { dirname, join } from "node:path";
 
-function defaultEntries() {
+interface LaunchdEntries {
+  generateHour: number;
+  promoteHour: number;
+}
+
+function defaultEntries(): LaunchdEntries {
   return { generateHour: 22, promoteHour: 9 };
 }
 
-function launchAgentsDir() {
+function launchAgentsDir(): string {
   return process.env.MARKETING_ENGINE_SCHEDULE_LAUNCH_AGENTS_DIR
     ?? join(homedir(), "Library", "LaunchAgents");
 }
 
-function launchctlLogPath() {
+function launchctlLogPath(): string | undefined {
   return process.env.MARKETING_ENGINE_SCHEDULE_LAUNCHCTL_LOG;
 }
 
-function launchctlUid() {
+function launchctlUid(): string {
   return process.env.MARKETING_ENGINE_SCHEDULE_UID ?? String(process.getuid?.() ?? 0);
 }
 
-function plist(label, cmdRoot, hour, subcommand) {
+function plist(label: string, cmdRoot: string, hour: number, subcommand: string): string {
   return `<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -52,7 +57,7 @@ function plist(label, cmdRoot, hour, subcommand) {
 `;
 }
 
-function runLaunchctl(action, plistPath) {
+function runLaunchctl(action: string, plistPath: string): void {
   const logPath = launchctlLogPath();
   if (logPath) {
     if (!existsSync(dirname(logPath))) {
@@ -65,7 +70,12 @@ function runLaunchctl(action, plistPath) {
   execSync(`launchctl ${action} gui/${launchctlUid()} "${plistPath}"`);
 }
 
-export function showLaunchdPlan(cmdRoot) {
+export function showLaunchdPlan(cmdRoot: string): {
+  generatePlistPath: string;
+  promotePlistPath: string;
+  generatePlist: string;
+  promotePlist: string;
+} {
   const entries = defaultEntries();
   const agentsDir = launchAgentsDir();
   return {
@@ -76,7 +86,7 @@ export function showLaunchdPlan(cmdRoot) {
   };
 }
 
-export function installLaunchd(cmdRoot) {
+export function installLaunchd(cmdRoot: string): { added: boolean; message: string } {
   const plan = showLaunchdPlan(cmdRoot);
   if (existsSync(plan.generatePlistPath) || existsSync(plan.promotePlistPath)) {
     return { added: false, message: "launchd plists already installed." };
@@ -96,7 +106,7 @@ export function installLaunchd(cmdRoot) {
   return { added: true, message: "launchd plists installed." };
 }
 
-export function uninstallLaunchd() {
+export function uninstallLaunchd(): { removed: boolean; message: string } {
   const plan = showLaunchdPlan(process.cwd());
   const paths = [plan.generatePlistPath, plan.promotePlistPath];
   const existing = paths.filter((path) => existsSync(path));
@@ -117,7 +127,7 @@ export function uninstallLaunchd() {
   return { removed: true, message: "launchd plists removed." };
 }
 
-export function statusLaunchd() {
+export function statusLaunchd(): string {
   const plan = showLaunchdPlan(process.cwd());
   const installed = [
     [plan.generatePlistPath, "generate"] as const,

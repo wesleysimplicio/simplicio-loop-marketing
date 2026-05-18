@@ -6,15 +6,20 @@ import { dirname, join } from "node:path";
 const MARKER_BEGIN = "# >>> marketing-engine begin >>>";
 const MARKER_END = "# <<< marketing-engine end <<<";
 
-function defaultEntries() {
+interface CronEntries {
+  generateHour: number;
+  promoteHour: number;
+}
+
+function defaultEntries(): CronEntries {
   return { generateHour: 22, promoteHour: 9 };
 }
 
-function configuredCrontabFile() {
+function configuredCrontabFile(): string | undefined {
   return process.env.MARKETING_ENGINE_SCHEDULE_CRONTAB_FILE;
 }
 
-function cronBlock(cmdRoot, entries = defaultEntries()) {
+function cronBlock(cmdRoot: string, entries: CronEntries = defaultEntries()): string {
   return `${MARKER_BEGIN}
 0 ${entries.generateHour} * * * cd "${cmdRoot}" && npx marketing-engine generate >> .marketing-engine/data/cron.log 2>&1
 0 ${entries.promoteHour} * * * cd "${cmdRoot}" && npx marketing-engine promote >> .marketing-engine/data/cron.log 2>&1
@@ -22,7 +27,7 @@ ${MARKER_END}
 `;
 }
 
-function readCurrentCrontab() {
+function readCurrentCrontab(): string {
   const crontabFile = configuredCrontabFile();
   if (crontabFile) {
     return existsSync(crontabFile) ? readFileSync(crontabFile, "utf8") : "";
@@ -35,7 +40,7 @@ function readCurrentCrontab() {
   }
 }
 
-function writeCurrentCrontab(next) {
+function writeCurrentCrontab(next: string): void {
   const crontabFile = configuredCrontabFile();
   if (crontabFile) {
     if (!existsSync(dirname(crontabFile))) {
@@ -50,11 +55,11 @@ function writeCurrentCrontab(next) {
   execSync(`crontab "${tmpPath}"`);
 }
 
-export function showCronPlan(cmdRoot) {
+export function showCronPlan(cmdRoot: string): string {
   return cronBlock(cmdRoot);
 }
 
-export function installCron(cmdRoot) {
+export function installCron(cmdRoot: string): { added: boolean; message: string } {
   const current = readCurrentCrontab();
   if (current.includes(MARKER_BEGIN)) {
     return { added: false, message: "marketing-engine block already installed in crontab." };
@@ -66,7 +71,7 @@ export function installCron(cmdRoot) {
   return { added: true, message: "crontab updated." };
 }
 
-export function uninstallCron() {
+export function uninstallCron(): { removed: boolean; message: string } {
   const current = readCurrentCrontab();
   if (!current) {
     return { removed: false, message: "no crontab to modify." };
@@ -82,7 +87,7 @@ export function uninstallCron() {
   return { removed: true, message: "crontab cleaned." };
 }
 
-export function statusCron() {
+export function statusCron(): string {
   const current = readCurrentCrontab();
   if (!current) {
     return "no crontab installed";

@@ -9,7 +9,7 @@ import {
   TimeoutError,
   withRetry,
 } from "../lib/providers/policy";
-import { CodexProvider } from "../lib/providers/llm";
+import { CodexProvider, OllamaProvider } from "../lib/providers/llm";
 import { runWithFallback } from "../lib/router";
 
 test("estimateTokens approximates char/4", () => {
@@ -137,6 +137,106 @@ test("CodexProvider retries once on forced 500 and succeeds on retry", async () 
       delete process.env.OPENAI_API_KEY;
     } else {
       process.env.OPENAI_API_KEY = originalKey;
+    }
+  }
+});
+
+test("OllamaProvider uses OLLAMA_HOST and OLLAMA_MODEL in the local chat request", async () => {
+  const originalFetch = globalThis.fetch;
+  const originalHost = process.env.OLLAMA_HOST;
+  const originalModel = process.env.OLLAMA_MODEL;
+  process.env.OLLAMA_HOST = "http://127.0.0.1:22445/";
+  process.env.OLLAMA_MODEL = "llama3.3";
+  const calls: Array<{ url: string; init?: RequestInit }> = [];
+
+  globalThis.fetch = (async (input, init) => {
+    calls.push({ url: String(input), init });
+    return new Response(
+      JSON.stringify({
+        message: { content: "fallback ok" },
+        prompt_eval_count: 12,
+        eval_count: 7,
+      }),
+      {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      },
+    );
+  }) as typeof fetch;
+
+  try {
+    const provider = new OllamaProvider();
+    const result = await provider.generate("rewrite this", {
+      task: "translation",
+      system: "You are concise.",
+      max_tokens: 77,
+      temperature: 0.2,
+    });
+
+    expect(calls).toHaveLength(1);
+    expect(calls[0]?.url).toBe("http://127.0.0.1:22445/api/chat");
+    const body = JSON.parse(String(calls[0]?.init?.body)) as {
+      model: string;
+      messages: Array<{ role: string; content: string }>;
+      stream: boolean;
+      options: { temperature: number; num_predict: number };
+    };
+    expect(body.model).toBe("llama3.3");
+    expect(body.messages).toEqual([
+      { role: "system", content: "You are concise." },
+      { role: "user", content: "rewrite this" },
+    ]);
+    expect(body.stream).toBe(false);
+    expect(body.options).toEqual({ temperature: 0.2, num_predict: 77 });
+    expect(result.output).toBe("fallback ok");
+    expect(result.tokens).toBe(19);
+    expect(result.cost_usd).toBe(0);
+    expect(result.latency_ms).toBeGreaterThanOrEqual(0);
+  } finally {
+    globalThis.fetch = originalFetch;
+    if (originalHost === undefined) {
+      delete process.env.OLLAMA_HOST;
+    } else {
+      process.env.OLLAMA_HOST = originalHost;
+    }
+    if (originalModel === undefined) {
+      delete process.env.OLLAMA_MODEL;
+    } else {
+      process.env.OLLAMA_MODEL = originalModel;
+    }
+  }
+});
+
+test("OllamaProvider surfaces a descriptive unreachable-host error", async () => {
+  const originalFetch = globalThis.fetch;
+  const originalHost = process.env.OLLAMA_HOST;
+  const originalModel = process.env.OLLAMA_MODEL;
+  process.env.OLLAMA_HOST = "http://127.0.0.1:33445";
+  process.env.OLLAMA_MODEL = "llama3.2";
+  let calls = 0;
+
+  globalThis.fetch = (async () => {
+    calls += 1;
+    throw new TypeError("fetch failed");
+  }) as typeof fetch;
+
+  try {
+    const provider = new OllamaProvider();
+    await expect(
+      provider.generate("hello", { task: "caption" }),
+    ).rejects.toThrow(/could not reach http:\/\/127\.0\.0\.1:33445\/api\/chat/i);
+    expect(calls).toBe(2);
+  } finally {
+    globalThis.fetch = originalFetch;
+    if (originalHost === undefined) {
+      delete process.env.OLLAMA_HOST;
+    } else {
+      process.env.OLLAMA_HOST = originalHost;
+    }
+    if (originalModel === undefined) {
+      delete process.env.OLLAMA_MODEL;
+    } else {
+      process.env.OLLAMA_MODEL = originalModel;
     }
   }
 });
