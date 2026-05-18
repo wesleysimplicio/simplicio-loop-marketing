@@ -6,6 +6,21 @@ All notable changes to this project are documented here. Format based on
 
 ## [Unreleased]
 
+## [0.2.6] - 2026-05-18
+
+### Fixed
+
+- Provider pricing and usage estimation now live in
+  `lib/providers/cost.ts`, keeping the editable pricing table and
+  `char/4` fallback heuristic in one shared module.
+- Real LLM adapters now emit a concrete retry attempt count, and
+  `data/llm-usage.jsonl` persists `tokens`, `cost_usd`, and the final
+  `attempt` number from the provider call instead of logging only a
+  router-level success marker.
+- Missing SDK usage payloads now warn once per provider/model pair while
+  still producing cost estimates from the shared fallback token
+  heuristic.
+
 ## [0.2.5] - 2026-05-18
 
 ### Fixed

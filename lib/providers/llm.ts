@@ -1,7 +1,11 @@
 import type { GenerationResult, LLMTask } from "./types";
 import { llmRow, loadProviderMatrix } from "./matrix";
 import { MOCK_LLM_REGISTRY } from "./__mocks__/llm";
-import { estimateCost, estimateTokens, withRetry } from "./policy";
+import {
+  estimateCost,
+  resolveUsageWithFallback,
+} from "./cost";
+import { withRetry } from "./policy";
 
 export interface LLMGenerateOptions {
   task: LLMTask;
@@ -28,11 +32,19 @@ abstract class RealLLMBase implements LLMProvider {
   ): Promise<GenerationResult>;
 
   async generate(prompt: string, opts: LLMGenerateOptions): Promise<GenerationResult> {
-    return withRetry(() => this.realGenerate(prompt, opts), {
+    let attempts = 0;
+    const result = await withRetry(async () => {
+      attempts += 1;
+      return this.realGenerate(prompt, opts);
+    }, {
       retries: 1,
       backoffMs: 2000,
       timeoutMs: opts.task === "script" ? 180_000 : 60_000,
     });
+    return {
+      ...result,
+      attempt: attempts,
+    };
   }
 }
 
@@ -81,15 +93,26 @@ export class ClaudeProvider extends RealLLMBase {
       .filter((c) => c.type === "text")
       .map((c) => c.text ?? "")
       .join("");
-    const tokens_in = data.usage?.input_tokens ?? estimateTokens(prompt);
-    const tokens_out = data.usage?.output_tokens ?? estimateTokens(text);
+    const usage = resolveUsageWithFallback({
+      provider: this.name,
+      model,
+      prompt,
+      output: text,
+      tokens_in: data.usage?.input_tokens,
+      tokens_out: data.usage?.output_tokens,
+    });
     return {
       ok: true,
       provider: this.name,
       task: opts.task,
       output: text,
-      tokens: tokens_in + tokens_out,
-      cost_usd: estimateCost({ provider: "claude", model, tokens_in, tokens_out }),
+      tokens: usage.tokens_in + usage.tokens_out,
+      cost_usd: estimateCost({
+        provider: "claude",
+        model,
+        tokens_in: usage.tokens_in,
+        tokens_out: usage.tokens_out,
+      }),
       latency_ms: Date.now() - t0,
     };
   }
@@ -229,19 +252,25 @@ async function callOpenAICompatible(
     usage?: { prompt_tokens?: number; completion_tokens?: number };
   };
   const text = data.choices?.[0]?.message?.content ?? "";
-  const tokens_in = data.usage?.prompt_tokens ?? estimateTokens(prompt);
-  const tokens_out = data.usage?.completion_tokens ?? estimateTokens(text);
+  const usage = resolveUsageWithFallback({
+    provider: providerName,
+    model,
+    prompt,
+    output: text,
+    tokens_in: data.usage?.prompt_tokens,
+    tokens_out: data.usage?.completion_tokens,
+  });
   return {
     ok: true,
     provider: providerName,
     task: opts.task,
     output: text,
-    tokens: tokens_in + tokens_out,
+    tokens: usage.tokens_in + usage.tokens_out,
     cost_usd: estimateCost({
       provider: providerName,
       model,
-      tokens_in,
-      tokens_out,
+      tokens_in: usage.tokens_in,
+      tokens_out: usage.tokens_out,
     }),
     latency_ms: Date.now() - t0,
   };

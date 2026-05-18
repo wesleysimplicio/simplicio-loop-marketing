@@ -44,6 +44,13 @@ interface UsageLogLine extends UsageEntry {
   timestamp: string;
 }
 
+interface UsageLikeResult {
+  tokens?: number;
+  cost_usd?: number;
+  latency_ms?: number;
+  attempt?: number;
+}
+
 export function usageLogPath(): string {
   return resolve(process.cwd(), "data", "llm-usage.jsonl");
 }
@@ -65,6 +72,25 @@ export function logUsage(entry: UsageEntry, override_path?: string): void {
     latency_ms: entry.latency_ms,
   };
   appendFileSync(log_path, `${JSON.stringify(line)}\n`, { encoding: "utf8" });
+}
+
+function usageFromResult(result: unknown, offset: number): Required<Pick<UsageEntry, "attempt">> &
+  Pick<UsageEntry, "tokens" | "cost_usd" | "latency_ms"> {
+  if (!result || typeof result !== "object") {
+    return { attempt: offset + 1 };
+  }
+
+  const usage = result as UsageLikeResult;
+  const attempt = typeof usage.attempt === "number" && usage.attempt > 0
+    ? usage.attempt
+    : 1;
+
+  return {
+    attempt: offset + attempt,
+    tokens: usage.tokens,
+    cost_usd: usage.cost_usd,
+    latency_ms: usage.latency_ms,
+  };
 }
 
 export interface FallbackOptions<T> {
@@ -111,14 +137,17 @@ export async function runWithFallback<T>(
     const t0 = Date.now();
     try {
       const r = await opts.primary();
+      const usage = usageFromResult(r, primaryAttempts - 1);
       logUsage(
         {
           task: opts.task,
           provider: opts.primaryName,
+          tokens: usage.tokens,
+          cost_usd: usage.cost_usd,
           ok: true,
           fallback_used: false,
-          attempt: primaryAttempts,
-          latency_ms: Date.now() - t0,
+          attempt: usage.attempt,
+          latency_ms: usage.latency_ms ?? (Date.now() - t0),
         },
         opts.log_path,
       );
@@ -126,7 +155,7 @@ export async function runWithFallback<T>(
         result: r,
         provider_used: opts.primaryName,
         fallback_triggered: false,
-        attempts: primaryAttempts,
+        attempts: usage.attempt,
       };
     } catch (err) {
       primaryMessage = err instanceof Error ? err.message : String(err);
@@ -158,14 +187,17 @@ export async function runWithFallback<T>(
   const t1 = Date.now();
   try {
     const r = await opts.fallback();
+    const usage = usageFromResult(r, primaryAttempts);
     logUsage(
       {
         task: opts.task,
         provider: opts.fallbackName,
+        tokens: usage.tokens,
+        cost_usd: usage.cost_usd,
         ok: true,
         fallback_used: true,
-        attempt: fallbackAttempt,
-        latency_ms: Date.now() - t1,
+        attempt: usage.attempt,
+        latency_ms: usage.latency_ms ?? (Date.now() - t1),
       },
       opts.log_path,
     );
@@ -173,7 +205,7 @@ export async function runWithFallback<T>(
       result: r,
       provider_used: opts.fallbackName,
       fallback_triggered: true,
-      attempts: fallbackAttempt,
+      attempts: usage.attempt,
     };
   } catch (err) {
     const fallbackMessage = err instanceof Error ? err.message : String(err);

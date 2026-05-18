@@ -34,6 +34,7 @@ export interface GenerationResult<T = string> {
   tokens?: number;
   cost_usd?: number;
   latency_ms?: number;
+  attempt?: number;
 }
 
 export interface ProviderConstraint {
