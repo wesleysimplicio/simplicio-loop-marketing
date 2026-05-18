@@ -1,0 +1,41 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="140" y1="80" x2="1460" y2="820" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF4EF"/>
+      <stop offset="0.52" stop-color="#F6F9FF"/>
+      <stop offset="1" stop-color="#EEF4FF"/>
+    </linearGradient>
+    <linearGradient id="cardA" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#FF7C66"/>
+      <stop offset="1" stop-color="#FF4D6D"/>
+    </linearGradient>
+    <linearGradient id="cardB" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#3F7BFF"/>
+      <stop offset="1" stop-color="#1845FF"/>
+    </linearGradient>
+    <linearGradient id="cardC" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#7A7DFF"/>
+      <stop offset="1" stop-color="#4955FF"/>
+    </linearGradient>
+    <filter id="shadow" x="-40" y="-40" width="240" height="240" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="20" stdDeviation="20" flood-color="#2346A6" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+  <rect width="1600" height="900" rx="36" fill="url(#bg)"/>
+  <circle cx="147" cy="133" r="76" fill="#FFE7DE"/>
+  <circle cx="1438" cy="756" r="114" fill="#E6EEFF"/>
+  <circle cx="1286" cy="178" r="54" fill="#FDE7FF"/>
+  <text x="120" y="122" fill="#13213D" font-family="Segoe UI, Arial, sans-serif" font-size="76" font-weight="800">Marketing Engine</text>
+  <text x="121" y="176" fill="#42506A" font-family="Segoe UI, Arial, sans-serif" font-size="28">Provider-agnostic AI marketing pipeline with compliance, publishing, metrics, and ads.</text>
+  <g transform="translate(110 280)"><rect x="0" y="0" width="150" height="178" rx="28" fill="white"/><rect x="0" y="0" width="150" height="178" rx="28" stroke="#F0D7CF"/><rect x="18" y="18" width="54" height="54" rx="18" fill="url(#cardA)"/><text x="32" y="53" fill="white" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="800">01</text><text x="20" y="102" fill="#13213D" font-family="Segoe UI, Arial, sans-serif" font-size="28" font-weight="800">Brief</text><text x="20" y="134" fill="#5A6782" font-family="Segoe UI, Arial, sans-serif" font-size="18">Input the goal,</text><text x="20" y="158" fill="#5A6782" font-family="Segoe UI, Arial, sans-serif" font-size="18">audience, and angle.</text></g>
+  <g transform="translate(320 280)"><rect x="0" y="0" width="150" height="178" rx="28" fill="white"/><rect x="0" y="0" width="150" height="178" rx="28" stroke="#DEE6FF"/><rect x="18" y="18" width="54" height="54" rx="18" fill="url(#cardB)"/><text x="30" y="53" fill="white" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="800">02</text><text x="20" y="102" fill="#13213D" font-family="Segoe UI, Arial, sans-serif" font-size="28" font-weight="800">Script</text><text x="20" y="134" fill="#5A6782" font-family="Segoe UI, Arial, sans-serif" font-size="18">Route copy tasks to</text><text x="20" y="158" fill="#5A6782" font-family="Segoe UI, Arial, sans-serif" font-size="18">the right LLM.</text></g>
+  <g transform="translate(530 280)"><rect x="0" y="0" width="150" height="178" rx="28" fill="white"/><rect x="0" y="0" width="150" height="178" rx="28" stroke="#E0E0FF"/><rect x="18" y="18" width="54" height="54" rx="18" fill="url(#cardC)"/><text x="30" y="53" fill="white" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="800">03</text><text x="20" y="102" fill="#13213D" font-family="Segoe UI, Arial, sans-serif" font-size="28" font-weight="800">Creative</text><text x="20" y="134" fill="#5A6782" font-family="Segoe UI, Arial, sans-serif" font-size="18">Generate image and</text><text x="20" y="158" fill="#5A6782" font-family="Segoe UI, Arial, sans-serif" font-size="18">video variants.</text></g>
+  <g transform="translate(740 280)"><rect x="0" y="0" width="150" height="178" rx="28" fill="white"/><rect x="0" y="0" width="150" height="178" rx="28" stroke="#F0D7CF"/><rect x="18" y="18" width="54" height="54" rx="18" fill="url(#cardA)"/><text x="30" y="53" fill="white" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="800">04</text><text x="20" y="102" fill="#13213D" font-family="Segoe UI, Arial, sans-serif" font-size="28" font-weight="800">Compliance</text><text x="20" y="134" fill="#5A6782" font-family="Segoe UI, Arial, sans-serif" font-size="18">Block risky claims and</text><text x="20" y="158" fill="#5A6782" font-family="Segoe UI, Arial, sans-serif" font-size="18">write per-piece reports.</text></g>
+  <g transform="translate(950 280)"><rect x="0" y="0" width="150" height="178" rx="28" fill="white"/><rect x="0" y="0" width="150" height="178" rx="28" stroke="#DEE6FF"/><rect x="18" y="18" width="54" height="54" rx="18" fill="url(#cardB)"/><text x="30" y="53" fill="white" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="800">05</text><text x="20" y="102" fill="#13213D" font-family="Segoe UI, Arial, sans-serif" font-size="28" font-weight="800">Publish</text><text x="20" y="134" fill="#5A6782" font-family="Segoe UI, Arial, sans-serif" font-size="18">Fan out content to</text><text x="20" y="158" fill="#5A6782" font-family="Segoe UI, Arial, sans-serif" font-size="18">nine channels.</text></g>
+  <g transform="translate(1160 280)"><rect x="0" y="0" width="150" height="178" rx="28" fill="white"/><rect x="0" y="0" width="150" height="178" rx="28" stroke="#E0E0FF"/><rect x="18" y="18" width="54" height="54" rx="18" fill="url(#cardC)"/><text x="30" y="53" fill="white" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="800">06</text><text x="20" y="102" fill="#13213D" font-family="Segoe UI, Arial, sans-serif" font-size="28" font-weight="800">Metrics + Ads</text><text x="20" y="134" fill="#5A6782" font-family="Segoe UI, Arial, sans-serif" font-size="18">Classify winners and</text><text x="20" y="158" fill="#5A6782" font-family="Segoe UI, Arial, sans-serif" font-size="18">draft promotions.</text></g>
+  <path d="M260 370H300" stroke="#FF6A62" stroke-width="12" stroke-linecap="round"/><path d="M470 370H510" stroke="#316EFF" stroke-width="12" stroke-linecap="round"/><path d="M680 370H720" stroke="#5764FF" stroke-width="12" stroke-linecap="round"/><path d="M890 370H930" stroke="#FF6A62" stroke-width="12" stroke-linecap="round"/><path d="M1100 370H1140" stroke="#316EFF" stroke-width="12" stroke-linecap="round"/>
+  <g filter="url(#shadow)" transform="translate(602 530)"><ellipse cx="198" cy="134" rx="182" ry="58" fill="#2C58FF" fill-opacity="0.16"/><rect x="52" y="34" width="292" height="170" rx="84" fill="url(#cardB)"/><rect x="84" y="0" width="228" height="140" rx="70" fill="white" fill-opacity="0.18"/><circle cx="198" cy="74" r="52" fill="#E6EEFF"/><path d="M175 62C175 45 188 32 204 32C220 32 233 45 233 62C233 80 220 95 204 95C188 95 175 80 175 62Z" fill="#244BFF"/><path d="M204 32V95" stroke="#9AB0FF" stroke-width="4" stroke-linecap="round"/><path d="M181 52C189 57 197 61 204 61C212 61 220 57 228 52" stroke="#9AB0FF" stroke-width="4" stroke-linecap="round"/><path d="M183 75C191 69 198 67 204 67C211 67 218 69 226 75" stroke="#9AB0FF" stroke-width="4" stroke-linecap="round"/><text x="113" y="153" fill="white" font-family="Segoe UI, Arial, sans-serif" font-size="34" font-weight="800">AI ENGINE</text></g>
+  <text x="120" y="694" fill="#13213D" font-family="Segoe UI, Arial, sans-serif" font-size="34" font-weight="800">One engine, many providers</text>
+  <text x="120" y="736" fill="#50617D" font-family="Segoe UI, Arial, sans-serif" font-size="24">Swap Claude, OpenAI, DeepSeek, Ollama, GPT Image, Higgsfield, Topview, and Wavespeed</text>
+  <text x="120" y="770" fill="#50617D" font-family="Segoe UI, Arial, sans-serif" font-size="24">through routing config instead of rewriting skills.</text>
+</svg>
