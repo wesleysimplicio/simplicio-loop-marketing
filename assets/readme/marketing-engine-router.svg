@@ -1,0 +1,53 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg2" x1="210" y1="80" x2="1380" y2="840" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0F1733"/>
+      <stop offset="1" stop-color="#11285F"/>
+    </linearGradient>
+    <linearGradient id="chipA" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#FF8C6B"/>
+      <stop offset="1" stop-color="#FF4D6D"/>
+    </linearGradient>
+    <linearGradient id="chipB" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#63A0FF"/>
+      <stop offset="1" stop-color="#2453FF"/>
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="900" rx="36" fill="url(#bg2)"/>
+  <circle cx="1288" cy="152" r="94" fill="#24397C"/>
+  <circle cx="179" cy="744" r="118" fill="#17306C"/>
+  <text x="112" y="132" fill="white" font-family="Segoe UI, Arial, sans-serif" font-size="72" font-weight="800">Routing Matrix</text>
+  <text x="112" y="182" fill="#C2D2FF" font-family="Segoe UI, Arial, sans-serif" font-size="28">The repo routes abstract marketing tasks into concrete providers with fallbacks and logs.</text>
+  <rect x="102" y="272" width="316" height="368" rx="32" fill="#13224A" stroke="#2C458B"/>
+  <text x="136" y="328" fill="white" font-family="Segoe UI, Arial, sans-serif" font-size="32" font-weight="800">Incoming tasks</text>
+  <rect x="136" y="360" width="248" height="54" rx="18" fill="#1C3167"/><text x="164" y="395" fill="#EAF0FF" font-family="Segoe UI, Arial, sans-serif" font-size="24">caption</text>
+  <rect x="136" y="430" width="248" height="54" rx="18" fill="#1C3167"/><text x="164" y="465" fill="#EAF0FF" font-family="Segoe UI, Arial, sans-serif" font-size="24">script</text>
+  <rect x="136" y="500" width="248" height="54" rx="18" fill="#1C3167"/><text x="164" y="535" fill="#EAF0FF" font-family="Segoe UI, Arial, sans-serif" font-size="24">quote-card</text>
+  <rect x="136" y="570" width="248" height="54" rx="18" fill="#1C3167"/><text x="164" y="605" fill="#EAF0FF" font-family="Segoe UI, Arial, sans-serif" font-size="24">cinematic-reel</text>
+  <path d="M424 458C480 458 520 458 575 458" stroke="#6E96FF" stroke-width="14" stroke-linecap="round"/><path d="M566 430L620 458L566 486" fill="#6E96FF"/>
+  <rect x="610" y="218" width="382" height="472" rx="40" fill="#F5F8FF"/>
+  <rect x="646" y="254" width="310" height="108" rx="26" fill="#11285F"/>
+  <text x="692" y="303" fill="white" font-family="Segoe UI, Arial, sans-serif" font-size="28" font-weight="800">lib/router.ts</text>
+  <text x="692" y="338" fill="#C9D6FF" font-family="Segoe UI, Arial, sans-serif" font-size="20">load matrix -> resolve provider -> fallback -> usage log</text>
+  <rect x="646" y="392" width="310" height="72" rx="22" fill="#EEF3FF"/>
+  <text x="676" y="437" fill="#17306C" font-family="Segoe UI, Arial, sans-serif" font-size="26" font-weight="700">PROVIDERS.md is the source of truth</text>
+  <rect x="646" y="490" width="144" height="140" rx="26" fill="#FFF2EE"/>
+  <text x="675" y="534" fill="#A3302E" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="800">Primary</text>
+  <text x="675" y="575" fill="#24324D" font-family="Segoe UI, Arial, sans-serif" font-size="22">DeepSeek</text>
+  <text x="675" y="605" fill="#24324D" font-family="Segoe UI, Arial, sans-serif" font-size="22">Claude</text>
+  <text x="675" y="635" fill="#24324D" font-family="Segoe UI, Arial, sans-serif" font-size="22">GPT Image</text>
+  <rect x="812" y="490" width="144" height="140" rx="26" fill="#EEF3FF"/>
+  <text x="841" y="534" fill="#2146C7" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="800">Fallback</text>
+  <text x="841" y="575" fill="#24324D" font-family="Segoe UI, Arial, sans-serif" font-size="22">Codex</text>
+  <text x="841" y="605" fill="#24324D" font-family="Segoe UI, Arial, sans-serif" font-size="22">Ollama</text>
+  <text x="841" y="635" fill="#24324D" font-family="Segoe UI, Arial, sans-serif" font-size="22">Wavespeed</text>
+  <path d="M1000 458C1058 458 1094 458 1156 458" stroke="#FF7B64" stroke-width="14" stroke-linecap="round"/><path d="M1147 430L1201 458L1147 486" fill="#FF7B64"/>
+  <rect x="1182" y="248" width="300" height="408" rx="32" fill="#13224A" stroke="#2C458B"/>
+  <text x="1218" y="308" fill="white" font-family="Segoe UI, Arial, sans-serif" font-size="32" font-weight="800">Provider lanes</text>
+  <rect x="1218" y="348" width="226" height="62" rx="20" fill="url(#chipA)"/><text x="1268" y="388" fill="white" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="800">LLM</text>
+  <rect x="1218" y="432" width="226" height="62" rx="20" fill="url(#chipB)"/><text x="1260" y="472" fill="white" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="800">Image / Video</text>
+  <rect x="1218" y="516" width="226" height="62" rx="20" fill="url(#chipA)"/><text x="1251" y="556" fill="white" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="800">Compliance gate</text>
+  <rect x="1218" y="600" width="226" height="62" rx="20" fill="url(#chipB)"/><text x="1278" y="640" fill="white" font-family="Segoe UI, Arial, sans-serif" font-size="24" font-weight="800">Usage logs</text>
+  <text x="112" y="770" fill="white" font-family="Segoe UI, Arial, sans-serif" font-size="34" font-weight="800">Why it matters</text>
+  <text x="112" y="815" fill="#C2D2FF" font-family="Segoe UI, Arial, sans-serif" font-size="24">Skills stay abstract, providers stay configurable, and every task can degrade gracefully under real-world failures.</text>
+</svg>

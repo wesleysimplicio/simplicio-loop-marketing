@@ -7,6 +7,14 @@ Provider-agnostic AI marketing engine. Drop into any project, scan it, generate 
 
 [![CI](https://github.com/wesleysimplicio/marketing-engine/actions/workflows/ci.yml/badge.svg)](https://github.com/wesleysimplicio/marketing-engine/actions/workflows/ci.yml)
 
+## Repository visuals
+
+These visuals stay near the top of the README on purpose, so the repository always has a fast visual map for humans and coding agents.
+
+![Marketing Engine hero](./assets/readme/marketing-engine-hero.svg)
+
+![Marketing Engine routing matrix](./assets/readme/marketing-engine-router.svg)
+
 ## Watch the skills explainer (90s)
 
 A Remotion-rendered walkthrough of the pipeline and every skill in `.skills/`. Rendered in English; a [Portuguese version](./README.pt-BR.md#veja-o-explainer-das-skills-90s) is also available.
@@ -137,6 +145,14 @@ flowchart LR
 ```
 
 Full design: [.specs/architecture/DESIGN.md](./.specs/architecture/DESIGN.md).
+
+## Project mapping
+
+This repository now ships with an applied [llm-project-mapper](https://github.com/wesleysimplicio/llm-project-mapper) overlay so agents and contributors get an operational map by default.
+
+- Entry docs: [AGENTS.md](./AGENTS.md), [PRD.md](./PRD.md), [PROGRESS.md](./PROGRESS.md), [GOAL_RESULT.md](./GOAL_RESULT.md)
+- Mapper-owned operational docs: [docs/local-setup.md](./docs/local-setup.md), [docs/domain-map.md](./docs/domain-map.md), [docs/architecture-map.md](./docs/architecture-map.md), [docs/troubleshooting.md](./docs/troubleshooting.md)
+- Agent overlays: [.agents/README.md](./.agents/README.md), [.claude/settings.json](./.claude/settings.json), [INIT.md](./INIT.md)
 
 ## Repo layout
 
