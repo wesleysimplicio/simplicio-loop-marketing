@@ -57,10 +57,24 @@ test("generate loop processes a draft piece end-to-end with mocks under DRY_RUN"
     );
     expect(manifest.piece_id).toBe("PIECE-test-001");
     expect(manifest.providers.llm).toBeDefined();
+    expect(manifest.prompts.script).toContain("Launch our new product.");
+    expect(manifest.prompts.caption).toContain("Caption for:");
+    expect(manifest.compliance_report_path).toContain("compliance.json");
+    expect(Array.isArray(manifest.outputs)).toBe(true);
+    expect(manifest.outputs).toContain(join(pieceDir, "script.md"));
     expect(typeof manifest.cost_estimate_usd).toBe("number");
-    const runsLog = readFileSync(join(host, "data", "runs.jsonl"), "utf8");
-    expect(runsLog).toContain("PIECE-test-001");
-    expect(runsLog).toContain("success");
+    const runsLog = readFileSync(join(host, "data", "runs.jsonl"), "utf8")
+      .trim()
+      .split("\n")
+      .map((line) => JSON.parse(line));
+    expect(runsLog).toHaveLength(1);
+    expect(runsLog[0]).toMatchObject({
+      piece_id: "PIECE-test-001",
+      client: "acme",
+      status: "success",
+    });
+    expect(Array.isArray(runsLog[0].providers_used)).toBe(true);
+    expect(typeof runsLog[0].timestamp).toBe("string");
     const usage = readFileSync(join(host, "data", "llm-usage.jsonl"), "utf8");
     expect(usage.length).toBeGreaterThan(0);
     const updated = readFileSync(

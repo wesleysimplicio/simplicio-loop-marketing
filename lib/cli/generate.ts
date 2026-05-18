@@ -202,6 +202,7 @@ async function processPiece(
   });
 
   const captionText = captionResult.result.output ?? "";
+  const captionPrompt = `Caption for: ${brief.slice(0, 200)}`;
   const platformCaptions: Record<string, string> = {};
   for (const platform of fm.platforms) {
     const max = platform === "x" ? 240 : platform === "tiktok" ? 150 : 1500;
@@ -279,7 +280,12 @@ async function processPiece(
       image: imageUsed,
       video: videoUsed,
     },
-    prompts: { script: brief },
+    prompts: {
+      script: brief,
+      caption: captionPrompt,
+      image: tasks.image ? brief : undefined,
+      video: tasks.video ? brief : undefined,
+    },
     cost_estimate_usd: totalCost,
     tokens_in: copy.result.tokens ?? 0,
     tokens_out: captionResult.result.tokens ?? 0,
