@@ -131,9 +131,10 @@ test("classify keeps the top and bottom 20 percent, aggregates by piece, and ski
 
   expect(result.losers[0]?.piece_id).toBe("loser-005");
   expect(result.losers[0]?.save_rate).toBeCloseTo(4 / 720, 5);
-  expect(result.losers[0]?.reason).toContain("low save rate");
-  expect(result.losers[0]?.reason).toMatch(/watch time|reach|comment ratio/i);
-  expect(result.losers[0]?.reason.toLowerCase()).not.toContain("provider");
+  const loserReason = result.losers[0]?.reason ?? "";
+  expect(loserReason).toContain("low save rate");
+  expect(loserReason).toMatch(/watch time|reach|comment ratio/i);
+  expect(loserReason.toLowerCase()).not.toContain("provider");
 
   expect(result.skipped[0]).toMatchObject({
     piece_id: "skip-006",
