@@ -39,6 +39,14 @@ test("nextPieceId increments per ISO week", () => {
   expect(b).toBe("PIECE-2026W19-002");
 });
 
+test("nextPieceId resets sequence on ISO week boundary", () => {
+  _resetIdCounters();
+  const week19 = nextPieceId(new Date("2026-05-08T00:00:00Z"));
+  const week20 = nextPieceId(new Date("2026-05-11T00:00:00Z"));
+  expect(week19).toBe("PIECE-2026W19-001");
+  expect(week20).toBe("PIECE-2026W20-001");
+});
+
 test("parsePiece extracts frontmatter and body", () => {
   const text = `---
 id: PIECE-2026W19-001
@@ -66,6 +74,22 @@ test("parsePiece rejects missing required keys", () => {
   expect(() =>
     parsePiece(`---\nid: x\n---\nbody\n`),
   ).toThrow(/required frontmatter key missing/);
+});
+
+test("parsePiece requires locale explicitly", () => {
+  expect(() =>
+    parsePiece(`---
+id: PIECE-2026W19-001
+client: acme
+date: 2026-05-08
+status: draft
+type: reel
+pillar: education
+platforms: ["instagram"]
+---
+body
+`),
+  ).toThrow(/locale/);
 });
 
 test("serializePiece round-trips", () => {

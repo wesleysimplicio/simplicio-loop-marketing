@@ -107,3 +107,7 @@ export function transitionStatus(
   writePiece(piece, opts);
   return piece;
 }
+
+export const list = listPieces;
+export const read = readPiece;
+export const write = writePiece;

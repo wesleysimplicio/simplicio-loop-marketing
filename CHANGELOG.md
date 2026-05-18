@@ -6,6 +6,18 @@ All notable changes to this project are documented here. Format based on
 
 ## [Unreleased]
 
+## [0.2.5] - 2026-05-18
+
+### Fixed
+
+- `lib/pieces/frontmatter.ts` now enforces `locale` as a required frontmatter
+  field, matching the documented piece template contract.
+- `lib/pieces/id.ts` now computes ISO weeks from UTC date parts, preventing
+  timezone-dependent week rollover bugs in `PIECE-YYYYWww-NNN` ids.
+- `lib/pieces/store.ts` now exports `list`, `read`, and `write` aliases in
+  addition to the existing `*Piece*` helpers so the public API matches the issue
+  contract more directly.
+
 ## [0.2.4] - 2026-05-18
 
 ### Fixed

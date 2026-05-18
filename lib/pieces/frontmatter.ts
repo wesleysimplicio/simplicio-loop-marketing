@@ -126,6 +126,7 @@ const REQUIRED_KEYS: Array<keyof PieceFrontmatter> = [
   "type",
   "pillar",
   "platforms",
+  "locale",
 ];
 
 export function parsePiece(text: string): ParsedPiece {
