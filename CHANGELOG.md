@@ -6,6 +6,19 @@ All notable changes to this project are documented here. Format based on
 
 ## [Unreleased]
 
+## [0.2.7] - 2026-05-18
+
+### Fixed
+
+- `marketing-engine schedule` now routes install, status, and uninstall through
+  platform-aware launchd and cron backends, including macOS uninstall/status
+  support and a Windows manual Task Scheduler warning instead of silent writes.
+- Scheduler preview mode now prints the exact launchd plist bodies or cron
+  lines that would be installed, and the Linux cadence now correctly renders
+  `22:00` and `09:00` as `0 22 * * *` / `0 9 * * *`.
+- Added scheduler round-trip E2E coverage against temporary cron and launchd
+  directories, plus updated setup guidance for the new CLI commands.
+
 ## [0.2.6] - 2026-05-18
 
 ### Fixed

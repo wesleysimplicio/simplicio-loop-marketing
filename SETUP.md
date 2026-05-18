@@ -120,8 +120,12 @@ Only after the dry-run looks correct:
 
 1. Set `DRY_RUN=false` in `.marketing-engine/.env`.
 2. Run one piece end-to-end manually first.
-3. Schedule via launchd (macOS) or cron (Linux). Manual install — the bootstrap will not write a cron without explicit confirmation. Suggested cadence: generation daily at 22:00, promotion daily at 09:00.
-4. Validate with `launchctl list` (macOS) or `crontab -l` (Linux) after install.
+3. Preview the scheduler plan with `marketing-engine schedule install`.
+4. Install only after explicit confirmation with `marketing-engine schedule install --yes`.
+   Default cadence is generation daily at 22:00 local and promotion daily at
+   09:00 local. Use `marketing-engine schedule status` to inspect the installed
+   entries and `marketing-engine schedule uninstall` to remove them later.
+5. Validate with `launchctl list` (macOS) or `crontab -l` (Linux) after install.
 
 ## Troubleshooting
 
