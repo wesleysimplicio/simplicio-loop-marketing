@@ -6,6 +6,20 @@ All notable changes to this project are documented here. Format based on
 
 ## [Unreleased]
 
+## [0.2.4] - 2026-05-18
+
+### Fixed
+
+- `marketing-engine new-piece`, `status`, and `logs` now operate against the
+  host project's `.marketing-engine/` workspace instead of assuming runtime
+  files live at the host root.
+- `new-piece` now renders from `.specs/pieces/piece-template.md`, prints the
+  created file path directly, and scans existing weekly piece files so repeated
+  CLI invocations do not reuse the same `PIECE-YYYYWww-NNN` id.
+- `status` and `logs` now return infra exit code `2` when the workspace has not
+  been initialized yet, while still succeeding cleanly when the data directory
+  exists but the usage log file is empty.
+
 ## [0.2.3] - 2026-05-18
 
 ### Fixed

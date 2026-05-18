@@ -12,6 +12,11 @@ interface UsageRow {
   attempt?: number;
 }
 
+function engineRoot(): string {
+  const root = process.env.MARKETING_ENGINE_HOST_ROOT ?? process.cwd();
+  return resolve(root, ".marketing-engine");
+}
+
 export async function cliEntry(argv: string[]): Promise<void> {
   let tail = 20;
   let filterTask: string | undefined;
@@ -21,7 +26,19 @@ export async function cliEntry(argv: string[]): Promise<void> {
     else if (argv[i] === "--task") filterTask = argv[++i];
     else if (argv[i] === "--provider") filterProvider = argv[++i];
   }
-  const path = resolve(process.cwd(), "data", "llm-usage.jsonl");
+  if (!Number.isInteger(tail) || tail <= 0) {
+    process.stderr.write("usage: --tail must be a positive integer\n");
+    process.exit(1);
+  }
+  const root = engineRoot();
+  const dataDir = resolve(root, "data");
+  if (!existsSync(root) || !existsSync(dataDir)) {
+    process.stderr.write(
+      `infra: expected .marketing-engine workspace at ${root}. Run \`marketing-engine init\` first.\n`,
+    );
+    process.exit(2);
+  }
+  const path = resolve(dataDir, "llm-usage.jsonl");
   if (!existsSync(path)) {
     process.stdout.write(`no log file at ${path}\n`);
     return;

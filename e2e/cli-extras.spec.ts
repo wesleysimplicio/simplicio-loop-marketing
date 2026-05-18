@@ -41,6 +41,7 @@ test("help shows the new commands", () => {
 
 test("new-piece creates a markdown file with correct frontmatter", () => {
   const host = mkdtempSync(join(tmpdir(), "me-newpiece-"));
+  mkdirSync(join(host, ".marketing-engine", "pieces"), { recursive: true });
   const r = run(
     [
       "new-piece",
@@ -56,22 +57,107 @@ test("new-piece creates a markdown file with correct frontmatter", () => {
     host,
   );
   expect(r.status).toBe(0);
-  const files = readdirSync(join(host, "pieces")).filter((f) => f.endsWith(".md"));
+  const files = readdirSync(join(host, ".marketing-engine", "pieces")).filter((f) =>
+    f.endsWith(".md")
+  );
   expect(files.length).toBe(1);
+  const outputPath = r.stdout.trim();
+  expect(outputPath).toContain(join(host, ".marketing-engine", "pieces"));
 });
 
-test("status command exits 0 against an empty host", () => {
+test("new-piece exits 2 when the workspace is missing", () => {
+  const host = mkdtempSync(join(tmpdir(), "me-newpiece-missing-"));
+  const r = run(
+    ["new-piece", "--client", "acme", "--pillar", "education", "--channel", "instagram"],
+    host,
+  );
+  expect(r.status).toBe(2);
+});
+
+test("status command exits 2 when the workspace is missing", () => {
   const host = mkdtempSync(join(tmpdir(), "me-status-"));
+  const r = run(["status"], host);
+  expect(r.status).toBe(2);
+});
+
+test("status command reads .marketing-engine pieces and runs", () => {
+  const host = mkdtempSync(join(tmpdir(), "me-status-ready-"));
+  mkdirSync(join(host, ".marketing-engine", "pieces"), { recursive: true });
+  mkdirSync(join(host, ".marketing-engine", "data"), { recursive: true });
+  writeFileSync(
+    join(host, ".marketing-engine", "pieces", "PIECE-2026W19-001.md"),
+    `---
+id: PIECE-2026W19-001
+client: acme
+date: 2026-05-08
+status: draft
+type: reel
+pillar: education
+platforms: ["instagram"]
+locale: en
+---
+# Brief
+`,
+  );
+  writeFileSync(
+    join(host, ".marketing-engine", "data", "runs.jsonl"),
+    `${JSON.stringify({
+      timestamp: new Date().toISOString(),
+      piece_id: "PIECE-2026W19-001",
+      providers_used: ["claude"],
+      cost_estimate_usd: 1.23,
+      status: "success",
+    })}\n`,
+  );
   const r = run(["status"], host);
   expect(r.status).toBe(0);
   expect(r.stdout).toContain("Pieces");
+  expect(r.stdout).toContain("draft");
+  expect(r.stdout).toContain("cost USD");
+});
+
+test("logs command exits 2 when the workspace is missing", () => {
+  const host = mkdtempSync(join(tmpdir(), "me-logs-"));
+  const r = run(["logs"], host);
+  expect(r.status).toBe(2);
 });
 
 test("logs command exits 0 even with no log file", () => {
-  const host = mkdtempSync(join(tmpdir(), "me-logs-"));
+  const host = mkdtempSync(join(tmpdir(), "me-logs-empty-"));
+  mkdirSync(join(host, ".marketing-engine", "data"), { recursive: true });
   const r = run(["logs"], host);
   expect(r.status).toBe(0);
   expect(r.stdout.toLowerCase()).toContain("no log file");
+});
+
+test("logs command filters .marketing-engine usage rows", () => {
+  const host = mkdtempSync(join(tmpdir(), "me-logs-ready-"));
+  mkdirSync(join(host, ".marketing-engine", "data"), { recursive: true });
+  writeFileSync(
+    join(host, ".marketing-engine", "data", "llm-usage.jsonl"),
+    [
+      JSON.stringify({
+        timestamp: new Date().toISOString(),
+        task: "caption",
+        provider: "deepseek",
+        tokens: 100,
+        cost_usd: 0.001,
+        ok: true,
+      }),
+      JSON.stringify({
+        timestamp: new Date().toISOString(),
+        task: "script",
+        provider: "claude",
+        tokens: 200,
+        cost_usd: 0.01,
+        ok: true,
+      }),
+    ].join("\n") + "\n",
+  );
+  const r = run(["logs", "--tail", "1", "--provider", "claude"], host);
+  expect(r.status).toBe(0);
+  expect(r.stdout).toContain("claude");
+  expect(r.stdout).not.toContain("deepseek");
 });
 
 test("cost command runs and surfaces totals", () => {

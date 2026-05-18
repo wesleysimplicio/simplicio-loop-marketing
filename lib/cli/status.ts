@@ -23,9 +23,22 @@ function readRuns(path: string): RunRow[] {
   return rows;
 }
 
+function engineRoot(): string {
+  const root = process.env.MARKETING_ENGINE_HOST_ROOT ?? process.cwd();
+  return resolve(root, ".marketing-engine");
+}
+
 export async function cliEntry(_argv: string[]): Promise<void> {
-  const root = process.cwd();
-  const pieces = listPieces({ root });
+  const root = engineRoot();
+  const piecesDir = resolve(root, "pieces");
+  const dataDir = resolve(root, "data");
+  if (!existsSync(root) || !existsSync(piecesDir) || !existsSync(dataDir)) {
+    process.stderr.write(
+      `infra: expected .marketing-engine workspace at ${root}. Run \`marketing-engine init\` first.\n`,
+    );
+    process.exit(2);
+  }
+  const pieces = listPieces({ piecesDir });
   const counts: Record<string, number> = {};
   for (const p of pieces) {
     counts[p.frontmatter.status] = (counts[p.frontmatter.status] ?? 0) + 1;
@@ -34,7 +47,7 @@ export async function cliEntry(_argv: string[]): Promise<void> {
   for (const k of ["draft", "scheduled", "published", "measured", "review"]) {
     process.stdout.write(`  ${k.padEnd(10)} ${counts[k] ?? 0}\n`);
   }
-  const runs = readRuns(resolve(root, "data", "runs.jsonl"));
+  const runs = readRuns(resolve(dataDir, "runs.jsonl"));
   const last24h = Date.now() - 24 * 3600 * 1000;
   const recentRuns = runs.filter((r) => Date.parse(r.timestamp) > last24h);
   const cost = recentRuns.reduce((acc, r) => acc + (r.cost_estimate_usd ?? 0), 0);
