@@ -11,5 +11,6 @@ jobs:
           cache: "npm"
       - run: npm ci
       - run: npm run typecheck
-      - run: npx playwright install --with-deps chromium
+      # Specs run on the Node test runner, not a browser context, so chromium is
+      # not required. Avoids the --with-deps apt step that breaks on Ubuntu noble.
       - run: npm run test:e2e
