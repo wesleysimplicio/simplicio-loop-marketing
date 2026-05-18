@@ -2,6 +2,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { appendRunLog } from "../data/runs";
 import { writeManifest, type ManifestPayload } from "../data/manifest";
+import { pushStatus } from "../calendar/notion";
 import {
   listPieces,
   pieceFilePath,
@@ -333,6 +334,9 @@ async function processPiece(
   transitionStatus(fm.id, "draft", "scheduled", {
     piecesDir: piecesRootFor(opts),
   });
+  if (fm.notion_page_id && process.env.NOTION_TOKEN) {
+    await pushStatus(fm.id, "scheduled", { root: opts.root });
+  }
 
   appendRunLog(
     {

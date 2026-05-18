@@ -11,9 +11,9 @@ if [ -f "$ENV_FILE" ]; then
 fi
 NOTION_CALENDAR_DB_ID="${NOTION_CALENDAR_DB_ID:-}"
 NOTION_TOKEN="${NOTION_TOKEN:-}"
-if [ -n "$NOTION_CALENDAR_DB_ID" ] && [ -n "$NOTION_TOKEN" ]; then
-  echo "[sync-calendar] would pull from Notion (NOTION_CALENDAR_DB_ID=$NOTION_CALENDAR_DB_ID)"
-else
+if [ -z "$NOTION_CALENDAR_DB_ID" ] || [ -z "$NOTION_TOKEN" ]; then
   echo "[sync-calendar] WARN: NOTION_TOKEN or NOTION_CALENDAR_DB_ID unset; skipping pull"
+  exit 0
 fi
-echo "[sync-calendar] done"
+
+node "$ROOT/bin/marketing-engine.mjs" sync --root "$ROOT" "$@"

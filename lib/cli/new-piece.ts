@@ -1,7 +1,7 @@
-import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
-import { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { existsSync, readdirSync, writeFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { isoWeek, nextPieceId } from "../pieces/id";
+import { renderPieceTemplate } from "../pieces/template";
 
 interface Args {
   client?: string;
@@ -10,9 +10,6 @@ interface Args {
   date?: string;
   type?: string;
 }
-
-const __filename = fileURLToPath(import.meta.url);
-const PACKAGE_ROOT = resolve(dirname(__filename), "..", "..");
 
 function parse(argv: string[]): Args {
   const args: Args = {};
@@ -30,10 +27,6 @@ function parse(argv: string[]): Args {
 function engineRoot(): string {
   const root = process.env.MARKETING_ENGINE_HOST_ROOT ?? process.cwd();
   return resolve(root, ".marketing-engine");
-}
-
-function templatePath(): string {
-  return resolve(PACKAGE_ROOT, ".specs", "pieces", "piece-template.md");
 }
 
 function ensureWorkspaceDir(path: string, label: string): void {
@@ -65,18 +58,15 @@ function nextSequenceForWeek(piecesDir: string, date: Date): number {
 }
 
 function renderTemplate(args: Args, id: string, dateStr: string): string {
-  const template = readFileSync(templatePath(), "utf8");
-  return template
-    .replace("id: PIECE-XXX", `id: ${id}`)
-    .replace("client: <client-id>", `client: ${args.client}`)
-    .replace("campaign: <campaign-id>", "campaign: null")
-    .replace("date: YYYY-MM-DD", `date: ${dateStr}`)
-    .replace("type: reel", `type: ${args.type ?? "reel"}`)
-    .replace("pillar: <pillar-id from PILLARS>", `pillar: ${args.pillar}`)
-    .replace(
-      "platforms: [instagram, tiktok, youtube-shorts, facebook]",
-      `platforms: ["${args.channel}"]`,
-    );
+  return renderPieceTemplate({
+    id,
+    client: args.client ?? "unknown",
+    campaign: null,
+    date: dateStr,
+    type: args.type ?? "reel",
+    pillar: args.pillar ?? "education",
+    platforms: [args.channel ?? "instagram"],
+  });
 }
 
 export async function cliEntry(argv: string[]): Promise<void> {

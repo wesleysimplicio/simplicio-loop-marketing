@@ -6,6 +6,24 @@ All notable changes to this project are documented here. Format based on
 
 ## [Unreleased]
 
+## [0.2.10] - 2026-05-18
+
+### Fixed
+
+- `marketing-engine sync` now pulls Notion calendar rows into the host
+  workspace `.marketing-engine/pieces/`, rendering new piece files from
+  `.specs/pieces/piece-template.md` and recording the linked `notion_page_id`
+  plus the last synced remote fingerprint.
+- Notion sync conflicts now preserve the local piece file and append the remote
+  snapshot as a comment block instead of overwriting the frontmatter or losing
+  local edits.
+- `generate` now back-syncs linked pieces to Notion when they advance to
+  `scheduled`, and `promote` marks linked published pieces as `measured` in
+  both the local piece file and the Notion calendar.
+- `.ralph/sync-calendar.sh` now calls the real `marketing-engine sync`
+  command, and the repo adds focused Notion sync coverage for creation,
+  conflict handling, and status back-sync paths.
+
 ## [0.2.9] - 2026-05-18
 
 ### Fixed

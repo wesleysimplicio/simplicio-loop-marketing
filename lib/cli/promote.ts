@@ -1,6 +1,7 @@
 import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
-import { readPiece } from "../pieces/store";
+import { pushStatus } from "../calendar/notion";
+import { readPiece, transitionStatus } from "../pieces/store";
 
 interface PromoteOptions {
   root: string;
@@ -59,6 +60,24 @@ function safeReadPiece(
     return readPiece(pieceId, { piecesDir: piecesRootFor(opts) });
   } catch {
     return null;
+  }
+}
+
+async function maybeMarkMeasured(
+  pieceId: string,
+  opts: PromoteOptions,
+): Promise<void> {
+  const piece = safeReadPiece(pieceId, opts);
+  if (!piece || piece.frontmatter.status !== "published") {
+    return;
+  }
+
+  transitionStatus(pieceId, "published", "measured", {
+    piecesDir: piecesRootFor(opts),
+  });
+
+  if (piece.frontmatter.notion_page_id && process.env.NOTION_TOKEN) {
+    await pushStatus(pieceId, "measured", { root: opts.root });
   }
 }
 
@@ -195,6 +214,7 @@ export async function runPromoteLoop(opts: PromoteOptions): Promise<{
         meta_ads_draft_path: finalPath,
       })}\n`,
     );
+    await maybeMarkMeasured(w.piece_id, opts);
   }
 
   for (const l of losers) {
@@ -204,6 +224,7 @@ export async function runPromoteLoop(opts: PromoteOptions): Promise<{
       channel: l.channel,
       reason: reasonForLoss(l),
     });
+    await maybeMarkMeasured(l.piece_id, opts);
   }
   return {
     promoted: winners.length,

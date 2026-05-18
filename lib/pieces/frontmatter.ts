@@ -7,6 +7,9 @@ export interface PieceFrontmatter {
   type: string;
   pillar: string;
   platforms: string[];
+  notion_page_id?: string;
+  notion_last_synced_at?: string;
+  notion_last_remote_hash?: string;
   provider_override?: {
     llm_text?: string | null;
     image?: string | null;
