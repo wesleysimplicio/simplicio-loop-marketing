@@ -8,18 +8,19 @@ import {
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import { runGenerateLoop } from "../lib/cli/generate";
+import { cliEntry, runGenerateLoop } from "../lib/cli/generate";
 import { serializePiece, type PieceFrontmatter } from "../lib/pieces/frontmatter";
 import { resetMatrixCache } from "../lib/providers/matrix";
 
 test("generate loop processes a draft piece end-to-end with mocks under DRY_RUN", async () => {
   process.env.DRY_RUN = "true";
   const host = mkdtempSync(join(tmpdir(), "me-gen-"));
-  const piecesDir = join(host, "pieces");
-  const outputsDir = join(host, "outputs");
+  const workspaceRoot = join(host, ".marketing-engine");
+  const piecesDir = join(workspaceRoot, "pieces");
+  const outputsDir = join(workspaceRoot, "outputs");
   mkdirSync(piecesDir, { recursive: true });
   mkdirSync(outputsDir, { recursive: true });
-  mkdirSync(join(host, "data"), { recursive: true });
+  mkdirSync(join(workspaceRoot, "data"), { recursive: true });
   // Copy PROVIDERS.md so loader sees the real matrix (we point the loader at the embedded defaults via missing file).
   resetMatrixCache();
 
@@ -40,11 +41,7 @@ test("generate loop processes a draft piece end-to-end with mocks under DRY_RUN"
   const prevCwd = process.cwd();
   process.chdir(host);
   try {
-    const summary = await runGenerateLoop({
-      root: host,
-      piecesDir,
-      outputsDir,
-    });
+    const summary = await runGenerateLoop({ root: host });
     expect(summary.inspected).toBe(1);
     expect(summary.advanced).toBe(1);
     const pieceDir = resolve(outputsDir, "acme", "2026-05-08", "PIECE-test-001");
@@ -63,7 +60,7 @@ test("generate loop processes a draft piece end-to-end with mocks under DRY_RUN"
     expect(Array.isArray(manifest.outputs)).toBe(true);
     expect(manifest.outputs).toContain(join(pieceDir, "script.md"));
     expect(typeof manifest.cost_estimate_usd).toBe("number");
-    const runsLog = readFileSync(join(host, "data", "runs.jsonl"), "utf8")
+    const runsLog = readFileSync(join(workspaceRoot, "data", "runs.jsonl"), "utf8")
       .trim()
       .split("\n")
       .map((line) => JSON.parse(line));
@@ -75,7 +72,7 @@ test("generate loop processes a draft piece end-to-end with mocks under DRY_RUN"
     });
     expect(Array.isArray(runsLog[0].providers_used)).toBe(true);
     expect(typeof runsLog[0].timestamp).toBe("string");
-    const usage = readFileSync(join(host, "data", "llm-usage.jsonl"), "utf8")
+    const usage = readFileSync(join(workspaceRoot, "data", "llm-usage.jsonl"), "utf8")
       .trim()
       .split("\n")
       .map((line) => JSON.parse(line));
@@ -95,9 +92,10 @@ test("generate loop processes a draft piece end-to-end with mocks under DRY_RUN"
 test("generate loop blocks pieces failing compliance and does not transition", async () => {
   process.env.DRY_RUN = "true";
   const host = mkdtempSync(join(tmpdir(), "me-gen-block-"));
-  const piecesDir = join(host, "pieces");
+  const workspaceRoot = join(host, ".marketing-engine");
+  const piecesDir = join(workspaceRoot, "pieces");
   mkdirSync(piecesDir, { recursive: true });
-  mkdirSync(join(host, "data"), { recursive: true });
+  mkdirSync(join(workspaceRoot, "data"), { recursive: true });
 
   const fm: PieceFrontmatter = {
     id: "PIECE-test-002",
@@ -119,11 +117,7 @@ test("generate loop blocks pieces failing compliance and does not transition", a
   const prevCwd = process.cwd();
   process.chdir(host);
   try {
-    const summary = await runGenerateLoop({
-      root: host,
-      piecesDir,
-      outputsDir: join(host, "outputs"),
-    });
+    const summary = await runGenerateLoop({ root: host });
     expect(summary.blocked).toBeGreaterThanOrEqual(1);
     const updated = readFileSync(
       join(piecesDir, "PIECE-test-002.md"),
@@ -132,6 +126,56 @@ test("generate loop blocks pieces failing compliance and does not transition", a
     expect(updated).toMatch(/status: draft/);
     expect(updated).toMatch(/compliance_block:/);
   } finally {
+    process.chdir(prevCwd);
+  }
+});
+
+test("cliEntry honors MAX_ITER when reading host .marketing-engine pieces", async () => {
+  process.env.DRY_RUN = "true";
+  process.env.MAX_ITER = "1";
+  const host = mkdtempSync(join(tmpdir(), "me-gen-max-"));
+  const workspaceRoot = join(host, ".marketing-engine");
+  const piecesDir = join(workspaceRoot, "pieces");
+  mkdirSync(piecesDir, { recursive: true });
+  mkdirSync(join(workspaceRoot, "data"), { recursive: true });
+
+  for (const id of ["PIECE-test-101", "PIECE-test-102"]) {
+    writeFileSync(
+      join(piecesDir, `${id}.md`),
+      serializePiece(
+        {
+          id,
+          client: "acme",
+          date: "2026-05-08",
+          status: "draft",
+          type: "quote-card",
+          pillar: "education",
+          platforms: ["instagram"],
+          locale: "en",
+        },
+        "# Brief\n\nLaunch our new product.\n",
+      ),
+    );
+  }
+
+  const prevCwd = process.cwd();
+  process.chdir(host);
+  try {
+    await cliEntry([]);
+    const first = readFileSync(join(piecesDir, "PIECE-test-101.md"), "utf8");
+    const second = readFileSync(join(piecesDir, "PIECE-test-102.md"), "utf8");
+    const scheduledCount = [first, second].filter((text) =>
+      /status: scheduled/.test(text)
+    ).length;
+    const draftCount = [first, second].filter((text) => /status: draft/.test(text)).length;
+    expect(scheduledCount).toBe(1);
+    expect(draftCount).toBe(1);
+    const runsLog = readFileSync(join(workspaceRoot, "data", "runs.jsonl"), "utf8")
+      .trim()
+      .split("\n");
+    expect(runsLog).toHaveLength(1);
+  } finally {
+    delete process.env.MAX_ITER;
     process.chdir(prevCwd);
   }
 });

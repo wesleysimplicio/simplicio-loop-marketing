@@ -6,6 +6,17 @@ All notable changes to this project are documented here. Format based on
 
 ## [Unreleased]
 
+## [0.2.2] - 2026-05-18
+
+### Fixed
+
+- `marketing-engine generate` now resolves the host project's
+  `.marketing-engine/{pieces,outputs,data}` workspace by default instead of
+  assuming runtime files live at the host root.
+- `lib/cli/generate.ts` now honors the `MAX_ITER` environment variable in
+  addition to the existing `--max-iter` flag, and the E2E coverage exercises
+  both the host-workspace defaults and the capped iteration flow.
+
 ## [0.2.1] - 2026-05-18
 
 ### Added

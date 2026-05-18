@@ -31,6 +31,19 @@ interface GenerateSummary {
   failures: number;
 }
 
+function engineRoot(root: string): string {
+  const nested = resolve(root, ".marketing-engine");
+  return existsSync(nested) ? nested : root;
+}
+
+function piecesRootFor(opts: GenerateOptions): string {
+  return opts.piecesDir ?? resolve(engineRoot(opts.root), "pieces");
+}
+
+function dataRootFor(opts: GenerateOptions): string {
+  return resolve(engineRoot(opts.root), "data");
+}
+
 function typeToTasks(type: string): {
   copy: LLMTask;
   image?: ImageTask;
@@ -54,7 +67,7 @@ function typeToTasks(type: string): {
 }
 
 function outputsRootFor(opts: GenerateOptions): string {
-  return opts.outputsDir ?? resolve(opts.root, "outputs");
+  return opts.outputsDir ?? resolve(engineRoot(opts.root), "outputs");
 }
 
 function pieceOutputDir(
@@ -71,8 +84,8 @@ function loadCompliance(opts: GenerateOptions, client: string): {
   required: string[];
 } {
   void client;
-  const root = opts.root;
-  const generic = resolve(root, ".specs", "product", "COMPLIANCE.md");
+  const root = engineRoot(opts.root);
+  const generic = resolve(root, "COMPLIANCE.md");
   const forbidden: RegExp[] = [
     /guaranteed?\s+(?:return|income|cash[- ]back|results?)/i,
     /clinically\s+proven/i,
@@ -109,8 +122,7 @@ export async function runGenerateLoop(
   loadProviderMatrix(opts.matrixPath);
 
   const pieces = listPieces({
-    root: opts.root,
-    piecesDir: opts.piecesDir,
+    piecesDir: piecesRootFor(opts),
     status: "draft",
   });
   const max = opts.maxIter ?? pieces.length;
@@ -151,7 +163,7 @@ async function processPiece(
   const pieceDir = pieceOutputDir(opts, fm.client, dateStr, fm.id);
   if (!existsSync(pieceDir)) mkdirSync(pieceDir, { recursive: true });
 
-  const usageLogPath = resolve(opts.root, "data", "llm-usage.jsonl");
+  const usageLogPath = resolve(dataRootFor(opts), "llm-usage.jsonl");
   const llmOverride = fm.provider_override?.llm_text ?? undefined;
   const imageOverride = fm.provider_override?.image ?? undefined;
   const videoOverride = fm.provider_override?.video ?? undefined;
@@ -307,11 +319,10 @@ async function processPiece(
         status: "blocked",
         notes: `compliance violations: ${compliance.violations.length}`,
       },
-      opts.root,
+      engineRoot(opts.root),
     );
     const path = pieceFilePath(fm.id, {
-      root: opts.root,
-      piecesDir: opts.piecesDir,
+      piecesDir: piecesRootFor(opts),
     });
     const cur = parsePiece(readFileSync(path, "utf8"));
     cur.frontmatter.compliance_block = compliance.violations;
@@ -320,8 +331,7 @@ async function processPiece(
   }
 
   transitionStatus(fm.id, "draft", "scheduled", {
-    root: opts.root,
-    piecesDir: opts.piecesDir,
+    piecesDir: piecesRootFor(opts),
   });
 
   appendRunLog(
@@ -334,7 +344,7 @@ async function processPiece(
       cost_estimate_usd: totalCost,
       status: "success",
     },
-    opts.root,
+    engineRoot(opts.root),
   );
 }
 
@@ -346,13 +356,14 @@ export async function cliEntry(argv: string[]): Promise<void> {
       maxIter = Number(argv[++i]);
     }
   }
+  const envMaxIter = process.env.MAX_ITER ? Number(process.env.MAX_ITER) : undefined;
   const piecesEnv = process.env.MARKETING_ENGINE_PIECES_DIR;
   const outputsEnv = process.env.MARKETING_ENGINE_OUTPUTS_DIR;
   const summary = await runGenerateLoop({
     root,
     piecesDir: piecesEnv,
     outputsDir: outputsEnv,
-    maxIter,
+    maxIter: maxIter ?? (Number.isFinite(envMaxIter) ? envMaxIter : undefined),
   });
   const line = `generate: inspected=${summary.inspected} advanced=${summary.advanced} blocked=${summary.blocked} failures=${summary.failures}`;
   process.stdout.write(`${line}\n`);
