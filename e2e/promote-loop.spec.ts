@@ -1,9 +1,16 @@
 import { test, expect } from "@playwright/test";
-import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync } from "node:fs";
+import {
+  mkdtempSync,
+  mkdirSync,
+  writeFileSync,
+  readFileSync,
+  existsSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { classify } from "../lib/promotion/classifier";
 import { runPromoteLoop } from "../lib/cli/promote";
+import { serializePiece } from "../lib/pieces/frontmatter";
 
 test("classify identifies top 20% winners by save_rate", () => {
   const rows = [];
@@ -36,7 +43,9 @@ test("classify skips pieces under 100 impressions", () => {
 test("runPromoteLoop writes ads-draft.json for winners and learnings for losers", async () => {
   process.env.DRY_RUN = "true";
   const host = mkdtempSync(join(tmpdir(), "me-promote-"));
-  mkdirSync(join(host, "data"), { recursive: true });
+  const workspaceRoot = join(host, ".marketing-engine");
+  mkdirSync(join(workspaceRoot, "data"), { recursive: true });
+  mkdirSync(join(workspaceRoot, "pieces"), { recursive: true });
   const analytics = [];
   for (let i = 1; i <= 10; i++) {
     analytics.push(
@@ -51,11 +60,44 @@ test("runPromoteLoop writes ads-draft.json for winners and learnings for losers"
       }),
     );
   }
-  writeFileSync(join(host, "data", "analytics.jsonl"), analytics.join("\n") + "\n");
+  writeFileSync(
+    join(workspaceRoot, "data", "analytics.jsonl"),
+    analytics.join("\n") + "\n",
+  );
+  writeFileSync(
+    join(workspaceRoot, "pieces", "p10.md"),
+    serializePiece(
+      {
+        id: "p10",
+        client: "acme",
+        date: "2026-05-08",
+        status: "published",
+        type: "reel",
+        pillar: "education",
+        platforms: ["instagram"],
+        locale: "en",
+        provider_override: {
+          ads: "custom-ads",
+        },
+      },
+      "# Brief\n\nTop performer.\n",
+    ),
+  );
   const r = await runPromoteLoop({ root: host, windowDays: 7 });
   expect(r.promoted).toBeGreaterThanOrEqual(1);
   expect(r.losers).toBeGreaterThanOrEqual(1);
-  expect(existsSync(join(host, "data", "learnings.md"))).toBe(true);
-  const learnings = readFileSync(join(host, "data", "learnings.md"), "utf8");
+  expect(existsSync(join(workspaceRoot, "data", "learnings.md"))).toBe(true);
+  const learnings = readFileSync(join(workspaceRoot, "data", "learnings.md"), "utf8");
   expect(learnings).toMatch(/did not perform/);
+  const draftPath = join(
+    workspaceRoot,
+    "outputs",
+    "acme",
+    "2026-05-08",
+    "p10",
+    "ads-draft.json",
+  );
+  expect(existsSync(draftPath)).toBe(true);
+  const draft = JSON.parse(readFileSync(draftPath, "utf8"));
+  expect(draft.provider).toBe("custom-ads");
 });

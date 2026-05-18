@@ -1,5 +1,6 @@
 import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
+import { readPiece } from "../pieces/store";
 
 interface PromoteOptions {
   root: string;
@@ -31,6 +32,34 @@ interface PieceStats {
   reach: number;
   watch_time_s: number;
   save_rate: number;
+}
+
+function engineRoot(root: string): string {
+  const nested = resolve(root, ".marketing-engine");
+  return existsSync(nested) ? nested : root;
+}
+
+function piecesRootFor(opts: PromoteOptions): string {
+  return resolve(engineRoot(opts.root), "pieces");
+}
+
+function dataRootFor(opts: PromoteOptions): string {
+  return resolve(engineRoot(opts.root), "data");
+}
+
+function outputsRootFor(opts: PromoteOptions): string {
+  return opts.outputsDir ?? resolve(engineRoot(opts.root), "outputs");
+}
+
+function safeReadPiece(
+  pieceId: string,
+  opts: PromoteOptions,
+): ReturnType<typeof readPiece> | null {
+  try {
+    return readPiece(pieceId, { piecesDir: piecesRootFor(opts) });
+  } catch {
+    return null;
+  }
 }
 
 export function classify(
@@ -125,18 +154,24 @@ export async function runPromoteLoop(opts: PromoteOptions): Promise<{
 }> {
   process.env.DRY_RUN = process.env.DRY_RUN ?? "true";
   const analyticsPath =
-    opts.analyticsPath ?? resolve(opts.root, "data", "analytics.jsonl");
-  const outputsRoot = opts.outputsDir ?? resolve(opts.root, "outputs");
+    opts.analyticsPath ?? resolve(dataRootFor(opts), "analytics.jsonl");
+  const outputsRoot = outputsRootFor(opts);
   const rows = readAnalytics(analyticsPath);
   const { winners, losers, skipped } = classify(rows, opts.windowDays);
   const today = new Date().toISOString().slice(0, 10);
 
   for (const w of winners) {
-    const dir = resolve(outputsRoot, w.client ?? "unknown", today, w.piece_id);
+    const piece = safeReadPiece(w.piece_id, opts);
+    const pieceMeta = piece?.frontmatter;
+    const client = pieceMeta?.client ?? w.client ?? "unknown";
+    const dateStr = pieceMeta?.date?.slice(0, 10) ?? today;
+    const adsProvider = pieceMeta?.provider_override?.ads ?? "meta-ads";
+    const dir = resolve(outputsRoot, client, dateStr, w.piece_id);
     if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
     const draftPath = join(dir, "ads-draft.json");
     const draft = {
       piece_id: w.piece_id,
+      provider: adsProvider,
       campaign_name: `auto-promote-${w.piece_id}`,
       objective: "OUTCOME_ENGAGEMENT",
       audience_hint: w.channel ?? "unknown",
@@ -150,11 +185,12 @@ export async function runPromoteLoop(opts: PromoteOptions): Promise<{
       : draftPath;
     writeFileSync(finalPath, JSON.stringify(draft, null, 2));
     appendFileSync(
-      resolve(opts.root, "data", "promotions.jsonl"),
+      resolve(dataRootFor(opts), "promotions.jsonl"),
       `${JSON.stringify({
         timestamp: new Date().toISOString(),
         piece_id: w.piece_id,
         platform: w.channel,
+        provider: adsProvider,
         reason: "top-20-by-save-rate",
         meta_ads_draft_path: finalPath,
       })}\n`,
@@ -162,7 +198,7 @@ export async function runPromoteLoop(opts: PromoteOptions): Promise<{
   }
 
   for (const l of losers) {
-    appendLearning(opts.root, {
+    appendLearning(engineRoot(opts.root), {
       date: today,
       piece_id: l.piece_id,
       channel: l.channel,
@@ -187,7 +223,7 @@ export async function cliEntry(argv: string[]): Promise<void> {
   }
   const r = await runPromoteLoop({ root, windowDays });
   process.stdout.write(
-    `promote: promoted=${r.promoted} losers=${r.losers} skipped=${r.skipped}\n`,
+    `promoted: ${r.promoted} | losers: ${r.losers} | skipped: ${r.skipped}\n`,
   );
 }
 

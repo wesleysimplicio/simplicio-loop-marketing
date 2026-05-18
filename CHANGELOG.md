@@ -6,6 +6,17 @@ All notable changes to this project are documented here. Format based on
 
 ## [Unreleased]
 
+## [0.2.3] - 2026-05-18
+
+### Fixed
+
+- `marketing-engine promote` now reads and writes its runtime artefacts from the
+  host project's `.marketing-engine/{data,pieces,outputs}` workspace by
+  default, matching the scaffolded project layout.
+- Winner drafts now honor `provider_override.ads` from the source piece
+  frontmatter, and the CLI summary output matches the documented
+  `promoted: N | losers: M | skipped: K` format.
+
 ## [0.2.2] - 2026-05-18
 
 ### Fixed
