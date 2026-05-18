@@ -17,7 +17,7 @@ export interface ComplianceReport {
   vertical_used?: string;
 }
 
-interface RuleDef {
+export interface RuleDef {
   rule_id: string;
   category: "health" | "finance" | "comparison" | "audience" | "legal" | "privacy";
   pattern: RegExp;

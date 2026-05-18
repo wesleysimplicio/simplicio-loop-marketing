@@ -3,9 +3,11 @@ import { dirname, join, resolve } from "node:path";
 import { appendRunLog } from "../data/runs";
 import { writeManifest, type ManifestPayload } from "../data/manifest";
 import { pushStatus } from "../calendar/notion";
+import { runAudit } from "../compliance/loader";
 import {
   listPieces,
   pieceFilePath,
+  readPiece,
   transitionStatus,
 } from "../pieces/store";
 import { parsePiece, serializePiece, type PieceFrontmatter } from "../pieces/frontmatter";
@@ -78,39 +80,6 @@ function pieceOutputDir(
   id: string,
 ): string {
   return resolve(outputsRootFor(opts), client, date, id);
-}
-
-function loadCompliance(opts: GenerateOptions, client: string): {
-  forbidden: RegExp[];
-  required: string[];
-} {
-  void client;
-  const root = engineRoot(opts.root);
-  const generic = resolve(root, "COMPLIANCE.md");
-  const forbidden: RegExp[] = [
-    /guaranteed?\s+(?:return|income|cash[- ]back|results?)/i,
-    /clinically\s+proven/i,
-    /scientifically\s+proven/i,
-    /\b(?:cura|treats?|prevents?|diagnoses?)\b\s+\w+/i,
-    /risk[- ]?free/i,
-    /lose\s+\d+\s*(?:kg|lbs?|pounds?)\s+in\s+\d+/i,
-  ];
-  void generic;
-  return { forbidden, required: [] };
-}
-
-function runCompliance(
-  text: string,
-  rules: { forbidden: RegExp[] },
-): { pass: boolean; violations: Array<{ rule_id: string; snippet: string }> } {
-  const violations: Array<{ rule_id: string; snippet: string }> = [];
-  for (const re of rules.forbidden) {
-    const m = re.exec(text);
-    if (m) {
-      violations.push({ rule_id: re.source.slice(0, 30), snippet: m[0] });
-    }
-  }
-  return { pass: violations.length === 0, violations };
 }
 
 export async function runGenerateLoop(
@@ -263,24 +232,17 @@ async function processPiece(
     totalCost += r.cost_usd ?? 0;
   }
 
-  const compliance = runCompliance(
-    `${captionText}\n${copy.result.output ?? ""}\n${piece.body}`,
-    loadCompliance(opts, fm.client),
-  );
+  const complianceResult = await runAudit({
+    root: opts.root,
+    piece_id: fm.id,
+    text: `${captionText}\n${copy.result.output ?? ""}\n${piece.body}`,
+    client: fm.client,
+  });
+  const compliance = complianceResult.report;
   const compliancePath = join(pieceDir, "compliance.json");
   writeFileSync(
     compliancePath,
-    JSON.stringify(
-      {
-        piece_id: fm.id,
-        pass: compliance.pass,
-        violations: compliance.violations,
-        checker: "compliance-generic-inline",
-        checked_at: new Date().toISOString(),
-      },
-      null,
-      2,
-    ),
+    JSON.stringify(compliance, null, 2),
   );
   outputs.push(compliancePath);
 
@@ -302,7 +264,7 @@ async function processPiece(
     cost_estimate_usd: totalCost,
     tokens_in: copy.result.tokens ?? 0,
     tokens_out: captionResult.result.tokens ?? 0,
-    compliance_report_path: compliancePath,
+    compliance_report_path: complianceResult.report_path,
     outputs,
     fallback_used: copy.fallback_triggered || captionResult.fallback_triggered,
   };
@@ -327,6 +289,7 @@ async function processPiece(
     });
     const cur = parsePiece(readFileSync(path, "utf8"));
     cur.frontmatter.compliance_block = compliance.violations;
+    cur.frontmatter.compliance_report = complianceResult.report_path;
     writeFileSync(path, serializePiece(cur.frontmatter, cur.body));
     throw new Error(`compliance-block:${fm.id}`);
   }
@@ -334,6 +297,16 @@ async function processPiece(
   transitionStatus(fm.id, "draft", "scheduled", {
     piecesDir: piecesRootFor(opts),
   });
+  const scheduled = readPiece(fm.id, {
+    piecesDir: piecesRootFor(opts),
+  });
+  scheduled.frontmatter.compliance_report = complianceResult.report_path;
+  writeFileSync(
+    pieceFilePath(fm.id, {
+      piecesDir: piecesRootFor(opts),
+    }),
+    serializePiece(scheduled.frontmatter, scheduled.body),
+  );
   if (fm.notion_page_id && process.env.NOTION_TOKEN) {
     await pushStatus(fm.id, "scheduled", { root: opts.root });
   }

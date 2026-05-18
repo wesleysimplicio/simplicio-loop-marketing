@@ -56,10 +56,11 @@ test("generate loop processes a draft piece end-to-end with mocks under DRY_RUN"
     expect(manifest.providers.llm).toBeDefined();
     expect(manifest.prompts.script).toContain("Launch our new product.");
     expect(manifest.prompts.caption).toContain("Caption for:");
-    expect(manifest.compliance_report_path).toContain("compliance.json");
+    expect(manifest.compliance_report_path).toContain("/data/compliance/");
     expect(Array.isArray(manifest.outputs)).toBe(true);
     expect(manifest.outputs).toContain(join(pieceDir, "script.md"));
     expect(typeof manifest.cost_estimate_usd).toBe("number");
+    expect(existsSync(manifest.compliance_report_path)).toBe(true);
     const runsLog = readFileSync(join(workspaceRoot, "data", "runs.jsonl"), "utf8")
       .trim()
       .split("\n")
@@ -84,6 +85,7 @@ test("generate loop processes a draft piece end-to-end with mocks under DRY_RUN"
       "utf8",
     );
     expect(updated).toMatch(/status: scheduled/);
+    expect(updated).toMatch(/compliance_report:/);
   } finally {
     process.chdir(prevCwd);
   }
@@ -123,8 +125,9 @@ test("generate loop blocks pieces failing compliance and does not transition", a
       join(piecesDir, "PIECE-test-002.md"),
       "utf8",
     );
-    expect(updated).toMatch(/status: draft/);
+    expect(updated).toMatch(/status: review/);
     expect(updated).toMatch(/compliance_block:/);
+    expect(existsSync(join(workspaceRoot, "data", "compliance-blocked", "PIECE-test-002.json"))).toBe(true);
   } finally {
     process.chdir(prevCwd);
   }

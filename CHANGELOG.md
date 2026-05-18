@@ -6,6 +6,21 @@ All notable changes to this project are documented here. Format based on
 
 ## [Unreleased]
 
+## [0.2.11] - 2026-05-18
+
+### Fixed
+
+- Compliance loading now honors `ACTIVE_CLIENT`, reads additive client override
+  rules from `.specs/clients/<client>/COMPLIANCE.override.md`, and writes warn
+  lines to a weekly digest plus repeat-block alerts to `data/learnings.md`.
+- Blocking compliance reports now move local pieces to `review`, persist the
+  report in `data/compliance-blocked/`, and keep the pipeline metadata pointed
+  at the canonical `data/compliance/<piece>.json` audit trail.
+- `generate` now routes compliance through the shared loader instead of the old
+  inline regex helper, and the repo ships a template
+  `.specs/clients/_template/COMPLIANCE.override.md` plus focused coverage for
+  override loading, escalation, and review transitions.
+
 ## [0.2.10] - 2026-05-18
 
 ### Fixed

@@ -1,14 +1,26 @@
 import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
-import { audit, writeReport, type AuditInput, type ComplianceReport } from "./generic";
+import {
+  audit,
+  writeReport,
+  type AuditInput,
+  type ComplianceReport,
+  type RuleDef,
+} from "./generic";
+import { readPiece, transitionStatus } from "../pieces/store";
 
 export function activeClient(): string {
-  return process.env.ACTIVE_CLIENT ?? "default";
+  return process.env.ACTIVE_CLIENT ?? "saas-consultoria-imagem";
+}
+
+function engineRoot(root: string): string {
+  const nested = resolve(root, ".marketing-engine");
+  return existsSync(nested) ? nested : root;
 }
 
 export function clientOverridePath(client: string, root?: string): string {
   return resolve(
-    root ?? process.cwd(),
+    engineRoot(root ?? process.cwd()),
     ".specs",
     "clients",
     client,
@@ -16,23 +28,115 @@ export function clientOverridePath(client: string, root?: string): string {
   );
 }
 
+interface OverrideRuleSource {
+  rule_id: string;
+  category: RuleDef["category"];
+  pattern: string;
+  flags?: string;
+  severity: RuleDef["severity"];
+  remediation?: string;
+  applies_to?: string[];
+}
+
+const JSON_BLOCK_RE = /```json\s*([\s\S]*?)```/i;
+
+export function loadOverrideRules(client: string, root?: string): {
+  path: string;
+  rules: RuleDef[];
+} {
+  const path = clientOverridePath(client, root);
+  if (!existsSync(path)) {
+    return { path, rules: [] };
+  }
+
+  const text = readFileSync(path, "utf8");
+  const match = JSON_BLOCK_RE.exec(text);
+  if (!match) {
+    return { path, rules: [] };
+  }
+
+  const parsed = JSON.parse(match[1]) as OverrideRuleSource[];
+  return {
+    path,
+    rules: parsed.map((rule) => ({
+      rule_id: rule.rule_id,
+      category: rule.category,
+      pattern: new RegExp(rule.pattern, rule.flags ?? "i"),
+      severity: rule.severity,
+      remediation: rule.remediation,
+      applies_to: rule.applies_to,
+    })),
+  };
+}
+
+function appendWeeklyDigest(
+  root: string,
+  client: string,
+  report: ComplianceReport,
+): void {
+  if (report.warnings.length === 0) return;
+  const digestPath = resolve(root, "data", "compliance-weekly-digest.md");
+  if (!existsSync(dirname(digestPath))) mkdirSync(dirname(digestPath), { recursive: true });
+  for (const warning of report.warnings) {
+    appendFileSync(
+      digestPath,
+      `- ${new Date().toISOString()} | ${client} | ${report.piece_id} | ${warning.rule_id} | ${warning.snippet}\n`,
+    );
+  }
+}
+
+function maybeTransitionPieceToReview(root: string, pieceId: string): void {
+  const piecesDir = resolve(root, "pieces");
+  try {
+    const piece = readPiece(pieceId, { piecesDir });
+    if (piece.frontmatter.status === "draft") {
+      transitionStatus(pieceId, "draft", "review", { piecesDir });
+      return;
+    }
+    if (piece.frontmatter.status === "scheduled") {
+      transitionStatus(pieceId, "scheduled", "review", { piecesDir });
+      return;
+    }
+    if (piece.frontmatter.status === "published") {
+      transitionStatus(pieceId, "published", "review", { piecesDir });
+    }
+  } catch {
+    // No local piece file means we still preserve the report artefacts.
+  }
+}
+
+function appendStreakAlerts(root: string, currentClient: string): void {
+  const streaks = detectStreaks(root).filter((streak) => streak.client === currentClient);
+  if (streaks.length === 0) return;
+
+  const learningsPath = resolve(root, "data", "learnings.md");
+  if (!existsSync(dirname(learningsPath))) mkdirSync(dirname(learningsPath), { recursive: true });
+  for (const streak of streaks) {
+    const line = `- ${new Date().toISOString()} | compliance streak | ${streak.client} | ${streak.rule_id} | pieces: ${streak.pieces.join(", ")}\n`;
+    appendFileSync(learningsPath, line);
+    process.stdout.write(
+      `[compliance] streak alert for ${streak.client} on ${streak.rule_id}: ${streak.count} blocks this week\n`,
+    );
+  }
+}
+
 export async function runAudit(
   input: AuditInput & { root?: string },
 ): Promise<{ report: ComplianceReport; report_path: string }> {
-  const root = input.root ?? process.cwd();
+  const root = engineRoot(input.root ?? process.cwd());
   const client = input.client ?? activeClient();
-  const overridePath = clientOverridePath(client, root);
-  let extraRulesNote: string | undefined;
-  if (existsSync(overridePath)) {
-    extraRulesNote = `loaded ${overridePath}`;
-  }
+  const { path: overridePath, rules: extraRules } = loadOverrideRules(client, root);
   const report = await audit({
     ...input,
     client,
+    extra_rules: extraRules,
   });
-  if (extraRulesNote) report.checked_against.push(extraRulesNote);
+  if (extraRules.length > 0) {
+    report.checked_against.push(`clients/${client}/COMPLIANCE.override.md`);
+  }
 
   const path = writeReport(root, report);
+  appendWeeklyDigest(root, client, report);
 
   if (!report.pass) {
     const blockedDir = resolve(root, "data", "compliance-blocked");
@@ -55,6 +159,8 @@ export async function runAudit(
         })}\n`,
       );
     }
+    maybeTransitionPieceToReview(root, report.piece_id);
+    appendStreakAlerts(root, client);
   }
   return { report, report_path: path };
 }
