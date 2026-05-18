@@ -57,10 +57,12 @@ test("generate loop processes a draft piece end-to-end with mocks under DRY_RUN"
     expect(manifest.prompts.script).toContain("Launch our new product.");
     expect(manifest.prompts.caption).toContain("Caption for:");
     expect(manifest.compliance_report_path).toContain("/data/compliance/");
+    expect(manifest.qa_report_path).toContain("/qa-tech-specs.json");
     expect(Array.isArray(manifest.outputs)).toBe(true);
     expect(manifest.outputs).toContain(join(pieceDir, "script.md"));
     expect(typeof manifest.cost_estimate_usd).toBe("number");
     expect(existsSync(manifest.compliance_report_path)).toBe(true);
+    expect(existsSync(manifest.qa_report_path)).toBe(true);
     const runsLog = readFileSync(join(workspaceRoot, "data", "runs.jsonl"), "utf8")
       .trim()
       .split("\n")
@@ -128,6 +130,47 @@ test("generate loop blocks pieces failing compliance and does not transition", a
     expect(updated).toMatch(/status: review/);
     expect(updated).toMatch(/compliance_block:/);
     expect(existsSync(join(workspaceRoot, "data", "compliance-blocked", "PIECE-test-002.json"))).toBe(true);
+  } finally {
+    process.chdir(prevCwd);
+  }
+});
+
+test("generate loop blocks pieces failing qa tech specs and moves them to review", async () => {
+  process.env.DRY_RUN = "true";
+  const host = mkdtempSync(join(tmpdir(), "me-gen-qa-"));
+  const workspaceRoot = join(host, ".marketing-engine");
+  const piecesDir = join(workspaceRoot, "pieces");
+  mkdirSync(piecesDir, { recursive: true });
+  mkdirSync(join(workspaceRoot, "data"), { recursive: true });
+
+  const fm: PieceFrontmatter = {
+    id: "PIECE-test-003",
+    client: "acme",
+    date: "2026-05-08",
+    status: "draft",
+    type: "quote-card",
+    pillar: "education",
+    platforms: ["instagram", "tiktok"],
+    locale: "en",
+  };
+  writeFileSync(
+    join(piecesDir, "PIECE-test-003.md"),
+    serializePiece(fm, "# Brief\n\nSquare-safe quote for two very different placements.\n"),
+  );
+  const prevCwd = process.cwd();
+  process.chdir(host);
+  try {
+    const summary = await runGenerateLoop({ root: host });
+    expect(summary.blocked).toBeGreaterThanOrEqual(1);
+    const pieceDir = resolve(
+      join(workspaceRoot, "outputs"),
+      "acme",
+      "2026-05-08",
+      "PIECE-test-003",
+    );
+    expect(existsSync(join(pieceDir, "qa-tech-specs.json"))).toBe(true);
+    const updated = readFileSync(join(piecesDir, "PIECE-test-003.md"), "utf8");
+    expect(updated).toMatch(/status: review/);
   } finally {
     process.chdir(prevCwd);
   }

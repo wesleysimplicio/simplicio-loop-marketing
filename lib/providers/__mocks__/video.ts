@@ -1,5 +1,18 @@
+import { existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { resolve } from "node:path";
 import type { GenerationResult } from "../types";
 import type { VideoGenerateOptions, VideoProvider } from "../video";
+
+function aspectToDims(aspect: string): { width: number; height: number } {
+  switch (aspect) {
+    case "16:9":
+      return { width: 1920, height: 1080 };
+    case "1:1":
+      return { width: 1080, height: 1080 };
+    default:
+      return { width: 1080, height: 1920 };
+  }
+}
 
 abstract class BaseMockVideo implements VideoProvider {
   abstract readonly name: string;
@@ -7,10 +20,15 @@ abstract class BaseMockVideo implements VideoProvider {
   async generate(
     brief: string,
     opts: VideoGenerateOptions,
-  ): Promise<GenerationResult<string>> {
-    void brief;
+  ): Promise<GenerationResult<string | string[]>> {
     const ts = Date.now();
-    const output = `outputs/mock-${this.name}-${ts}.mp4`;
+    const outputDir = opts.output_dir ?? resolve(process.cwd(), "outputs");
+    if (!existsSync(outputDir)) {
+      mkdirSync(outputDir, { recursive: true });
+    }
+    const { width, height } = aspectToDims(opts.aspect);
+    const output = resolve(outputDir, `mock-${this.name}-${width}x${height}-${ts}.mp4`);
+    writeFileSync(output, `mock video ${brief}`);
     return {
       ok: true,
       provider: this.name,

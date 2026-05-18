@@ -32,3 +32,17 @@ test("validate surfaces metadata", () => {
   expect(r.metadata.width).toBe(1920);
   expect(r.metadata.height).toBe(1080);
 });
+
+test("validate skips safely when probe tools are unavailable and no heuristic exists", () => {
+  const prevPath = process.env.PATH;
+  process.env.PATH = "";
+  try {
+    const p = fakeAsset("mystery-asset.bin");
+    const r = validate(p, ["ig_reel"]);
+    expect(r.pass).toBe(true);
+    expect(r.per_platform.ig_reel?.pass).toBe(true);
+    expect(r.per_platform.ig_reel?.fixes.join(" ")).toContain("install");
+  } finally {
+    process.env.PATH = prevPath;
+  }
+});

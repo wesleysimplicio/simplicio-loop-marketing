@@ -6,6 +6,21 @@ All notable changes to this project are documented here. Format based on
 
 ## [Unreleased]
 
+## [0.2.12] - 2026-05-18
+
+### Fixed
+
+- `qa-tech-specs` now reads channel constraints from `.specs/product/CHANNELS.md`,
+  probes assets with `ffprobe` / `identify`, falls back to filename metadata
+  when possible, and skips safely with install guidance when local probe tools
+  are unavailable.
+- The generate loop now writes `qa-tech-specs.json` per piece, blocks pieces
+  that fail hard platform-spec checks before scheduling, and records the QA
+  report path in the manifest for successful runs.
+- Wavespeed image and video providers now support real model selection,
+  batch-oriented variant expansion with concurrency capped at 5, and mocked
+  local coverage for image downloads plus WAN video polling.
+
 ## [0.2.11] - 2026-05-18
 
 ### Fixed

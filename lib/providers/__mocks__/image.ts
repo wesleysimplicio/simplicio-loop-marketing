@@ -1,5 +1,20 @@
+import { existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { resolve } from "node:path";
 import type { GenerationResult } from "../types";
 import type { ImageGenerateOptions, ImageProvider } from "../image";
+
+function aspectToDims(aspect: string): { width: number; height: number } {
+  switch (aspect) {
+    case "9:16":
+      return { width: 1080, height: 1920 };
+    case "16:9":
+      return { width: 1920, height: 1080 };
+    case "4:5":
+      return { width: 1080, height: 1350 };
+    default:
+      return { width: 1080, height: 1080 };
+  }
+}
 
 abstract class BaseMockImage implements ImageProvider {
   abstract readonly name: string;
@@ -10,11 +25,20 @@ abstract class BaseMockImage implements ImageProvider {
   ): Promise<GenerationResult<string[]>> {
     const count = opts.n ?? 1;
     const ts = Date.now();
+    const outputDir = opts.output_dir ?? resolve(process.cwd(), "outputs");
+    if (!existsSync(outputDir)) {
+      mkdirSync(outputDir, { recursive: true });
+    }
+    const { width, height } = aspectToDims(opts.aspect);
     const output: string[] = [];
     for (let i = 1; i <= count; i++) {
-      output.push(`outputs/mock-${this.name}-${ts}-${i}.png`);
+      const path = resolve(
+        outputDir,
+        `mock-${this.name}-${width}x${height}-${ts}-${i}.png`,
+      );
+      writeFileSync(path, `mock image ${brief}`);
+      output.push(path);
     }
-    void brief;
     return {
       ok: true,
       provider: this.name,

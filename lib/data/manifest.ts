@@ -29,6 +29,7 @@ export interface ManifestPayload {
   tokens_in?: number;
   tokens_out?: number;
   compliance_report_path: string;
+  qa_report_path?: string;
   outputs?: string[];
   fallback_used?: boolean;
 }
@@ -87,6 +88,7 @@ export function writeManifest(
     tokens_in: payload.tokens_in ?? 0,
     tokens_out: payload.tokens_out ?? 0,
     compliance_report_path: payload.compliance_report_path,
+    qa_report_path: payload.qa_report_path,
     outputs: payload.outputs ?? [],
     fallback_used: payload.fallback_used ?? false,
   };

@@ -17,6 +17,10 @@ import { getImageProviderByName } from "../providers/image";
 import { getVideoProviderByName } from "../providers/video";
 import { llmRow, imageRow, videoRow, loadProviderMatrix } from "../providers/matrix";
 import type { ImageTask, LLMTask, VideoTask } from "../providers/types";
+import {
+  validate as validateTechSpecs,
+  type Platform as TechSpecsPlatform,
+} from "../qa/tech-specs";
 
 interface GenerateOptions {
   root: string;
@@ -32,6 +36,12 @@ interface GenerateSummary {
   blocked: number;
   skipped: number;
   failures: number;
+}
+
+interface GeneratedAsset {
+  kind: "image" | "video";
+  path: string;
+  platforms: TechSpecsPlatform[];
 }
 
 function engineRoot(root: string): string {
@@ -82,6 +92,48 @@ function pieceOutputDir(
   return resolve(outputsRootFor(opts), client, date, id);
 }
 
+function isReelLike(type: string): boolean {
+  return ["reel", "shorts", "story", "ugc"].includes(type.toLowerCase());
+}
+
+function techSpecTargetsFor(
+  fm: PieceFrontmatter,
+  kind: GeneratedAsset["kind"],
+): TechSpecsPlatform[] {
+  const targets = new Set<TechSpecsPlatform>();
+  const type = fm.type.toLowerCase();
+  for (const platform of fm.platforms) {
+    switch (platform.toLowerCase()) {
+      case "instagram":
+        if (kind === "video") {
+          targets.add(type === "story" ? "ig_story" : "ig_reel");
+        } else {
+          targets.add(type === "carousel" ? "ig_carousel" : "ig_feed");
+        }
+        break;
+      case "tiktok":
+        targets.add("tiktok");
+        break;
+      case "youtube":
+      case "youtube-shorts":
+      case "yt_shorts":
+        if (kind === "video") {
+          targets.add(isReelLike(type) ? "yt_shorts" : "yt_long");
+        }
+        break;
+      case "facebook":
+        targets.add(kind === "video" && isReelLike(type) ? "fb_reels" : "fb_feed");
+        break;
+      case "linkedin":
+        targets.add("linkedin");
+        break;
+      default:
+        break;
+    }
+  }
+  return Array.from(targets);
+}
+
 export async function runGenerateLoop(
   opts: GenerateOptions,
 ): Promise<GenerateSummary> {
@@ -112,7 +164,7 @@ export async function runGenerateLoop(
       summary.advanced++;
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      if (msg.startsWith("compliance-block:")) {
+      if (msg.startsWith("compliance-block:") || msg.startsWith("tech-specs-block:")) {
         summary.blocked++;
       } else {
         summary.failures++;
@@ -200,6 +252,7 @@ async function processPiece(
     join(pieceDir, "script.md"),
     join(pieceDir, "captions.json"),
   ];
+  const generatedAssets: GeneratedAsset[] = [];
 
   let imageUsed: string | undefined;
   let videoUsed: string | undefined;
@@ -215,7 +268,16 @@ async function processPiece(
       n: 1,
       output_dir: pieceDir,
     });
-    if (r.output) outputs.push(...r.output);
+    if (r.output) {
+      outputs.push(...r.output);
+      for (const path of r.output) {
+        generatedAssets.push({
+          kind: "image",
+          path,
+          platforms: techSpecTargetsFor(fm, "image"),
+        });
+      }
+    }
     totalCost += r.cost_usd ?? 0;
   }
   if (tasks.video) {
@@ -228,8 +290,57 @@ async function processPiece(
       duration_s: 30,
       output_dir: pieceDir,
     });
-    if (r.output) outputs.push(r.output);
+    if (r.output) {
+      const videoOutputs = Array.isArray(r.output) ? r.output : [r.output];
+      outputs.push(...videoOutputs);
+      for (const path of videoOutputs) {
+        generatedAssets.push({
+          kind: "video",
+          path,
+          platforms: techSpecTargetsFor(fm, "video"),
+        });
+      }
+    }
     totalCost += r.cost_usd ?? 0;
+  }
+
+  let qaReportPath: string | undefined;
+  if (generatedAssets.length > 0) {
+    const qaReport = {
+      piece_id: fm.id,
+      pass: true,
+      assets: generatedAssets
+        .filter((asset) => asset.platforms.length > 0)
+        .map((asset) => ({
+          kind: asset.kind,
+          path: asset.path,
+          target_platforms: asset.platforms,
+          report: validateTechSpecs(asset.path, asset.platforms),
+        })),
+    };
+    qaReport.pass = qaReport.assets.every((asset) => asset.report.pass);
+    qaReportPath = join(pieceDir, "qa-tech-specs.json");
+    writeFileSync(qaReportPath, JSON.stringify(qaReport, null, 2));
+    outputs.push(qaReportPath);
+    if (!qaReport.pass) {
+      transitionStatus(fm.id, "draft", "review", {
+        piecesDir: piecesRootFor(opts),
+      });
+      appendRunLog(
+        {
+          piece_id: fm.id,
+          client: fm.client,
+          providers_used: [copy.provider_used, imageUsed, videoUsed].filter(
+            (p): p is string => Boolean(p),
+          ),
+          cost_estimate_usd: totalCost,
+          status: "blocked",
+          notes: "qa-tech-specs violations",
+        },
+        engineRoot(opts.root),
+      );
+      throw new Error(`tech-specs-block:${fm.id}`);
+    }
   }
 
   const complianceResult = await runAudit({
@@ -265,6 +376,7 @@ async function processPiece(
     tokens_in: copy.result.tokens ?? 0,
     tokens_out: captionResult.result.tokens ?? 0,
     compliance_report_path: complianceResult.report_path,
+    qa_report_path: qaReportPath,
     outputs,
     fallback_used: copy.fallback_triggered || captionResult.fallback_triggered,
   };
