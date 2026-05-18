@@ -9,7 +9,7 @@ import {
   TimeoutError,
   withRetry,
 } from "../lib/providers/policy";
-import { CodexProvider, OllamaProvider } from "../lib/providers/llm";
+import { CodexProvider, DeepSeekProvider, OllamaProvider } from "../lib/providers/llm";
 import { runWithFallback } from "../lib/router";
 
 test("estimateTokens approximates char/4", () => {
@@ -35,6 +35,34 @@ test("estimateCost falls back to provider default model", () => {
     tokens_out: 10_000,
   });
   expect(cost).toBeCloseTo((10 * 0.00014) + (10 * 0.00028), 6);
+});
+
+test("estimateCost uses the reasoner pricing tier and honors env overrides", () => {
+  const originalIn = process.env.DEEPSEEK_REASONER_INPUT_USD_PER_1K;
+  const originalOut = process.env.DEEPSEEK_REASONER_OUTPUT_USD_PER_1K;
+  process.env.DEEPSEEK_REASONER_INPUT_USD_PER_1K = "0.001";
+  process.env.DEEPSEEK_REASONER_OUTPUT_USD_PER_1K = "0.004";
+
+  try {
+    const cost = estimateCost({
+      provider: "deepseek",
+      model: "deepseek-reasoner",
+      tokens_in: 1_000,
+      tokens_out: 500,
+    });
+    expect(cost).toBeCloseTo(0.001 + 0.002, 6);
+  } finally {
+    if (originalIn === undefined) {
+      delete process.env.DEEPSEEK_REASONER_INPUT_USD_PER_1K;
+    } else {
+      process.env.DEEPSEEK_REASONER_INPUT_USD_PER_1K = originalIn;
+    }
+    if (originalOut === undefined) {
+      delete process.env.DEEPSEEK_REASONER_OUTPUT_USD_PER_1K;
+    } else {
+      process.env.DEEPSEEK_REASONER_OUTPUT_USD_PER_1K = originalOut;
+    }
+  }
 });
 
 test("resolveUsageWithFallback warns and estimates tokens when SDK usage is missing", () => {
@@ -137,6 +165,124 @@ test("CodexProvider retries once on forced 500 and succeeds on retry", async () 
       delete process.env.OPENAI_API_KEY;
     } else {
       process.env.OPENAI_API_KEY = originalKey;
+    }
+  }
+});
+
+test("DeepSeekProvider uses deepseek-chat for caption and sends the expected request shape", async () => {
+  const originalFetch = globalThis.fetch;
+  const originalKey = process.env.DEEPSEEK_API_KEY;
+  process.env.DEEPSEEK_API_KEY = "deepseek-test-key";
+  const calls: Array<{ url: string; init?: RequestInit }> = [];
+
+  globalThis.fetch = (async (input, init) => {
+    calls.push({ url: String(input), init });
+    return new Response(
+      JSON.stringify({
+        choices: [{ message: { content: "short caption" } }],
+        usage: { prompt_tokens: 2000, completion_tokens: 500 },
+      }),
+      {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      },
+    );
+  }) as typeof fetch;
+
+  try {
+    const provider = new DeepSeekProvider();
+    const result = await provider.generate("draft a caption", {
+      task: "caption",
+      system: "Be concise.",
+      max_tokens: 88,
+      temperature: 0.15,
+    });
+
+    expect(calls).toHaveLength(1);
+    expect(calls[0]?.url).toBe("https://api.deepseek.com/chat/completions");
+    expect(calls[0]?.init?.headers).toEqual({
+      authorization: "Bearer deepseek-test-key",
+      "content-type": "application/json",
+    });
+    const body = JSON.parse(String(calls[0]?.init?.body)) as {
+      model: string;
+      messages: Array<{ role: string; content: string }>;
+      max_tokens: number;
+      temperature: number;
+    };
+    expect(body.model).toBe("deepseek-chat");
+    expect(body.messages).toEqual([
+      { role: "system", content: "Be concise." },
+      { role: "user", content: "draft a caption" },
+    ]);
+    expect(body.max_tokens).toBe(88);
+    expect(body.temperature).toBe(0.15);
+    expect(result.output).toBe("short caption");
+    expect(result.tokens).toBe(2500);
+    expect(result.cost_usd).toBeCloseTo((2 * 0.00014) + (0.5 * 0.00028), 6);
+    expect(result.latency_ms).toBeGreaterThanOrEqual(0);
+  } finally {
+    globalThis.fetch = originalFetch;
+    if (originalKey === undefined) {
+      delete process.env.DEEPSEEK_API_KEY;
+    } else {
+      process.env.DEEPSEEK_API_KEY = originalKey;
+    }
+  }
+});
+
+test("DeepSeekProvider uses deepseek-reasoner for thinking tasks and retries once", async () => {
+  const originalFetch = globalThis.fetch;
+  const originalKey = process.env.DEEPSEEK_API_KEY;
+  process.env.DEEPSEEK_API_KEY = "deepseek-test-key";
+  let calls = 0;
+  const bodies: Array<{
+    model: string;
+    messages: Array<{ role: string; content: string }>;
+    max_tokens: number;
+    temperature: number;
+  }> = [];
+
+  globalThis.fetch = (async (_input, init) => {
+    calls += 1;
+    bodies.push(JSON.parse(String(init?.body)));
+    if (calls === 1) {
+      return new Response("retry me", { status: 500 });
+    }
+    return new Response(
+      JSON.stringify({
+        choices: [{ message: { content: "reasoned answer" } }],
+        usage: { prompt_tokens: 1200, completion_tokens: 600 },
+      }),
+      {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      },
+    );
+  }) as typeof fetch;
+
+  try {
+    const provider = new DeepSeekProvider();
+    const result = await provider.generate("review this script", {
+      task: "script",
+      max_tokens: 144,
+      temperature: 0.4,
+    });
+
+    expect(calls).toBe(2);
+    expect(result.attempt).toBe(2);
+    expect(bodies[0]?.model).toBe("deepseek-reasoner");
+    expect(bodies[1]?.model).toBe("deepseek-reasoner");
+    expect(bodies[1]?.messages).toEqual([{ role: "user", content: "review this script" }]);
+    expect(result.output).toBe("reasoned answer");
+    expect(result.tokens).toBe(1800);
+    expect(result.cost_usd).toBeCloseTo((1.2 * 0.00055) + (0.6 * 0.0022), 6);
+  } finally {
+    globalThis.fetch = originalFetch;
+    if (originalKey === undefined) {
+      delete process.env.DEEPSEEK_API_KEY;
+    } else {
+      process.env.DEEPSEEK_API_KEY = originalKey;
     }
   }
 });

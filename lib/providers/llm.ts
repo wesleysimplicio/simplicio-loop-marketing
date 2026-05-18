@@ -19,6 +19,16 @@ export interface LLMProvider {
   generate(prompt: string, opts: LLMGenerateOptions): Promise<GenerationResult>;
 }
 
+function deepseekModelForTask(task: LLMTask): string {
+  switch (task) {
+    case "caption":
+    case "translation":
+      return "deepseek-chat";
+    default:
+      return "deepseek-reasoner";
+  }
+}
+
 function isDryRun(): boolean {
   const v = process.env.DRY_RUN;
   return v === undefined || v === "" || v === "true";
@@ -151,7 +161,7 @@ export class DeepSeekProvider extends RealLLMBase {
   ): Promise<GenerationResult> {
     const apiKey = process.env.DEEPSEEK_API_KEY;
     if (!apiKey) throw new Error("deepseek: DEEPSEEK_API_KEY missing");
-    const model = "deepseek-chat";
+    const model = deepseekModelForTask(opts.task);
     return callOpenAICompatible({
       apiKey,
       baseUrl: "https://api.deepseek.com",

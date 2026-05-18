@@ -10,7 +10,7 @@ interface RateRow {
   out: number;
 }
 
-const PRICING: Record<string, RateRow> = {
+const BASE_PRICING: Record<string, RateRow> = {
   "claude:opus": { in: 0.015, out: 0.075 },
   "claude:sonnet": { in: 0.003, out: 0.015 },
   "claude:haiku": { in: 0.0008, out: 0.004 },
@@ -25,13 +25,67 @@ const PRICING: Record<string, RateRow> = {
   "ollama:default": { in: 0, out: 0 },
 };
 
+const ENV_RATE_OVERRIDES: Partial<Record<string, { in: string; out: string }>> = {
+  "deepseek:chat": {
+    in: "DEEPSEEK_CHAT_INPUT_USD_PER_1K",
+    out: "DEEPSEEK_CHAT_OUTPUT_USD_PER_1K",
+  },
+  "deepseek:reasoner": {
+    in: "DEEPSEEK_REASONER_INPUT_USD_PER_1K",
+    out: "DEEPSEEK_REASONER_OUTPUT_USD_PER_1K",
+  },
+};
+
 const warnedUsageFallbacks = new Set<string>();
 
+function parseOverride(name: string, fallback: number): number {
+  const raw = process.env[name];
+  if (raw === undefined || raw === "") return fallback;
+  const parsed = Number(raw);
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : fallback;
+}
+
+function pricingKey(provider: string, model?: string): string {
+  if (!model) return `${provider}:default`;
+
+  const normalizedProvider = provider.toLowerCase();
+  const normalizedModel = model.toLowerCase();
+
+  if (normalizedProvider === "claude") {
+    if (normalizedModel.includes("opus")) return "claude:opus";
+    if (normalizedModel.includes("sonnet")) return "claude:sonnet";
+    if (normalizedModel.includes("haiku")) return "claude:haiku";
+  }
+
+  if (normalizedProvider === "deepseek") {
+    if (normalizedModel.includes("reasoner")) return "deepseek:reasoner";
+    if (normalizedModel.includes("chat")) return "deepseek:chat";
+  }
+
+  if (normalizedProvider === "openai") {
+    if (normalizedModel.includes("gpt-5.1-mini")) return "openai:gpt-5.1-mini";
+    if (normalizedModel.includes("gpt-5.1")) return "openai:gpt-5.1";
+  }
+
+  return `${normalizedProvider}:default`;
+}
+
+function pricingRow(key: string): RateRow | null {
+  const base = BASE_PRICING[key] ?? null;
+  if (!base) return null;
+
+  const overrides = ENV_RATE_OVERRIDES[key];
+  if (!overrides) return base;
+
+  return {
+    in: parseOverride(overrides.in, base.in),
+    out: parseOverride(overrides.out, base.out),
+  };
+}
+
 export function estimateCost(input: CostInput): number {
-  const key = input.model
-    ? `${input.provider}:${input.model.split("-")[0]}`
-    : `${input.provider}:default`;
-  const row = PRICING[key] ?? PRICING[`${input.provider}:default`] ?? null;
+  const key = pricingKey(input.provider, input.model);
+  const row = pricingRow(key) ?? pricingRow(`${input.provider}:default`) ?? null;
   if (!row) return 0;
   return (input.tokens_in / 1000) * row.in + (input.tokens_out / 1000) * row.out;
 }

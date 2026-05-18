@@ -6,6 +6,21 @@ All notable changes to this project are documented here. Format based on
 
 ## [Unreleased]
 
+## [0.2.9] - 2026-05-18
+
+### Fixed
+
+- `DeepSeekProvider` now picks `deepseek-chat` for `caption` and
+  `translation`, while reasoning-heavy tasks route through
+  `deepseek-reasoner`.
+- DeepSeek pricing now resolves the correct model family in
+  `lib/providers/cost.ts`, with optional per-1k token env overrides for chat
+  and reasoner tiers.
+- Added provider coverage that asserts the DeepSeek request shape, retry
+  behavior, usage accounting, and model-specific cost calculation.
+- Synchronized the package version metadata across `package.json` and
+  `package-lock.json`.
+
 ## [0.2.8] - 2026-05-18
 
 ### Fixed
