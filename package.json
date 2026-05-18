@@ -47,6 +47,7 @@
     "tsconfig.json",
     ".env.example",
     "AGENTS.md",
+    "CHANGELOG.md",
     "README.md",
     "LICENSE"
   ],
@@ -57,12 +58,18 @@
     "router:check": "bash .ralph/provider-check.sh",
     "cli": "node bin/marketing-engine.mjs",
     "cli:init": "node bin/marketing-engine.mjs init",
-    "cli:check": "node bin/marketing-engine.mjs check"
+    "cli:check": "node bin/marketing-engine.mjs check",
+    "cli:generate": "node bin/marketing-engine.mjs generate",
+    "cli:promote": "node bin/marketing-engine.mjs promote",
+    "smoke": "node bin/marketing-engine.mjs help && node bin/marketing-engine.mjs generate"
   },
   "devDependencies": {
     "@playwright/test": "^1.48.0",
     "@types/node": "^22.0.0",
-    "typescript": "^5.6.0",
-    "dotenv": "^16.4.5"
+    "dotenv": "^16.4.5",
+    "typescript": "^5.6.0"
+  },
+  "dependencies": {
+    "tsx": "^4.22.1"
   }
 }

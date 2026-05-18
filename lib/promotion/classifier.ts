@@ -3,7 +3,8 @@ const MIN_IMPRESSIONS = 100;
 
 export interface AnalyticsRow {
   piece_id: string;
-  channel: string;
+  client?: string;
+  channel?: string;
   platform?: string;
   impressions: number;
   reach?: number;
@@ -12,12 +13,13 @@ export interface AnalyticsRow {
   comments?: number;
   likes?: number;
   watch_time_s?: number;
-  captured_at: string;
+  captured_at?: string;
 }
 
 export interface PieceStats {
   piece_id: string;
-  channel: string;
+  client?: string;
+  channel?: string;
   platform?: string;
   impressions: number;
   reach: number;
@@ -37,9 +39,13 @@ export interface ClassifyResult {
   winners: PieceStats[];
   losers: PieceStats[];
   skipped: PieceStats[];
+  all: PieceStats[];
 }
 
-function isWithinWindow(capturedAt: string, windowDays: number): boolean {
+function isWithinWindow(capturedAt: string | undefined, windowDays: number): boolean {
+  if (!capturedAt) {
+    return true;
+  }
   const capturedAtMs = new Date(capturedAt).getTime();
 
   if (Number.isNaN(capturedAtMs)) {
@@ -50,8 +56,23 @@ function isWithinWindow(capturedAt: string, windowDays: number): boolean {
 }
 
 function toPieceStats(rows: AnalyticsRow[]): PieceStats {
+  if (rows.length === 0) {
+    return {
+      piece_id: "",
+      impressions: 0,
+      reach: 0,
+      saves: 0,
+      shares: 0,
+      comments: 0,
+      likes: 0,
+      watch_time_s: 0,
+      latest_captured_at: "",
+      save_rate: 0,
+      comment_ratio: 0,
+    };
+  }
   const latest = rows.reduce((currentLatest, row) => {
-    if (new Date(row.captured_at).getTime() > new Date(currentLatest.captured_at).getTime()) {
+    if (new Date(row.captured_at ?? 0).getTime() > new Date(currentLatest.captured_at ?? 0).getTime()) {
       return row;
     }
     return currentLatest;
@@ -67,6 +88,7 @@ function toPieceStats(rows: AnalyticsRow[]): PieceStats {
 
   return {
     piece_id: latest.piece_id,
+    client: latest.client,
     channel: latest.channel,
     platform: latest.platform,
     impressions,
@@ -76,7 +98,7 @@ function toPieceStats(rows: AnalyticsRow[]): PieceStats {
     comments,
     likes,
     watch_time_s,
-    latest_captured_at: latest.captured_at,
+    latest_captured_at: latest.captured_at ?? "",
     save_rate: saves / Math.max(impressions, 1),
     comment_ratio: comments / Math.max(likes, 1),
   };
@@ -156,7 +178,7 @@ export function classify(rows: AnalyticsRow[], windowDays = 7): ClassifyResult {
   skipped.sort(bySaveRateDescending);
 
   if (eligible.length === 0) {
-    return { winners: [], losers: [], skipped };
+    return { winners: [], losers: [], skipped, all: [...skipped] };
   }
 
   const segmentSize = Math.max(1, Math.ceil(eligible.length * 0.2));
@@ -171,5 +193,6 @@ export function classify(rows: AnalyticsRow[], windowDays = 7): ClassifyResult {
     winners,
     losers,
     skipped,
+    all: [...eligible, ...skipped],
   };
 }

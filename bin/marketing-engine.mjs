@@ -17,22 +17,38 @@ Usage:
   marketing-engine <command> [options]
 
 Commands:
-  init      Scaffold .marketing-engine/ in current host project
-  scan      Re-scan host project to refresh draft specs
-  check     Validate provider env keys
-  generate  Run generation loop (DRY_RUN-safe)
-  promote   Run promotion loop
-  help      Show this message
+  init        Scaffold .marketing-engine/ in current host project
+  scan        Re-scan host project to refresh draft specs
+  check       Validate provider env keys
+  generate    Run generation loop (DRY_RUN-safe)
+  promote     Run promotion loop
+  new-piece   Create a new piece markdown from the template
+  status      Show pipeline state (counts + recent runs + 24h cost)
+  logs        Tail data/llm-usage.jsonl
+  cost        Aggregate llm-usage.jsonl over a window
+  ab-report   Join llm-usage + analytics; per-(task,provider) ROI
+  alerts      Tail recent failures from runs + usage logs
+  sync        Pull pieces from Notion calendar
+  schedule    Install/uninstall cron / launchd entries
+  help        Show this message
 
 Options:
-  --force   Overwrite existing files during init
-  --root    Override host project root (default: cwd)
+  --force         Overwrite existing files during init
+  --root          Override host project root (default: cwd)
+  --max-iter <N>  Cap iterations on generate / promote
+  --window <Nd>   Window for promote / cost / ab-report (default 7d)
 
 Docs: https://github.com/wesleysimplicio/marketing-engine
 `;
 
 function parseArgs(argv) {
-  const args = { _: [], force: false, root: null };
+  const args = {
+    _: [],
+    force: false,
+    root: null,
+    maxIter: null,
+    window: null,
+  };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === "--force") {
@@ -41,6 +57,14 @@ function parseArgs(argv) {
       args.root = argv[++i] ?? null;
     } else if (a.startsWith("--root=")) {
       args.root = a.slice("--root=".length);
+    } else if (a === "--max-iter") {
+      args.maxIter = Number(argv[++i]);
+    } else if (a.startsWith("--max-iter=")) {
+      args.maxIter = Number(a.slice("--max-iter=".length));
+    } else if (a === "--window") {
+      args.window = argv[++i] ?? null;
+    } else if (a.startsWith("--window=")) {
+      args.window = a.slice("--window=".length);
     } else {
       args._.push(a);
     }
@@ -552,20 +576,119 @@ function runShellCheck() {
 }
 void runShellCheck;
 
-function commandGenerate() {
-  console.log(
-    "Generation loop is a placeholder in v0.1. Set DRY_RUN=true and run " +
-      "`bash .ralph/loop-generation.sh` from the marketing-engine repo root for current behavior. " +
-      "Future: this will invoke the loop with the host project's .marketing-engine/ as context.",
-  );
+function resolveTsx() {
+  const candidates = [
+    join(PACKAGE_ROOT, "node_modules", "tsx", "dist", "cli.mjs"),
+    join(PACKAGE_ROOT, "node_modules", ".bin", "tsx"),
+  ];
+  for (const c of candidates) {
+    if (existsSync(c)) return c;
+  }
+  return null;
 }
 
-function commandPromote() {
-  console.log(
-    "Promotion loop is a placeholder in v0.1. Set DRY_RUN=true and run " +
-      "`bash .ralph/loop-promotion.sh` from the marketing-engine repo root for current behavior. " +
-      "Future: this will invoke the loop with the host project's .marketing-engine/ as context.",
-  );
+function spawnTsx(scriptPath, extraArgs, hostRoot) {
+  const tsx = resolveTsx();
+  if (!tsx) {
+    console.error(
+      "ERROR: tsx not found. Run `npm install` inside the marketing-engine package.",
+    );
+    process.exit(2);
+  }
+  const env = { ...process.env };
+  const hostEnv = join(hostRoot, ".marketing-engine", ".env");
+  const hostRootEnv = join(hostRoot, ".env");
+  const packageEnv = join(PACKAGE_ROOT, ".env");
+  let envFile = null;
+  if (existsSync(hostEnv)) envFile = hostEnv;
+  else if (existsSync(hostRootEnv)) envFile = hostRootEnv;
+  else if (existsSync(packageEnv)) envFile = packageEnv;
+  if (envFile) {
+    const parsed = parseDotenv(readFileSync(envFile, "utf8"));
+    for (const [k, v] of Object.entries(parsed)) {
+      if (env[k] === undefined) env[k] = v;
+    }
+  }
+  // The CLI scripts assume process.cwd() is the host root.
+  // When running scripts inside lib/, package context is the marketing-engine repo,
+  // so propagate host paths via env to keep `lib/` provider-agnostic.
+  env.MARKETING_ENGINE_HOST_ROOT = hostRoot;
+  // Default to DRY_RUN=true unless explicitly set in .env or shell.
+  if (env.DRY_RUN === undefined) env.DRY_RUN = "true";
+  const result = spawnSync(process.execPath, [tsx, scriptPath, ...extraArgs], {
+    cwd: hostRoot,
+    env,
+    stdio: "inherit",
+  });
+  process.exit(result.status ?? 1);
+}
+
+function commandGenerate(args) {
+  const hostRoot = resolveHostRoot(args);
+  const script = join(PACKAGE_ROOT, "lib", "cli", "generate.ts");
+  const extra = [];
+  if (args.maxIter !== null && args.maxIter !== undefined) {
+    extra.push("--max-iter", String(args.maxIter));
+  }
+  spawnTsx(script, extra, hostRoot);
+}
+
+function commandPromote(args) {
+  const hostRoot = resolveHostRoot(args);
+  const script = join(PACKAGE_ROOT, "lib", "cli", "promote.ts");
+  const extra = [];
+  if (args.window) extra.push("--window", args.window);
+  spawnTsx(script, extra, hostRoot);
+}
+
+function commandNewPiece(args) {
+  const hostRoot = resolveHostRoot(args);
+  const script = join(PACKAGE_ROOT, "lib", "cli", "new-piece.ts");
+  spawnTsx(script, args._.slice(1), hostRoot);
+}
+
+function commandStatus(args) {
+  const hostRoot = resolveHostRoot(args);
+  const script = join(PACKAGE_ROOT, "lib", "cli", "status.ts");
+  spawnTsx(script, [], hostRoot);
+}
+
+function commandLogs(args) {
+  const hostRoot = resolveHostRoot(args);
+  const script = join(PACKAGE_ROOT, "lib", "cli", "logs.ts");
+  spawnTsx(script, args._.slice(1), hostRoot);
+}
+
+function commandCost(args) {
+  const hostRoot = resolveHostRoot(args);
+  const script = join(PACKAGE_ROOT, "lib", "cli", "cost.ts");
+  const extra = [];
+  if (args.window) extra.push("--window", args.window);
+  spawnTsx(script, extra, hostRoot);
+}
+
+function commandAbReport(args) {
+  const hostRoot = resolveHostRoot(args);
+  const script = join(PACKAGE_ROOT, "lib", "cli", "ab-report.ts");
+  spawnTsx(script, args._.slice(1), hostRoot);
+}
+
+function commandAlerts(args) {
+  const hostRoot = resolveHostRoot(args);
+  const script = join(PACKAGE_ROOT, "lib", "cli", "alerts.ts");
+  spawnTsx(script, args._.slice(1), hostRoot);
+}
+
+function commandSync(args) {
+  const hostRoot = resolveHostRoot(args);
+  const script = join(PACKAGE_ROOT, "lib", "cli", "sync.ts");
+  spawnTsx(script, args._.slice(1), hostRoot);
+}
+
+function commandSchedule(args) {
+  const hostRoot = resolveHostRoot(args);
+  const script = join(PACKAGE_ROOT, "lib", "cli", "schedule.ts");
+  spawnTsx(script, args._.slice(1), hostRoot);
 }
 
 function main() {
@@ -589,10 +712,34 @@ function main() {
       commandCheck(args);
       return;
     case "generate":
-      commandGenerate();
+      commandGenerate(args);
       return;
     case "promote":
-      commandPromote();
+      commandPromote(args);
+      return;
+    case "new-piece":
+      commandNewPiece(args);
+      return;
+    case "status":
+      commandStatus(args);
+      return;
+    case "logs":
+      commandLogs(args);
+      return;
+    case "cost":
+      commandCost(args);
+      return;
+    case "ab-report":
+      commandAbReport(args);
+      return;
+    case "alerts":
+      commandAlerts(args);
+      return;
+    case "sync":
+      commandSync(args);
+      return;
+    case "schedule":
+      commandSchedule(args);
       return;
     default:
       console.error(`Unknown command: ${cmd}`);

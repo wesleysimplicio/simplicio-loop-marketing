@@ -1,0 +1,368 @@
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname, join, resolve } from "node:path";
+import { appendRunLog } from "../data/runs";
+import { writeManifest, type ManifestPayload } from "../data/manifest";
+import {
+  listPieces,
+  pieceFilePath,
+  transitionStatus,
+} from "../pieces/store";
+import { parsePiece, serializePiece, type PieceFrontmatter } from "../pieces/frontmatter";
+import { runWithFallback } from "../router";
+import { getLLMProviderByName } from "../providers/llm";
+import { getImageProviderByName } from "../providers/image";
+import { getVideoProviderByName } from "../providers/video";
+import { llmRow, imageRow, videoRow, loadProviderMatrix } from "../providers/matrix";
+import type { ImageTask, LLMTask, VideoTask } from "../providers/types";
+
+interface GenerateOptions {
+  root: string;
+  piecesDir?: string;
+  outputsDir?: string;
+  maxIter?: number;
+  matrixPath?: string;
+}
+
+interface GenerateSummary {
+  inspected: number;
+  advanced: number;
+  blocked: number;
+  skipped: number;
+  failures: number;
+}
+
+function typeToTasks(type: string): {
+  copy: LLMTask;
+  image?: ImageTask;
+  video?: VideoTask;
+} {
+  switch (type.toLowerCase()) {
+    case "reel":
+    case "shorts":
+    case "story":
+      return { copy: "script", video: "cinematic-reel" };
+    case "carousel":
+      return { copy: "script", image: "carousel" };
+    case "quote-card":
+    case "static":
+      return { copy: "caption", image: "quote-card" };
+    case "ugc":
+      return { copy: "caption", video: "ugc-product" };
+    default:
+      return { copy: "caption", image: "quote-card" };
+  }
+}
+
+function outputsRootFor(opts: GenerateOptions): string {
+  return opts.outputsDir ?? resolve(opts.root, "outputs");
+}
+
+function pieceOutputDir(
+  opts: GenerateOptions,
+  client: string,
+  date: string,
+  id: string,
+): string {
+  return resolve(outputsRootFor(opts), client, date, id);
+}
+
+function loadCompliance(opts: GenerateOptions, client: string): {
+  forbidden: RegExp[];
+  required: string[];
+} {
+  void client;
+  const root = opts.root;
+  const generic = resolve(root, ".specs", "product", "COMPLIANCE.md");
+  const forbidden: RegExp[] = [
+    /guaranteed?\s+(?:return|income|cash[- ]back|results?)/i,
+    /clinically\s+proven/i,
+    /scientifically\s+proven/i,
+    /\b(?:cura|treats?|prevents?|diagnoses?)\b\s+\w+/i,
+    /risk[- ]?free/i,
+    /lose\s+\d+\s*(?:kg|lbs?|pounds?)\s+in\s+\d+/i,
+  ];
+  void generic;
+  return { forbidden, required: [] };
+}
+
+function runCompliance(
+  text: string,
+  rules: { forbidden: RegExp[] },
+): { pass: boolean; violations: Array<{ rule_id: string; snippet: string }> } {
+  const violations: Array<{ rule_id: string; snippet: string }> = [];
+  for (const re of rules.forbidden) {
+    const m = re.exec(text);
+    if (m) {
+      violations.push({ rule_id: re.source.slice(0, 30), snippet: m[0] });
+    }
+  }
+  return { pass: violations.length === 0, violations };
+}
+
+export async function runGenerateLoop(
+  opts: GenerateOptions,
+): Promise<GenerateSummary> {
+  process.env.DRY_RUN = process.env.DRY_RUN ?? "true";
+  if (opts.matrixPath) {
+    process.env.PROVIDERS_MATRIX_PATH = opts.matrixPath;
+  }
+  loadProviderMatrix(opts.matrixPath);
+
+  const pieces = listPieces({
+    root: opts.root,
+    piecesDir: opts.piecesDir,
+    status: "draft",
+  });
+  const max = opts.maxIter ?? pieces.length;
+  const summary: GenerateSummary = {
+    inspected: pieces.length,
+    advanced: 0,
+    blocked: 0,
+    skipped: 0,
+    failures: 0,
+  };
+
+  for (let i = 0; i < Math.min(pieces.length, max); i++) {
+    const piece = pieces[i];
+    const fm = piece.frontmatter;
+    try {
+      await processPiece(piece, opts);
+      summary.advanced++;
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      if (msg.startsWith("compliance-block:")) {
+        summary.blocked++;
+      } else {
+        summary.failures++;
+        process.stderr.write(`[generate] piece ${fm.id} failed: ${msg}\n`);
+      }
+    }
+  }
+  return summary;
+}
+
+async function processPiece(
+  piece: { frontmatter: PieceFrontmatter; body: string },
+  opts: GenerateOptions,
+): Promise<void> {
+  const fm = piece.frontmatter;
+  const tasks = typeToTasks(fm.type);
+  const dateStr = fm.date.slice(0, 10);
+  const pieceDir = pieceOutputDir(opts, fm.client, dateStr, fm.id);
+  if (!existsSync(pieceDir)) mkdirSync(pieceDir, { recursive: true });
+
+  const usageLogPath = resolve(opts.root, "data", "llm-usage.jsonl");
+  const llmOverride = fm.provider_override?.llm_text ?? undefined;
+  const imageOverride = fm.provider_override?.image ?? undefined;
+  const videoOverride = fm.provider_override?.video ?? undefined;
+
+  const matrix = loadProviderMatrix(opts.matrixPath);
+  const copyRow = llmRow(tasks.copy, matrix);
+  const primaryLLM = llmOverride ?? copyRow.default;
+  const fallbackLLM = copyRow.fallback;
+
+  const brief = piece.body.slice(0, 800);
+
+  const copy = await runWithFallback({
+    task: tasks.copy,
+    primaryName: primaryLLM,
+    fallbackName: fallbackLLM,
+    log_path: usageLogPath,
+    primary: () =>
+      getLLMProviderByName(primaryLLM).generate(brief, { task: tasks.copy }),
+    fallback: fallbackLLM
+      ? () =>
+          getLLMProviderByName(fallbackLLM).generate(brief, { task: tasks.copy })
+      : undefined,
+  });
+
+  writeFileSync(
+    join(pieceDir, "script.md"),
+    `# Script for ${fm.id}\n\nProvider: ${copy.provider_used}\n\n${copy.result.output ?? ""}\n`,
+  );
+
+  const captionResult = await runWithFallback({
+    task: "caption",
+    primaryName: llmOverride ?? llmRow("caption", matrix).default,
+    fallbackName: llmRow("caption", matrix).fallback,
+    log_path: usageLogPath,
+    primary: () =>
+      getLLMProviderByName(llmOverride ?? llmRow("caption", matrix).default).generate(
+        `Caption for: ${brief.slice(0, 200)}`,
+        { task: "caption" },
+      ),
+    fallback: llmRow("caption", matrix).fallback
+      ? () =>
+          getLLMProviderByName(
+            llmRow("caption", matrix).fallback ?? "claude",
+          ).generate(`Caption for: ${brief.slice(0, 200)}`, {
+            task: "caption",
+          })
+      : undefined,
+  });
+
+  const captionText = captionResult.result.output ?? "";
+  const platformCaptions: Record<string, string> = {};
+  for (const platform of fm.platforms) {
+    const max = platform === "x" ? 240 : platform === "tiktok" ? 150 : 1500;
+    const trimmed = captionText.length > max ? captionText.slice(0, max) : captionText;
+    platformCaptions[platform] = `${trimmed} #${fm.pillar}`;
+  }
+  writeFileSync(
+    join(pieceDir, "captions.json"),
+    JSON.stringify(platformCaptions, null, 2),
+  );
+
+  const outputs: string[] = [
+    join(pieceDir, "script.md"),
+    join(pieceDir, "captions.json"),
+  ];
+
+  let imageUsed: string | undefined;
+  let videoUsed: string | undefined;
+  let totalCost = (copy.result.cost_usd ?? 0) + (captionResult.result.cost_usd ?? 0);
+
+  if (tasks.image) {
+    const row = imageRow(tasks.image, matrix);
+    const provider = imageOverride ?? row.default;
+    imageUsed = provider;
+    const r = await getImageProviderByName(provider).generate(brief, {
+      task: tasks.image,
+      aspect: fm.platforms.includes("instagram") ? "4:5" : "9:16",
+      n: 1,
+      output_dir: pieceDir,
+    });
+    if (r.output) outputs.push(...r.output);
+    totalCost += r.cost_usd ?? 0;
+  }
+  if (tasks.video) {
+    const row = videoRow(tasks.video, matrix);
+    const provider = videoOverride ?? row.default;
+    videoUsed = provider;
+    const r = await getVideoProviderByName(provider).generate(brief, {
+      task: tasks.video,
+      aspect: "9:16",
+      duration_s: 30,
+      output_dir: pieceDir,
+    });
+    if (r.output) outputs.push(r.output);
+    totalCost += r.cost_usd ?? 0;
+  }
+
+  const compliance = runCompliance(
+    `${captionText}\n${copy.result.output ?? ""}\n${piece.body}`,
+    loadCompliance(opts, fm.client),
+  );
+  const compliancePath = join(pieceDir, "compliance.json");
+  writeFileSync(
+    compliancePath,
+    JSON.stringify(
+      {
+        piece_id: fm.id,
+        pass: compliance.pass,
+        violations: compliance.violations,
+        checker: "compliance-generic-inline",
+        checked_at: new Date().toISOString(),
+      },
+      null,
+      2,
+    ),
+  );
+  outputs.push(compliancePath);
+
+  const manifest: ManifestPayload = {
+    piece_id: fm.id,
+    client: fm.client,
+    date: dateStr,
+    providers: {
+      llm: copy.provider_used,
+      image: imageUsed,
+      video: videoUsed,
+    },
+    prompts: { script: brief },
+    cost_estimate_usd: totalCost,
+    tokens_in: copy.result.tokens ?? 0,
+    tokens_out: captionResult.result.tokens ?? 0,
+    compliance_report_path: compliancePath,
+    outputs,
+    fallback_used: copy.fallback_triggered || captionResult.fallback_triggered,
+  };
+  writeManifest(join(pieceDir, "manifest.json"), manifest);
+
+  if (!compliance.pass) {
+    appendRunLog(
+      {
+        piece_id: fm.id,
+        client: fm.client,
+        providers_used: [copy.provider_used, imageUsed, videoUsed].filter(
+          (p): p is string => Boolean(p),
+        ),
+        cost_estimate_usd: totalCost,
+        status: "blocked",
+        notes: `compliance violations: ${compliance.violations.length}`,
+      },
+      opts.root,
+    );
+    const path = pieceFilePath(fm.id, {
+      root: opts.root,
+      piecesDir: opts.piecesDir,
+    });
+    const cur = parsePiece(readFileSync(path, "utf8"));
+    cur.frontmatter.compliance_block = compliance.violations;
+    writeFileSync(path, serializePiece(cur.frontmatter, cur.body));
+    throw new Error(`compliance-block:${fm.id}`);
+  }
+
+  transitionStatus(fm.id, "draft", "scheduled", {
+    root: opts.root,
+    piecesDir: opts.piecesDir,
+  });
+
+  appendRunLog(
+    {
+      piece_id: fm.id,
+      client: fm.client,
+      providers_used: [copy.provider_used, imageUsed, videoUsed].filter(
+        (p): p is string => Boolean(p),
+      ),
+      cost_estimate_usd: totalCost,
+      status: "success",
+    },
+    opts.root,
+  );
+}
+
+export async function cliEntry(argv: string[]): Promise<void> {
+  const root = process.cwd();
+  let maxIter: number | undefined;
+  for (let i = 0; i < argv.length; i++) {
+    if (argv[i] === "--max-iter" && argv[i + 1]) {
+      maxIter = Number(argv[++i]);
+    }
+  }
+  const piecesEnv = process.env.MARKETING_ENGINE_PIECES_DIR;
+  const outputsEnv = process.env.MARKETING_ENGINE_OUTPUTS_DIR;
+  const summary = await runGenerateLoop({
+    root,
+    piecesDir: piecesEnv,
+    outputsDir: outputsEnv,
+    maxIter,
+  });
+  const line = `generate: inspected=${summary.inspected} advanced=${summary.advanced} blocked=${summary.blocked} failures=${summary.failures}`;
+  process.stdout.write(`${line}\n`);
+  if (summary.failures > 0 && summary.advanced === 0) {
+    process.exit(2);
+  }
+}
+
+void dirname;
+
+if (
+  import.meta.url ===
+  `file://${process.argv[1]?.replace(/\\/g, "/")}`.replace(/^file:\/\/\/\//, "file:///")
+) {
+  cliEntry(process.argv.slice(2)).catch((err) => {
+    process.stderr.write(`generate failed: ${String(err)}\n`);
+    process.exit(1);
+  });
+}
