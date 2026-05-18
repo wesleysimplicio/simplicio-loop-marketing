@@ -50,14 +50,14 @@ test("unknown command exits 1 and surfaces the bad name", () => {
   expect(result.stderr).toContain("Usage:");
 });
 
-test("generate command prints DRY_RUN-safe placeholder and exits 0", () => {
+test("generate command runs under DRY_RUN and prints a summary line", () => {
   const result = run(["generate"]);
-  expect(result.status).toBe(0);
-  expect(result.stdout).toContain("Generation loop is a placeholder");
+  expect(result.status === 0 || result.status === 2).toBe(true);
+  expect(result.stdout).toContain("generate:");
 });
 
-test("promote command prints DRY_RUN-safe placeholder and exits 0", () => {
+test("promote command runs under DRY_RUN and prints a summary line", () => {
   const result = run(["promote"]);
   expect(result.status).toBe(0);
-  expect(result.stdout).toContain("Promotion loop is a placeholder");
+  expect(result.stdout).toContain("promote:");
 });

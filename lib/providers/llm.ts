@@ -1,7 +1,11 @@
 import type { GenerationResult, LLMTask } from "./types";
+import { llmRow, loadProviderMatrix } from "./matrix";
+import { MOCK_LLM_REGISTRY } from "./__mocks__/llm";
+import { estimateCost, estimateTokens, withRetry } from "./policy";
 
 export interface LLMGenerateOptions {
   task: LLMTask;
+  system?: string;
   max_tokens?: number;
   temperature?: number;
 }
@@ -11,73 +15,243 @@ export interface LLMProvider {
   generate(prompt: string, opts: LLMGenerateOptions): Promise<GenerationResult>;
 }
 
-abstract class BaseLLMProvider implements LLMProvider {
+function isDryRun(): boolean {
+  const v = process.env.DRY_RUN;
+  return v === undefined || v === "" || v === "true";
+}
+
+abstract class RealLLMBase implements LLMProvider {
   abstract readonly name: string;
-  abstract readonly cost_per_1k_in: number;
-  abstract readonly cost_per_1k_out: number;
+  abstract realGenerate(
+    prompt: string,
+    opts: LLMGenerateOptions,
+  ): Promise<GenerationResult>;
 
   async generate(prompt: string, opts: LLMGenerateOptions): Promise<GenerationResult> {
-    const tokens = 100;
-    const cost_usd = this.estimateCost(tokens, tokens);
-    const snippet = prompt.slice(0, 40);
+    return withRetry(() => this.realGenerate(prompt, opts), {
+      retries: 1,
+      backoffMs: 2000,
+      timeoutMs: opts.task === "script" ? 180_000 : 60_000,
+    });
+  }
+}
+
+export class ClaudeProvider extends RealLLMBase {
+  readonly name = "claude";
+  async realGenerate(
+    prompt: string,
+    opts: LLMGenerateOptions,
+  ): Promise<GenerationResult> {
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+    if (!apiKey) {
+      throw new Error(
+        "claude: ANTHROPIC_API_KEY missing — set it or run with DRY_RUN=true",
+      );
+    }
+    const model = opts.task === "caption" || opts.task === "humanization"
+      ? "claude-sonnet-4-6"
+      : "claude-opus-4-7";
+    const t0 = Date.now();
+    const body = {
+      model,
+      max_tokens: opts.max_tokens ?? 1024,
+      temperature: opts.temperature ?? 0.7,
+      system: opts.system
+        ? [{ type: "text", text: opts.system, cache_control: { type: "ephemeral" } }]
+        : undefined,
+      messages: [{ role: "user", content: prompt }],
+    };
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01",
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) {
+      throw new Error(`claude: HTTP ${res.status}: ${await res.text()}`);
+    }
+    const data = (await res.json()) as {
+      content: Array<{ type: string; text?: string }>;
+      usage?: { input_tokens?: number; output_tokens?: number };
+    };
+    const text = data.content
+      .filter((c) => c.type === "text")
+      .map((c) => c.text ?? "")
+      .join("");
+    const tokens_in = data.usage?.input_tokens ?? estimateTokens(prompt);
+    const tokens_out = data.usage?.output_tokens ?? estimateTokens(text);
     return {
       ok: true,
       provider: this.name,
       task: opts.task,
-      output: `[mock-${this.name}] ${snippet}...`,
-      tokens,
-      cost_usd,
-      latency_ms: 50,
+      output: text,
+      tokens: tokens_in + tokens_out,
+      cost_usd: estimateCost({ provider: "claude", model, tokens_in, tokens_out }),
+      latency_ms: Date.now() - t0,
     };
   }
+}
 
-  protected estimateCost(tokens_in: number, tokens_out: number): number {
-    return (
-      (tokens_in / 1000) * this.cost_per_1k_in +
-      (tokens_out / 1000) * this.cost_per_1k_out
-    );
+export class CodexProvider extends RealLLMBase {
+  readonly name = "codex";
+  async realGenerate(
+    prompt: string,
+    opts: LLMGenerateOptions,
+  ): Promise<GenerationResult> {
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) {
+      throw new Error("codex: OPENAI_API_KEY missing");
+    }
+    const model =
+      opts.task === "caption" || opts.task === "translation"
+        ? "gpt-5.1-mini"
+        : "gpt-5.1";
+    return callOpenAICompatible({
+      apiKey,
+      baseUrl: "https://api.openai.com/v1",
+      providerName: "codex",
+      model,
+      prompt,
+      opts,
+    });
   }
 }
 
-export class ClaudeProvider extends BaseLLMProvider {
-  readonly name = "claude";
-  readonly cost_per_1k_in = 0.003;
-  readonly cost_per_1k_out = 0.015;
-}
-
-export class CodexProvider extends BaseLLMProvider {
-  readonly name = "codex";
-  readonly cost_per_1k_in = 0.003;
-  readonly cost_per_1k_out = 0.015;
-}
-
-export class DeepSeekProvider extends BaseLLMProvider {
+export class DeepSeekProvider extends RealLLMBase {
   readonly name = "deepseek";
-  readonly cost_per_1k_in = 0.00014;
-  readonly cost_per_1k_out = 0.00028;
+  async realGenerate(
+    prompt: string,
+    opts: LLMGenerateOptions,
+  ): Promise<GenerationResult> {
+    const apiKey = process.env.DEEPSEEK_API_KEY;
+    if (!apiKey) throw new Error("deepseek: DEEPSEEK_API_KEY missing");
+    const model = "deepseek-chat";
+    return callOpenAICompatible({
+      apiKey,
+      baseUrl: "https://api.deepseek.com",
+      providerName: "deepseek",
+      model,
+      prompt,
+      opts,
+    });
+  }
 }
 
-export class OllamaProvider extends BaseLLMProvider {
+export class OllamaProvider extends RealLLMBase {
   readonly name = "ollama";
-  readonly cost_per_1k_in = 0;
-  readonly cost_per_1k_out = 0;
+  async realGenerate(
+    prompt: string,
+    opts: LLMGenerateOptions,
+  ): Promise<GenerationResult> {
+    const host = process.env.OLLAMA_HOST ?? "http://localhost:11434";
+    const model = process.env.OLLAMA_MODEL ?? "llama3.2";
+    const t0 = Date.now();
+    const res = await fetch(`${host}/api/chat`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        model,
+        messages: opts.system
+          ? [
+              { role: "system", content: opts.system },
+              { role: "user", content: prompt },
+            ]
+          : [{ role: "user", content: prompt }],
+        stream: false,
+        options: {
+          temperature: opts.temperature ?? 0.7,
+          num_predict: opts.max_tokens ?? 1024,
+        },
+      }),
+    });
+    if (!res.ok) {
+      throw new Error(`ollama: HTTP ${res.status}: ${await res.text()}`);
+    }
+    const data = (await res.json()) as {
+      message?: { content?: string };
+      prompt_eval_count?: number;
+      eval_count?: number;
+    };
+    const text = data.message?.content ?? "";
+    return {
+      ok: true,
+      provider: this.name,
+      task: opts.task,
+      output: text,
+      tokens: (data.prompt_eval_count ?? 0) + (data.eval_count ?? 0),
+      cost_usd: 0,
+      latency_ms: Date.now() - t0,
+    };
+  }
 }
 
-const LLM_REGISTRY: Record<string, () => LLMProvider> = {
+interface OpenAICompatibleArgs {
+  apiKey: string;
+  baseUrl: string;
+  providerName: string;
+  model: string;
+  prompt: string;
+  opts: LLMGenerateOptions;
+}
+
+async function callOpenAICompatible(
+  args: OpenAICompatibleArgs,
+): Promise<GenerationResult> {
+  const { apiKey, baseUrl, providerName, model, prompt, opts } = args;
+  const t0 = Date.now();
+  const messages = opts.system
+    ? [
+        { role: "system", content: opts.system },
+        { role: "user", content: prompt },
+      ]
+    : [{ role: "user", content: prompt }];
+  const res = await fetch(`${baseUrl}/chat/completions`, {
+    method: "POST",
+    headers: {
+      authorization: `Bearer ${apiKey}`,
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      model,
+      messages,
+      max_tokens: opts.max_tokens ?? 1024,
+      temperature: opts.temperature ?? 0.7,
+    }),
+  });
+  if (!res.ok) {
+    throw new Error(`${providerName}: HTTP ${res.status}: ${await res.text()}`);
+  }
+  const data = (await res.json()) as {
+    choices?: Array<{ message?: { content?: string } }>;
+    usage?: { prompt_tokens?: number; completion_tokens?: number };
+  };
+  const text = data.choices?.[0]?.message?.content ?? "";
+  const tokens_in = data.usage?.prompt_tokens ?? estimateTokens(prompt);
+  const tokens_out = data.usage?.completion_tokens ?? estimateTokens(text);
+  return {
+    ok: true,
+    provider: providerName,
+    task: opts.task,
+    output: text,
+    tokens: tokens_in + tokens_out,
+    cost_usd: estimateCost({
+      provider: providerName,
+      model,
+      tokens_in,
+      tokens_out,
+    }),
+    latency_ms: Date.now() - t0,
+  };
+}
+
+const REAL_LLM_REGISTRY: Record<string, () => LLMProvider> = {
   claude: () => new ClaudeProvider(),
   codex: () => new CodexProvider(),
   deepseek: () => new DeepSeekProvider(),
   ollama: () => new OllamaProvider(),
-};
-
-const LLM_TASK_DEFAULTS: Record<LLMTask, string> = {
-  orchestration: "claude",
-  code: "claude",
-  caption: "deepseek",
-  script: "claude",
-  compliance: "claude",
-  translation: "deepseek",
-  humanization: "claude",
 };
 
 export interface LLMFactoryOptions {
@@ -87,10 +261,18 @@ export interface LLMFactoryOptions {
 export function getLLMProvider(task: LLMTask, opts?: LLMFactoryOptions): LLMProvider {
   const env_default = process.env.LLM_DEFAULT;
   const override = opts?.override;
-  const candidate = override ?? LLM_TASK_DEFAULTS[task] ?? env_default ?? "claude";
-  const factory = LLM_REGISTRY[candidate] ?? LLM_REGISTRY["claude"];
+  const fromMatrix = llmRow(task, loadProviderMatrix()).default;
+  const candidate = override ?? fromMatrix ?? env_default ?? "claude";
+  const registry = isDryRun() ? MOCK_LLM_REGISTRY : REAL_LLM_REGISTRY;
+  const factory = registry[candidate] ?? registry["claude"];
   if (!factory) {
-    return new ClaudeProvider();
+    return (isDryRun() ? MOCK_LLM_REGISTRY : REAL_LLM_REGISTRY)["claude"]();
   }
+  return factory();
+}
+
+export function getLLMProviderByName(name: string): LLMProvider {
+  const registry = isDryRun() ? MOCK_LLM_REGISTRY : REAL_LLM_REGISTRY;
+  const factory = registry[name] ?? registry["claude"];
   return factory();
 }
