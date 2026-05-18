@@ -54,6 +54,40 @@ test("runWithFallback triggers fallback on primary error and logs both", async (
   expect(lines[1].provider).toBe("fb");
 });
 
+test("runWithFallback retries primary once for retryable errors before fallback", async () => {
+  const tmp = mkdtempSync(join(tmpdir(), "me-fallback-retry-"));
+  const log = join(tmp, "usage.jsonl");
+  let primaryAttempts = 0;
+  const r = await runWithFallback({
+    task: "test-task",
+    primaryName: "primary",
+    fallbackName: "fb",
+    retryBackoffMs: 0,
+    primary: async () => {
+      primaryAttempts += 1;
+      throw new Error("HTTP 503 synthetic primary fail");
+    },
+    fallback: async () => "fb-result",
+    log_path: log,
+  });
+  expect(primaryAttempts).toBe(2);
+  expect(r.result).toBe("fb-result");
+  expect(r.fallback_triggered).toBe(true);
+  expect(r.attempts).toBe(3);
+  const lines = readFileSync(log, "utf8")
+    .trim()
+    .split("\n")
+    .map((l) => JSON.parse(l));
+  expect(lines).toHaveLength(3);
+  expect(lines[0].provider).toBe("primary");
+  expect(lines[0].attempt).toBe(1);
+  expect(lines[1].provider).toBe("primary");
+  expect(lines[1].attempt).toBe(2);
+  expect(lines[2].provider).toBe("fb");
+  expect(lines[2].attempt).toBe(3);
+  expect(lines[2].fallback_used).toBe(true);
+});
+
 test("runWithFallback re-throws when both primary and fallback fail", async () => {
   const tmp = mkdtempSync(join(tmpdir(), "me-fallback-"));
   const log = join(tmp, "usage.jsonl");

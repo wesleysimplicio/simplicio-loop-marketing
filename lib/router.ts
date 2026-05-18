@@ -74,6 +74,8 @@ export interface FallbackOptions<T> {
   primaryName: string;
   fallbackName?: string;
   log_path?: string;
+  retryBackoffMs?: number;
+  shouldRetry?: (err: unknown) => boolean;
 }
 
 export interface FallbackResult<T> {
@@ -83,83 +85,112 @@ export interface FallbackResult<T> {
   attempts: number;
 }
 
+function isRetryableFallbackError(err: unknown): boolean {
+  const msg = err instanceof Error ? err.message : String(err);
+  return /timeout|ECONN|ETIMEDOUT|fetch failed|5\d\d|429/i.test(msg);
+}
+
+async function wait(ms: number): Promise<void> {
+  if (ms <= 0) {
+    return;
+  }
+
+  await new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 export async function runWithFallback<T>(
   opts: FallbackOptions<T>,
 ): Promise<FallbackResult<T>> {
-  const t0 = Date.now();
-  try {
-    const r = await opts.primary();
-    logUsage(
-      {
-        task: opts.task,
-        provider: opts.primaryName,
-        ok: true,
-        fallback_used: false,
-        attempt: 1,
-        latency_ms: Date.now() - t0,
-      },
-      opts.log_path,
-    );
-    return {
-      result: r,
-      provider_used: opts.primaryName,
-      fallback_triggered: false,
-      attempts: 1,
-    };
-  } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
-    logUsage(
-      {
-        task: opts.task,
-        provider: opts.primaryName,
-        ok: false,
-        error: msg,
-        fallback_used: false,
-        attempt: 1,
-        latency_ms: Date.now() - t0,
-      },
-      opts.log_path,
-    );
-    if (!opts.fallback || !opts.fallbackName) {
-      throw err;
-    }
-    const t1 = Date.now();
+  const retryBackoffMs = opts.retryBackoffMs ?? 2000;
+  const shouldRetry = opts.shouldRetry ?? isRetryableFallbackError;
+  let primaryAttempts = 0;
+  let primaryMessage = "";
+
+  while (primaryAttempts < 2) {
+    primaryAttempts += 1;
+    const t0 = Date.now();
     try {
-      const r = await opts.fallback();
+      const r = await opts.primary();
       logUsage(
         {
           task: opts.task,
-          provider: opts.fallbackName,
+          provider: opts.primaryName,
           ok: true,
-          fallback_used: true,
-          attempt: 2,
-          latency_ms: Date.now() - t1,
+          fallback_used: false,
+          attempt: primaryAttempts,
+          latency_ms: Date.now() - t0,
         },
         opts.log_path,
       );
       return {
         result: r,
-        provider_used: opts.fallbackName,
-        fallback_triggered: true,
-        attempts: 2,
+        provider_used: opts.primaryName,
+        fallback_triggered: false,
+        attempts: primaryAttempts,
       };
-    } catch (err2) {
-      const msg2 = err2 instanceof Error ? err2.message : String(err2);
+    } catch (err) {
+      primaryMessage = err instanceof Error ? err.message : String(err);
       logUsage(
         {
           task: opts.task,
-          provider: opts.fallbackName,
+          provider: opts.primaryName,
           ok: false,
-          error: msg2,
-          fallback_used: true,
-          attempt: 2,
-          latency_ms: Date.now() - t1,
+          error: primaryMessage,
+          fallback_used: false,
+          attempt: primaryAttempts,
+          latency_ms: Date.now() - t0,
         },
         opts.log_path,
       );
-      throw new Error(
-        `primary (${opts.primaryName}) failed: ${msg}; fallback (${opts.fallbackName}) failed: ${msg2}`,
-      );
+      if (primaryAttempts < 2 && shouldRetry(err)) {
+        await wait(retryBackoffMs);
+        continue;
+      }
+      break;
     }
+  }
+
+  if (!opts.fallback || !opts.fallbackName) {
+    throw new Error(primaryMessage);
+  }
+
+  const fallbackAttempt = primaryAttempts + 1;
+  const t1 = Date.now();
+  try {
+    const r = await opts.fallback();
+    logUsage(
+      {
+        task: opts.task,
+        provider: opts.fallbackName,
+        ok: true,
+        fallback_used: true,
+        attempt: fallbackAttempt,
+        latency_ms: Date.now() - t1,
+      },
+      opts.log_path,
+    );
+    return {
+      result: r,
+      provider_used: opts.fallbackName,
+      fallback_triggered: true,
+      attempts: fallbackAttempt,
+    };
+  } catch (err) {
+    const fallbackMessage = err instanceof Error ? err.message : String(err);
+    logUsage(
+      {
+        task: opts.task,
+        provider: opts.fallbackName,
+        ok: false,
+        error: fallbackMessage,
+        fallback_used: true,
+        attempt: fallbackAttempt,
+        latency_ms: Date.now() - t1,
+      },
+      opts.log_path,
+    );
+    throw new Error(
+      `primary (${opts.primaryName}) failed after ${primaryAttempts} attempt(s): ${primaryMessage}; fallback (${opts.fallbackName}) failed: ${fallbackMessage}`,
+    );
   }
 }
