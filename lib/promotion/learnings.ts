@@ -8,6 +8,8 @@ export interface LearningEntry {
   reason: string;
 }
 
+export function appendLearning(entry: LearningEntry): Promise<void>;
+export function appendLearning(root: string, entry: LearningEntry): Promise<void>;
 export async function appendLearning(
   rootOrEntry: string | LearningEntry,
   maybeEntry?: LearningEntry,
