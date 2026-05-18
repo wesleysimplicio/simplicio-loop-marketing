@@ -20,6 +20,8 @@ const __filename = fileURLToPath(import.meta.url);
 const PACKAGE_ROOT = resolve(dirname(__filename), "..", "..");
 const BRIEF_PLACEHOLDER =
   "One paragraph. What is this piece, who is the audience, what is the single behavior we want from them, and how does it ladder up to the campaign goal. Reference the pillar and any prior piece this responds to.";
+const SAFE_FRONTMATTER_KEY_RE = /^[A-Za-z0-9_]+$/;
+const SAFE_BARE_STRING_RE = /^[A-Za-z0-9._:/-]+$/;
 
 function serializeFrontmatterValue(value: string | string[] | null): string {
   if (Array.isArray(value)) {
@@ -28,24 +30,31 @@ function serializeFrontmatterValue(value: string | string[] | null): string {
   if (value === null) {
     return "null";
   }
-  return value;
+
+  return SAFE_BARE_STRING_RE.test(value) ? value : JSON.stringify(value);
 }
 
 function injectFrontmatter(
   template: string,
   extraFrontmatter: Record<string, string | string[] | null | undefined>,
 ): string {
-  const closeMarker = "\n---\n";
-  const closeIndex = template.indexOf(closeMarker);
-  if (closeIndex === -1) return template;
+  const match = /^(---\r?\n)([\s\S]*?)(\r?\n---)([\s\S]*)$/.exec(template);
+  if (!match) return template;
 
   const lines = Object.entries(extraFrontmatter)
     .filter(([, value]) => value !== undefined)
-    .map(([key, value]) => `${key}: ${serializeFrontmatterValue(value ?? null)}`);
+    .map(([key, value]) => {
+      if (!SAFE_FRONTMATTER_KEY_RE.test(key)) {
+        throw new Error(`piece template: invalid frontmatter key: ${key}`);
+      }
+      return `${key}: ${serializeFrontmatterValue(value ?? null)}`;
+    });
 
   if (lines.length === 0) return template;
 
-  return `${template.slice(0, closeIndex)}\n${lines.join("\n")}${template.slice(closeIndex)}`;
+  const [, opening, frontmatterBody, closing, rest] = match;
+  const separator = frontmatterBody.endsWith("\n") || frontmatterBody.length === 0 ? "" : "\n";
+  return `${opening}${frontmatterBody}${separator}${lines.join("\n")}${closing}${rest}`;
 }
 
 export function pieceTemplatePath(): string {
