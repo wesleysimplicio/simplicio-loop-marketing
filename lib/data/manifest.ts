@@ -1,5 +1,5 @@
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { dirname, join, normalize } from "node:path";
 
 export interface ProviderDescriptor {
   name: string;
@@ -61,6 +61,10 @@ function manifestPath(target: string): string {
   return target.endsWith(".json") ? target : join(target, "manifest.json");
 }
 
+function normalizeStoredPath(path?: string): string | undefined {
+  return path ? path.replace(/\\/g, "/") : undefined;
+}
+
 export function writeManifest(
   target: string,
   payload: ManifestPayload,
@@ -87,9 +91,9 @@ export function writeManifest(
     cost_estimate_usd: payload.cost_estimate_usd,
     tokens_in: payload.tokens_in ?? 0,
     tokens_out: payload.tokens_out ?? 0,
-    compliance_report_path: payload.compliance_report_path,
-    qa_report_path: payload.qa_report_path,
-    outputs: payload.outputs ?? [],
+    compliance_report_path: normalizeStoredPath(payload.compliance_report_path) ?? "",
+    qa_report_path: normalizeStoredPath(payload.qa_report_path),
+    outputs: (payload.outputs ?? []).map((output) => normalize(output)),
     fallback_used: payload.fallback_used ?? false,
   };
 

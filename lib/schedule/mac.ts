@@ -1,4 +1,4 @@
-import { execSync } from "node:child_process";
+import { execFileSync } from "node:child_process";
 import { appendFileSync, existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, join } from "node:path";
@@ -25,21 +25,33 @@ function launchctlUid(): string {
   return process.env.MARKETING_ENGINE_SCHEDULE_UID ?? String(process.getuid?.() ?? 0);
 }
 
+function escapeXml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
+}
+
 function plist(label: string, cmdRoot: string, hour: number, subcommand: string): string {
+  const escapedLabel = escapeXml(label);
+  const escapedRoot = escapeXml(cmdRoot);
+  const escapedSubcommand = escapeXml(subcommand);
   return `<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
   <key>Label</key>
-  <string>${label}</string>
+  <string>${escapedLabel}</string>
   <key>WorkingDirectory</key>
-  <string>${cmdRoot}</string>
+  <string>${escapedRoot}</string>
   <key>ProgramArguments</key>
   <array>
     <string>/usr/bin/env</string>
     <string>npx</string>
     <string>marketing-engine</string>
-    <string>${subcommand}</string>
+    <string>${escapedSubcommand}</string>
   </array>
   <key>StartCalendarInterval</key>
   <dict>
@@ -49,9 +61,9 @@ function plist(label: string, cmdRoot: string, hour: number, subcommand: string)
     <integer>0</integer>
   </dict>
   <key>StandardOutPath</key>
-  <string>${cmdRoot}/.marketing-engine/data/${subcommand}.log</string>
+  <string>${escapedRoot}/.marketing-engine/data/${escapedSubcommand}.log</string>
   <key>StandardErrorPath</key>
-  <string>${cmdRoot}/.marketing-engine/data/${subcommand}.log</string>
+  <string>${escapedRoot}/.marketing-engine/data/${escapedSubcommand}.log</string>
 </dict>
 </plist>
 `;
@@ -67,7 +79,9 @@ function runLaunchctl(action: string, plistPath: string): void {
     return;
   }
 
-  execSync(`launchctl ${action} gui/${launchctlUid()} "${plistPath}"`);
+  execFileSync("launchctl", [action, `gui/${launchctlUid()}`, plistPath], {
+    encoding: "utf8",
+  });
 }
 
 export function showLaunchdPlan(cmdRoot: string): {
@@ -88,14 +102,16 @@ export function showLaunchdPlan(cmdRoot: string): {
 
 export function installLaunchd(cmdRoot: string): { added: boolean; message: string } {
   const plan = showLaunchdPlan(cmdRoot);
-  if (existsSync(plan.generatePlistPath) || existsSync(plan.promotePlistPath)) {
+  const missing = [
+    [plan.generatePlistPath, plan.generatePlist] as const,
+    [plan.promotePlistPath, plan.promotePlist] as const,
+  ].filter(([path]) => !existsSync(path));
+
+  if (missing.length === 0) {
     return { added: false, message: "launchd plists already installed." };
   }
 
-  for (const [path, body] of [
-    [plan.generatePlistPath, plan.generatePlist] as const,
-    [plan.promotePlistPath, plan.promotePlist] as const,
-  ]) {
+  for (const [path, body] of missing) {
     if (!existsSync(dirname(path))) {
       mkdirSync(dirname(path), { recursive: true });
     }

@@ -244,7 +244,7 @@ export async function cliEntry(argv: string[]): Promise<void> {
   }
   const r = await runPromoteLoop({ root, windowDays });
   process.stdout.write(
-    `promoted: ${r.promoted} | losers: ${r.losers} | skipped: ${r.skipped}\n`,
+    `promote: promoted=${r.promoted} losers=${r.losers} skipped=${r.skipped}\n`,
   );
 }
 

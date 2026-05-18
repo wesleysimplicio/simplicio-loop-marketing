@@ -2,10 +2,11 @@
 // marketing-engine — provider-agnostic AI marketing engine CLI
 // Pure ESM, Node built-ins only (node:fs, node:path, node:url, node:child_process).
 
-import { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync, statSync, appendFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync, readdirSync, statSync, appendFileSync, writeSync } from "node:fs";
 import { dirname, join, resolve, basename } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { spawnSync } from "node:child_process";
+import { constants as osConstants } from "node:os";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -587,6 +588,16 @@ function resolveTsx() {
   return null;
 }
 
+function exitForSignal(signal) {
+  const signalNumber = osConstants.signals?.[signal];
+  return typeof signalNumber === "number" ? 128 + signalNumber : 1;
+}
+
+function replayOutput(fd, text) {
+  if (!text) return;
+  writeSync(fd, text);
+}
+
 function spawnTsx(scriptPath, extraArgs, hostRoot) {
   const tsx = resolveTsx();
   if (!tsx) {
@@ -615,12 +626,21 @@ function spawnTsx(scriptPath, extraArgs, hostRoot) {
   env.MARKETING_ENGINE_HOST_ROOT = hostRoot;
   // Default to DRY_RUN=true unless explicitly set in .env or shell.
   if (env.DRY_RUN === undefined) env.DRY_RUN = "true";
-  const result = spawnSync(process.execPath, [tsx, scriptPath, ...extraArgs], {
+  const scriptUrl = pathToFileURL(scriptPath).href;
+  const evalCode = `import(${JSON.stringify(scriptUrl)}).then((m) => m.cliEntry(${JSON.stringify(extraArgs)}))`;
+  const result = spawnSync(process.execPath, [tsx, "--eval", evalCode], {
     cwd: hostRoot,
     env,
-    stdio: "inherit",
+    encoding: "utf8",
   });
-  process.exit(result.status ?? 1);
+  replayOutput(process.stdout.fd, result.stdout);
+  replayOutput(process.stderr.fd, result.stderr);
+  if (result.error) {
+    process.stderr.write(`ERROR: failed to spawn tsx: ${result.error.message}\n`);
+    process.exitCode = 1;
+    return;
+  }
+  process.exitCode = result.signal ? exitForSignal(result.signal) : (result.status ?? 1);
 }
 
 function commandGenerate(args) {
