@@ -6,6 +6,21 @@ All notable changes to this project are documented here. Format based on
 
 ## [Unreleased]
 
+## [0.2.13] - 2026-05-19
+
+### Added
+
+- `<!-- rtk-cli:start -->` block in `AGENTS.md` and
+  `.github/copilot-instructions.md` (CLAUDE.md is a symlink to AGENTS.md)
+  documenting optional RTK CLI usage for token-smart shell exploration
+  (https://github.com/rtk-ai/rtk).
+- `.skills/rtk-cli/SKILL.md` skill manifest with plain→rtk mapping,
+  trigger examples, and DoD.
+- `<!-- yool-tuple-hamt:start -->` capability-addressing block citing
+  yool/tuple/HAMT spec v0.2 with mandatory guardrails
+  (`cpu_quota_pct=60`, `disk_quota_mb=100`, `timeout_s=300`) per Victor
+  Genaro's review.
+
 ## [0.2.12] - 2026-05-18
 
 ### Fixed
