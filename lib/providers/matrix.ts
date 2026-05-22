@@ -42,6 +42,9 @@ const EMBEDDED_DEFAULTS: ProviderMatrix = {
     "product-demo": { task: "product-demo", default: "topview" },
     "talking-head": { task: "talking-head", default: "topview" },
     "batch-hooks": { task: "batch-hooks", default: "wavespeed" },
+    "motion-typography": { task: "motion-typography", default: "hyperframes" },
+    "data-viz-reel": { task: "data-viz-reel", default: "hyperframes" },
+    "programmatic-short": { task: "programmatic-short", default: "hyperframes" },
   },
 };
 
@@ -64,6 +67,12 @@ const TASK_LABEL_MAP: Record<string, string> = {
   "product demo (url)": "product-demo",
   "talking head": "talking-head",
   "batch hook test": "batch-hooks",
+  "motion typography": "motion-typography",
+  "kinetic typography": "motion-typography",
+  "data viz reel": "data-viz-reel",
+  "data-viz reel": "data-viz-reel",
+  "programmatic short": "programmatic-short",
+  "parametrized short": "programmatic-short",
 };
 
 function normalizeTaskLabel(raw: string): string {

@@ -157,6 +157,23 @@ export class TopviewVideoProvider extends RealVideoBase {
   }
 }
 
+export class HyperframesVideoProvider extends RealVideoBase {
+  readonly name = "hyperframes";
+  async realGenerate(
+    _brief: string,
+    _opts: VideoGenerateOptions,
+  ): Promise<GenerationResult<string | string[]>> {
+    if (process.env.HYPERFRAMES_ACTIVE !== "true") {
+      throw new Error("hyperframes: HYPERFRAMES_ACTIVE not true");
+    }
+    throw new Error(
+      "hyperframes video: local CLI render required in caller context; stub. " +
+        "Invoke the `hyperframes-cli` skill (lint -> inspect -> render). " +
+        "Use DRY_RUN=true for tests.",
+    );
+  }
+}
+
 export class WavespeedVideoProvider extends RealVideoBase {
   readonly name = "wavespeed";
   async realGenerate(
@@ -274,6 +291,7 @@ const REAL_VIDEO_REGISTRY: Record<string, () => VideoProvider> = {
   higgsfield: () => new HiggsfieldVideoProvider(),
   topview: () => new TopviewVideoProvider(),
   wavespeed: () => new WavespeedVideoProvider(),
+  hyperframes: () => new HyperframesVideoProvider(),
 };
 
 export interface VideoFactoryOptions {
