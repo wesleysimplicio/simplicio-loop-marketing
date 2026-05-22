@@ -50,9 +50,13 @@ export class MockTopviewVideoProvider extends BaseMockVideo {
 export class MockWavespeedVideoProvider extends BaseMockVideo {
   readonly name = "wavespeed";
 }
+export class MockHyperframesVideoProvider extends BaseMockVideo {
+  readonly name = "hyperframes";
+}
 
 export const MOCK_VIDEO_REGISTRY: Record<string, () => VideoProvider> = {
   higgsfield: () => new MockHiggsfieldVideoProvider(),
   topview: () => new MockTopviewVideoProvider(),
   wavespeed: () => new MockWavespeedVideoProvider(),
+  hyperframes: () => new MockHyperframesVideoProvider(),
 };

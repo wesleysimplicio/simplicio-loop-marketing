@@ -23,7 +23,10 @@ export type VideoTask =
   | "ugc-product"
   | "product-demo"
   | "talking-head"
-  | "batch-hooks";
+  | "batch-hooks"
+  | "motion-typography"
+  | "data-viz-reel"
+  | "programmatic-short";
 
 export interface GenerationResult<T = string> {
   ok: boolean;
