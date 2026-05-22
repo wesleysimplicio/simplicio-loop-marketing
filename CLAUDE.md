@@ -1,5 +1,7 @@
 # Marketing Engine — Agent Charter
 
+The repository root ships a `SKILL.md` that packages the entire engine as a single invocable skill (Anthropic Skills format). It is the entry point for agents loading the repo; this charter is the canonical depth reference it links back to.
+
 ## Tool model
 
 Marketing Engine is a CLI tool installed into a host project (`npx marketing-engine init`). It writes to `.marketing-engine/` inside the host repo (clients, env, outputs, data, specs) and never assumes a specific business domain. All client-specific knowledge lives under `.marketing-engine/clients/<slug>/`. The engine itself is generic and public.

@@ -5,6 +5,8 @@
 
 Provider-agnostic AI marketing engine. Drop into any project, scan it, generate posts, publish across 9 platforms — all configurable via .env.
 
+> **Packaged as a skill.** The repo root ships a [`SKILL.md`](./SKILL.md) (Anthropic Skills format) — the whole engine is invocable as a single capability with one entry point.
+
 [![CI](https://github.com/wesleysimplicio/marketing-engine/actions/workflows/ci.yml/badge.svg)](https://github.com/wesleysimplicio/marketing-engine/actions/workflows/ci.yml)
 
 ## Repository visuals
