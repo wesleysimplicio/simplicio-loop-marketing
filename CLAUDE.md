@@ -92,6 +92,7 @@ The router picks it up automatically. Existing skills do not change.
 - `hyperframes` — HTML-as-source-of-truth motion composition authoring (kinetic type, motion quote cards, programmatic data-viz reels). See https://github.com/wesleysimplicio/hyperframes.
 - `hyperframes-cli` — runs `npx hyperframes` lint/inspect/preview/render against a composition project.
 - `hyperframes-prompt-builder` — translates a piece brief into the HyperFrames composition spec; selected by `video-prompt-builder` when the matrix resolves to `hyperframes`.
+- `install-hyperframes` — one-shot bootstrap playbook that wires the three HyperFrames skills + provider layer + routing matrix into a fresh clone (idempotent).
 - `llm-router` — selects and calls an LLM provider based on `task_type`, PROVIDERS.md, and overrides.
 
 ## Forbidden
