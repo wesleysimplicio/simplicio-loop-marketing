@@ -21,6 +21,7 @@ import {
   validate as validateTechSpecs,
   type Platform as TechSpecsPlatform,
 } from "../qa/tech-specs";
+import { runGate, writeWatcherReport } from "../gate/watcher-gate";
 
 interface GenerateOptions {
   root: string;
@@ -357,31 +358,6 @@ async function processPiece(
   );
   outputs.push(compliancePath);
 
-  const manifest: ManifestPayload = {
-    piece_id: fm.id,
-    client: fm.client,
-    date: dateStr,
-    providers: {
-      llm: copy.provider_used,
-      image: imageUsed,
-      video: videoUsed,
-    },
-    prompts: {
-      script: brief,
-      caption: captionPrompt,
-      image: tasks.image ? brief : undefined,
-      video: tasks.video ? brief : undefined,
-    },
-    cost_estimate_usd: totalCost,
-    tokens_in: copy.result.tokens ?? 0,
-    tokens_out: captionResult.result.tokens ?? 0,
-    compliance_report_path: complianceResult.report_path,
-    qa_report_path: qaReportPath,
-    outputs,
-    fallback_used: copy.fallback_triggered || captionResult.fallback_triggered,
-  };
-  writeManifest(join(pieceDir, "manifest.json"), manifest);
-
   if (!compliance.pass) {
     appendRunLog(
       {
@@ -406,6 +382,79 @@ async function processPiece(
     throw new Error(`compliance-block:${fm.id}`);
   }
 
+  // === WATCHER GATE (N-Nest style) ===
+  // Agent produced the output above; now the watcher independently verifies.
+  const watcherInput = {
+    piece_id: fm.id,
+    script: copy.result.output ?? "",
+    caption: captionText,
+    brief,
+    platform: fm.platforms[0] ?? "instagram",
+    pillar: fm.pillar,
+  };
+  const watcherReport = runGate(watcherInput);
+  const watcherReportPath = writeWatcherReport(
+    engineRoot(opts.root),
+    watcherReport,
+  );
+
+  if (!watcherReport.passed) {
+    // Watcher found discrepancies → route to review
+    transitionStatus(fm.id, "draft", "review", {
+      piecesDir: piecesRootFor(opts),
+    });
+    const cur = readPiece(fm.id, {
+      piecesDir: piecesRootFor(opts),
+    });
+    cur.frontmatter.claims_tag = watcherReport.tag;
+    cur.frontmatter.watcher_report_path = watcherReportPath;
+    writeFileSync(
+      pieceFilePath(fm.id, { piecesDir: piecesRootFor(opts) }),
+      serializePiece(cur.frontmatter, cur.body),
+    );
+    appendRunLog(
+      {
+        piece_id: fm.id,
+        client: fm.client,
+        providers_used: [copy.provider_used, imageUsed, videoUsed].filter(
+          (p): p is string => Boolean(p),
+        ),
+        cost_estimate_usd: totalCost,
+        status: "blocked",
+        notes: `watcher-gate: ${watcherReport.tag} — ${watcherReport.checked.filter((c) => !c.match).length} check(s) failed`,
+      },
+      engineRoot(opts.root),
+    );
+    throw new Error(`tech-specs-block:${fm.id}`);
+  }
+
+  // Gate passed — write manifest with watcher report path
+  const manifest: ManifestPayload = {
+    piece_id: fm.id,
+    client: fm.client,
+    date: dateStr,
+    providers: {
+      llm: copy.provider_used,
+      image: imageUsed,
+      video: videoUsed,
+    },
+    prompts: {
+      script: brief,
+      caption: captionPrompt,
+      image: tasks.image ? brief : undefined,
+      video: tasks.video ? brief : undefined,
+    },
+    cost_estimate_usd: totalCost,
+    tokens_in: copy.result.tokens ?? 0,
+    tokens_out: captionResult.result.tokens ?? 0,
+    compliance_report_path: complianceResult.report_path,
+    qa_report_path: qaReportPath,
+    watcher_report_path: watcherReportPath,
+    outputs,
+    fallback_used: copy.fallback_triggered || captionResult.fallback_triggered,
+  };
+  writeManifest(join(pieceDir, "manifest.json"), manifest);
+
   transitionStatus(fm.id, "draft", "scheduled", {
     piecesDir: piecesRootFor(opts),
   });
@@ -413,6 +462,8 @@ async function processPiece(
     piecesDir: piecesRootFor(opts),
   });
   scheduled.frontmatter.compliance_report = complianceResult.report_path;
+  scheduled.frontmatter.claims_tag = watcherReport.tag;
+  scheduled.frontmatter.watcher_report_path = watcherReportPath;
   writeFileSync(
     pieceFilePath(fm.id, {
       piecesDir: piecesRootFor(opts),

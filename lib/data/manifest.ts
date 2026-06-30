@@ -30,6 +30,7 @@ export interface ManifestPayload {
   tokens_out?: number;
   compliance_report_path: string;
   qa_report_path?: string;
+  watcher_report_path?: string;
   outputs?: string[];
   fallback_used?: boolean;
 }
@@ -93,6 +94,7 @@ export function writeManifest(
     tokens_out: payload.tokens_out ?? 0,
     compliance_report_path: normalizeStoredPath(payload.compliance_report_path) ?? "",
     qa_report_path: normalizeStoredPath(payload.qa_report_path),
+    watcher_report_path: normalizeStoredPath(payload.watcher_report_path),
     outputs: (payload.outputs ?? []).map((output) => normalize(output)),
     fallback_used: payload.fallback_used ?? false,
   };

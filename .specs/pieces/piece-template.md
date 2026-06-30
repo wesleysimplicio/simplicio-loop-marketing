@@ -12,6 +12,7 @@ provider_override:
   image: null
   video: null
 locale: pt-BR
+claims_tag: UNVERIFIED
 ---
 
 # Brief
@@ -78,6 +79,7 @@ Caption optimized for Facebook (longer-form acceptable, link-friendly).
 - [ ] All platform captions present
 - [ ] Tech specs verified against platform constraints
 - [ ] Compliance check passed (`pass: true`)
+- [ ] Watcher gate passed (claims_tag: MEASURED or CANON)
 - [ ] Target metrics defined
 - [ ] Schedule set in Notion calendar
 

@@ -2,6 +2,11 @@ import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } fr
 import { dirname, join, resolve } from "node:path";
 import { pushStatus } from "../calendar/notion";
 import { readPiece, transitionStatus } from "../pieces/store";
+import {
+  readWatcherReport,
+  checkClaimsGate,
+} from "../gate/watcher-gate";
+import { enforceClaimsGate, writeGateEnforcement } from "../gate/claims-gate";
 
 interface PromoteOptions {
   root: string;
@@ -75,6 +80,12 @@ async function maybeMarkMeasured(
   transitionStatus(pieceId, "published", "measured", {
     piecesDir: piecesRootFor(opts),
   });
+
+  // When transitioning to measured, write claims_tag too (performance-verified)
+  const updated = readPiece(pieceId, { piecesDir: piecesRootFor(opts) });
+  updated.frontmatter.claims_tag = "MEASURED";
+  const { writePiece } = await import("../pieces/store");
+  writePiece(updated, { piecesDir: piecesRootFor(opts) });
 
   if (piece.frontmatter.notion_page_id && process.env.NOTION_TOKEN) {
     await pushStatus(pieceId, "measured", { root: opts.root });
@@ -184,6 +195,28 @@ export async function runPromoteLoop(opts: PromoteOptions): Promise<{
     const pieceMeta = piece?.frontmatter;
     const client = pieceMeta?.client ?? w.client ?? "unknown";
     const dateStr = pieceMeta?.date?.slice(0, 10) ?? today;
+
+    // === CLAIMS GATE CHECK ===
+    // Block promotion of UNVERIFIED pieces — no paid media spend without verification.
+    const gateRoot = engineRoot(opts.root);
+    const gateReport = readWatcherReport(gateRoot, w.piece_id);
+    const claimsCheck = checkClaimsGate(w.piece_id, gateReport);
+    const gateEnforcement = enforceClaimsGate(w.piece_id, gateReport);
+    writeGateEnforcement(gateRoot, gateEnforcement);
+
+    if (gateEnforcement.blocked) {
+      process.stdout.write(
+        `[promote] gate-blocked: ${w.piece_id} is ${claimsCheck.tag} — skipping promotion\n`,
+      );
+      appendLearning(gateRoot, {
+        date: today,
+        piece_id: w.piece_id,
+        channel: w.channel,
+        reason: `claims-gate blocked: ${claimsCheck.tag} — ${claimsCheck.reason ?? "no watcher verification"}`,
+      });
+      continue;
+    }
+
     const adsProvider = pieceMeta?.provider_override?.ads ?? "meta-ads";
     const dir = resolve(outputsRoot, client, dateStr, w.piece_id);
     if (!existsSync(dir)) mkdirSync(dir, { recursive: true });

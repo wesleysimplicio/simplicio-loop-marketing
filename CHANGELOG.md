@@ -6,6 +6,16 @@ All notable changes to this project are documented here. Format based on
 
 ## [Unreleased]
 
+### Added
+
+- **watcher-gate (N-Nest style)**: independent verification layer in the generate loop that re-checks caption pillar hashtags, script topic coverage, caption length constraints, placeholder leakage, and overpromise language before allowing draft→scheduled transition. Every output receives a `claims_tag`: `MEASURED`, `CANON`, or `UNVERIFIED`.
+- **claims-gate**: enforce claims discipline at promote time — UNVERIFIED pieces blocked from ad creation. Watcher reports persisted under `data/gate/<piece-id>.json`.
+- `.skills/watcher-gate/SKILL.md`: skill manifest documenting gate rules, integration points, and DoD.
+- Piece frontmatter: `claims_tag` and `watcher_report_path` optional fields. Template defaults to `claims_tag: UNVERIFIED`.
+- Manifest payload now includes `watcher_report_path`.
+- `maybeMarkMeasured` sets `claims_tag: MEASURED` when performance data confirms value.
+- Promote loop checks claims gate before creating ad drafts; blocked pieces logged to `data/learnings.md`.
+
 ## [0.2.13] - 2026-05-19
 
 ### Added

@@ -1,3 +1,5 @@
+export type ClaimsTag = "MEASURED" | "CANON" | "UNVERIFIED";
+
 export interface PieceFrontmatter {
   id: string;
   client: string;
@@ -19,6 +21,8 @@ export interface PieceFrontmatter {
   locale?: string;
   compliance_report?: string;
   compliance_block?: Array<{ rule_id: string; snippet?: string }>;
+  claims_tag?: ClaimsTag;
+  watcher_report_path?: string;
 }
 
 export interface ParsedPiece {
