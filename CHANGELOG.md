@@ -6,6 +6,14 @@ All notable changes to this project are documented here. Format based on
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-07-01
+
+### Changed
+
+- Hardened release-readiness and handoff guidance: added `docs/release-readiness.md` with a minimum readiness checklist, claims/evidence rules, and a handoff template; expanded `docs/architecture-map.md`, `docs/domain-map.md`, `docs/local-setup.md`, and `docs/troubleshooting.md` with clearer setup and troubleshooting detail; minor `README.md` update.
+
+## [0.3.0] - 2026-06-30
+
 ### Added
 
 - **watcher-gate (N-Nest style)**: independent verification layer in the generate loop that re-checks caption pillar hashtags, script topic coverage, caption length constraints, placeholder leakage, and overpromise language before allowing draft→scheduled transition. Every output receives a `claims_tag`: `MEASURED`, `CANON`, or `UNVERIFIED`.
