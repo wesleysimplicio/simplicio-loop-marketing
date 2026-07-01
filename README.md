@@ -151,7 +151,7 @@ Full design: [.specs/architecture/DESIGN.md](./.specs/architecture/DESIGN.md).
 This repository now ships with an applied [llm-project-mapper](https://github.com/wesleysimplicio/llm-project-mapper) overlay so agents and contributors get an operational map by default.
 
 - Entry docs: [AGENTS.md](./AGENTS.md), [PRD.md](./PRD.md), [PROGRESS.md](./PROGRESS.md), [GOAL_RESULT.md](./GOAL_RESULT.md)
-- Mapper-owned operational docs: [docs/local-setup.md](./docs/local-setup.md), [docs/domain-map.md](./docs/domain-map.md), [docs/architecture-map.md](./docs/architecture-map.md), [docs/troubleshooting.md](./docs/troubleshooting.md)
+- Mapper-owned operational docs: [docs/local-setup.md](./docs/local-setup.md), [docs/domain-map.md](./docs/domain-map.md), [docs/architecture-map.md](./docs/architecture-map.md), [docs/troubleshooting.md](./docs/troubleshooting.md), [docs/release-readiness.md](./docs/release-readiness.md)
 - Agent overlays: [.agents/README.md](./.agents/README.md), [.claude/settings.json](./.claude/settings.json), [INIT.md](./INIT.md)
 
 ## Repo layout
