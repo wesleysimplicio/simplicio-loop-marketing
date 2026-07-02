@@ -22,6 +22,7 @@ import {
   type Platform as TechSpecsPlatform,
 } from "../qa/tech-specs";
 import { runGate, writeWatcherReport } from "../gate/watcher-gate";
+import { encodeToon } from "../format/toon";
 
 interface GenerateOptions {
   root: string;
@@ -78,6 +79,28 @@ function typeToTasks(type: string): {
     default:
       return { copy: "caption", image: "quote-card" };
   }
+}
+
+/**
+ * Structured piece metadata (client, type, pillar, platforms, ...) that
+ * gives the LLM prompt context about the piece it's writing copy for.
+ * Encoded as TOON (not JSON.stringify) before it lands in PROMPT CONTENT —
+ * TOON's tabular/inline-list rules cut tokens vs raw JSON on this kind of
+ * small, mostly-scalar structured payload. This is unrelated to the
+ * JSON.stringify(body) calls in lib/providers/llm.ts, which serialize the
+ * outbound HTTP request envelope (the wire protocol) and must stay JSON.
+ */
+function pieceContext(fm: PieceFrontmatter): Record<string, unknown> {
+  const ctx: Record<string, unknown> = {
+    id: fm.id,
+    client: fm.client,
+    type: fm.type,
+    pillar: fm.pillar,
+    platforms: fm.platforms,
+  };
+  if (fm.campaign) ctx.campaign = fm.campaign;
+  if (fm.locale) ctx.locale = fm.locale;
+  return ctx;
 }
 
 function outputsRootFor(opts: GenerateOptions): string {
@@ -197,6 +220,9 @@ async function processPiece(
   const fallbackLLM = copyRow.fallback;
 
   const brief = piece.body.slice(0, 800);
+  // Structured piece metadata goes into the prompt as TOON, not JSON — same
+  // information, fewer tokens on the wire to the LLM.
+  const scriptPrompt = `${encodeToon(pieceContext(fm))}\n\n${brief}`;
 
   const copy = await runWithFallback({
     task: tasks.copy,
@@ -204,10 +230,12 @@ async function processPiece(
     fallbackName: fallbackLLM,
     log_path: usageLogPath,
     primary: () =>
-      getLLMProviderByName(primaryLLM).generate(brief, { task: tasks.copy }),
+      getLLMProviderByName(primaryLLM).generate(scriptPrompt, { task: tasks.copy }),
     fallback: fallbackLLM
       ? () =>
-          getLLMProviderByName(fallbackLLM).generate(brief, { task: tasks.copy })
+          getLLMProviderByName(fallbackLLM).generate(scriptPrompt, {
+            task: tasks.copy,
+          })
       : undefined,
   });
 
@@ -439,7 +467,7 @@ async function processPiece(
       video: videoUsed,
     },
     prompts: {
-      script: brief,
+      script: scriptPrompt,
       caption: captionPrompt,
       image: tasks.image ? brief : undefined,
       video: tasks.video ? brief : undefined,
