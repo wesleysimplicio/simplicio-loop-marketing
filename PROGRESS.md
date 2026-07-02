@@ -2,9 +2,23 @@
 
 ## Current Status
 
-Completed.
+Completed — epic #46 (issues #47-#60) implemented on `claude/open-issues-95whqo`.
 
 ## Checkpoints
+
+### Checkpoint 4 (2026-07-02, epic #46)
+
+Status: completed
+
+Task: Implement all 14 open child issues (#47-#60) of epic #46 — autonomous SaaS marketing loop across social networks and dev communities.
+
+Result: See CHANGELOG.md [Unreleased] for the full list. Landed as 11 focused commits on `claude/open-issues-95whqo`: channel registry + integration broker, community compliance gate (3-state, addressing reviewer feedback on silent-pass risk), accrual-based analytics scoring (addressing reviewer feedback on one-shot-snapshot ranking), paid-growth budget guardrails, campaign CLI loop, browser/computer-use automation lane, community reply loop, Yool tuple-space board, strategy playbooks + evidence-aware content templates, root super-skill orchestrator, runtime-first ADR, and a capstone E2E mock launch loop test tying every lane together.
+
+Validation:
+- `npx tsc --noEmit` — clean.
+- `npx playwright test` — 171 passed. 4 pre-existing failures in `e2e/generate-loop.spec.ts`, `e2e/notion-sync.spec.ts`, `e2e/promote-loop.spec.ts` confirmed to reproduce identically against `main` in a clean `git worktree` — unrelated to this branch (touches none of the files those tests exercise).
+
+Next: Push and open a draft PR referencing #46-#60.
 
 ### Checkpoint 1
 
