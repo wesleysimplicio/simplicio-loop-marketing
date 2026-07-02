@@ -41,6 +41,8 @@ If you find yourself typing a provider name inside a skill body or agent prompt,
 
 All credentials and feature flags live in `.env` (template: `.env.example`). Production runs default to `DRY_RUN=true` until a piece is explicitly promoted.
 
+**Runtime dependency.** This project is runtime-first: it depends on `simplicio-runtime` as its orchestration kernel and does not require `simplicio-sprint` or `simplicio-prompt`. See `.specs/architecture/ADR-002-runtime-first.md`.
+
 ## Mandatory Loop per Piece
 
 Every piece execution MUST follow this sequence:
@@ -94,6 +96,13 @@ The router picks it up automatically. Existing skills do not change.
 - `hyperframes-prompt-builder` — translates a piece brief into the HyperFrames composition spec; selected by `video-prompt-builder` when the matrix resolves to `hyperframes`.
 - `install-hyperframes` — one-shot bootstrap playbook that wires the three HyperFrames skills + provider layer + routing matrix into a fresh clone (idempotent).
 - `llm-router` — selects and calls an LLM provider based on `task_type`, PROVIDERS.md, and overrides.
+- `simplicio-loop-marketing` — root super-skill orchestrator for the autonomous SaaS marketing loop (discover → orient → decide → create → verify → publish → measure → promote → learn); sequences the lanes below by capability, never by vendor.
+- `content-engineering-authentic` — renders the five evidence-aware content templates (dev article, social derivative, video script, Reddit/forum answer, launch thread); marks missing evidence explicitly instead of inventing it.
+- `watcher-gate` — N-Nest style independent verification pass; tags every output `MEASURED` / `CANON` / `UNVERIFIED`.
+
+## Skills Available (planned, code lives in `lib/` without a matching `.skills/*/SKILL.md` yet)
+
+- Channel registry (`lib/channels/registry.ts`), integration broker (`lib/integrations/broker.ts`), community compliance gate (`lib/compliance/community.ts`), accrual-based analytics scoring (`lib/analytics/score.ts`), paid-growth budget guardrails (`lib/promotion/budget-guardrail.ts`), campaign loop CLI (`lib/cli/campaign.ts`), Yool tuple-space board (`lib/yool/board.ts`, see `.specs/architecture/YOOL-BOARD.md`), community reply loop (`lib/community/reply-loop.ts`), and the governed browser/computer-use lane (`lib/automation/browser-lane.ts`).
 
 ## Forbidden
 

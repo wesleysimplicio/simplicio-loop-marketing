@@ -7,6 +7,10 @@ import {
   checkClaimsGate,
 } from "../gate/watcher-gate";
 import { enforceClaimsGate, writeGateEnforcement } from "../gate/claims-gate";
+import {
+  DEFAULT_GUARDRAILS,
+  recordPromotionAttempt,
+} from "../promotion/budget-guardrail";
 
 interface PromoteOptions {
   root: string;
@@ -231,11 +235,22 @@ export async function runPromoteLoop(opts: PromoteOptions): Promise<{
       paused: true,
       source_save_rate: w.save_rate,
       generated_at: new Date().toISOString(),
+      guardrails: DEFAULT_GUARDRAILS,
     };
     const finalPath = existsSync(draftPath)
       ? join(dir, `ads-draft.${Date.now()}.json`)
       : draftPath;
     writeFileSync(finalPath, JSON.stringify(draft, null, 2));
+    recordPromotionAttempt(gateRoot, {
+      piece_id: w.piece_id,
+      timestamp: new Date().toISOString(),
+      metric: "save_rate",
+      channel: w.channel ?? "unknown",
+      audience: w.channel ?? "unknown",
+      hypothesis: "top-20-by-save-rate organic piece is likely to convert paid traffic at a similar rate",
+      guardrails: DEFAULT_GUARDRAILS,
+      paused: true,
+    });
     appendFileSync(
       resolve(dataRootFor(opts), "promotions.jsonl"),
       `${JSON.stringify({

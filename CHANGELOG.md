@@ -6,6 +6,25 @@ All notable changes to this project are documented here. Format based on
 
 ## [Unreleased]
 
+### Added
+
+Autonomous SaaS marketing loop across social networks and dev communities (epic #46, issues #47-#60):
+
+- **Channel registry** (`lib/channels/registry.ts`, issue #49): typed registry of 8 social platforms and 41 developer/community portals across 10 languages (id, audience, link policy, tone, publish method, compliance notes, frequency limits).
+- **Integration broker** (`lib/integrations/broker.ts`, issue #52): resolves publish/schedule/fetch_metrics/draft_ad/comment_monitor/evidence_capture to the safest adapter (api/mcp/browser/computer-use/manual) per channel, with dry-run simulation and structured failure logging.
+- **Community compliance gate** (`lib/compliance/community.ts`, issue #56): anti-spam/etiquette audit with a `pass | fail | needs_review` three-state result — checks that cannot be evaluated (unreadable channel rules, corrupted post history) hold for human review instead of silently passing.
+- **Accrual-based analytics scoring** (`lib/analytics/score.ts`, issue #54): ranks amplification candidates by the delta between successive polls (normalized per day), not a single cached snapshot, so slow-compounding threads aren't starved by yesterday's spike; flags implausible vanity-metric spikes as spam risk.
+- **Strategy playbooks** (`.specs/strategy/PLAYBOOKS.md`, issue #50): per-channel launch playbook for the 10 priority international dev/community channels.
+- **Content templates** (`.specs/pieces/templates/*.md`, `lib/content/templates.ts`, issue #57): five evidence-aware templates (dev article, social derivative, video script, Reddit/forum answer, launch thread) that mark missing evidence explicitly and render English-first before any localized adaptation.
+- **Browser/computer-use lane** (`lib/automation/browser-lane.ts`, issue #51): governed evidence capture with redaction and failure-mode classification (login_required, captcha, two_factor, platform_rejection, policy_block); DRY_RUN-gated, live actions require explicit human approval.
+- **Paid-growth budget guardrails** (`lib/promotion/budget-guardrail.ts`, issue #55): max daily spend, max CPA/CPL, max experiment duration, and stop-loss enforcement wired into the existing ads-draft flow, plus an append-only promotion-attempt audit log with hypothesis.
+- **Campaign CLI** (`lib/cli/campaign.ts`, `lib/campaigns/campaign.ts`, issue #53): `marketing-engine campaign --brief <CAMPAIGN.md>` plans a channel/language/format-tagged piece queue and enforces organic-before-paid by default; `campaign review <id>` summarizes winners/losers/spend.
+- **Yool tuple-space board** (`lib/yool/board.ts`, `.specs/architecture/YOOL-BOARD.md`, issue #59): event-sourced tuple board across 13 tuple classes and 11 worker lanes; mandatory agent-manifest guardrails (cpu/disk/timeout quotas); `WorkerGovernor` bounds concurrency per lane.
+- **Community reply loop** (`lib/community/reply-loop.ts`, issue #60): classifies incoming comments, assigns risk level, drafts evidence-honest replies for human review; never posts autonomously.
+- **Root super-skill** (`.skills/simplicio-loop-marketing/SKILL.md`, issue #48): orchestrates the full discover→...→learn loop by capability.
+- **Runtime-first ADR** (`.specs/architecture/ADR-002-runtime-first.md`, issue #47): confirms zero required dependency on `simplicio-sprint`/`simplicio-prompt`.
+- **E2E mock launch loop** (`e2e/saas-launch-loop.spec.ts`, issue #58): proves the full loop end-to-end against mocks, DRY_RUN throughout, never a live provider/platform call.
+
 ## [0.3.1] - 2026-07-01
 
 ### Changed
