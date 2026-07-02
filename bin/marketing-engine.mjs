@@ -23,6 +23,7 @@ Commands:
   check       Validate provider env keys
   generate    Run generation loop (DRY_RUN-safe)
   promote     Run promotion loop
+  campaign    Plan a piece queue from a CAMPAIGN.md brief, or review one
   new-piece   Create a new piece markdown from the template
   status      Show pipeline state (counts + recent runs + 24h cost)
   logs        Tail data/llm-usage.jsonl
@@ -661,6 +662,12 @@ function commandPromote(args) {
   spawnTsx(script, extra, hostRoot);
 }
 
+function commandCampaign(args) {
+  const hostRoot = resolveHostRoot(args);
+  const script = join(PACKAGE_ROOT, "lib", "cli", "campaign.ts");
+  spawnTsx(script, args._.slice(1), hostRoot);
+}
+
 function commandNewPiece(args) {
   const hostRoot = resolveHostRoot(args);
   const script = join(PACKAGE_ROOT, "lib", "cli", "new-piece.ts");
@@ -736,6 +743,9 @@ function main() {
       return;
     case "promote":
       commandPromote(args);
+      return;
+    case "campaign":
+      commandCampaign(args);
       return;
     case "new-piece":
       commandNewPiece(args);
