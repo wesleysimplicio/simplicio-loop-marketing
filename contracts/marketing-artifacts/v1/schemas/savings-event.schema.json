@@ -1,0 +1,46 @@
+{
+  "$id": "simplicio.savings-event/v1",
+  "type": "object",
+  "required": [
+    "schema",
+    "event_id",
+    "ts",
+    "source",
+    "estimator",
+    "surfaces",
+    "tokens",
+    "proof",
+    "prev_event_hash",
+    "event_hash"
+  ],
+  "properties": {
+    "schema": { "const": "simplicio.savings-event/v1" },
+    "event_id": { "type": "string" },
+    "ts": { "type": "string" },
+    "source": { "type": "string" },
+    "estimator": { "type": "string" },
+    "surfaces": { "type": "array", "items": { "type": "string" } },
+    "tokens": {
+      "type": "object",
+      "required": ["baseline_total", "actual_total", "saved_total", "pct_saved"],
+      "properties": {
+        "baseline_total": { "type": "number" },
+        "actual_total": { "type": "number" },
+        "saved_total": { "type": "number" },
+        "pct_saved": { "type": "number" }
+      }
+    },
+    "proof": {
+      "type": "object",
+      "required": ["kind", "methodology"],
+      "properties": {
+        "kind": { "enum": ["estimated", "measured"] },
+        "methodology": { "type": "string" }
+      }
+    },
+    "piece_id": { "type": "string" },
+    "note": { "type": "string" },
+    "prev_event_hash": { "type": ["string", "null"] },
+    "event_hash": { "type": "string" }
+  }
+}

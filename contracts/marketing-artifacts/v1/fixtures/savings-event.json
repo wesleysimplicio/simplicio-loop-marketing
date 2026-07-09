@@ -1,0 +1,23 @@
+{
+  "schema": "simplicio.savings-event/v1",
+  "event_id": "000000000000000000000000",
+  "ts": "1970-01-01T00:00:00.000Z",
+  "source": "loop:journal-skip",
+  "estimator": "heuristic:chars-div-4",
+  "surfaces": [
+    "generate"
+  ],
+  "tokens": {
+    "baseline_total": 1200,
+    "actual_total": 150,
+    "saved_total": 1050,
+    "pct_saved": 87.5
+  },
+  "proof": {
+    "kind": "estimated",
+    "methodology": "baseline = estimated re-derivation cost (heuristic:chars-div-4)"
+  },
+  "piece_id": "PIECE-fixture-001",
+  "prev_event_hash": null,
+  "event_hash": "0000000000000000000000000000000000000000000000000000000000000000"
+}

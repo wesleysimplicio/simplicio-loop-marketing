@@ -1,0 +1,18 @@
+{
+  "$id": "marketing-event/v1",
+  "type": "object",
+  "required": ["schema", "ts", "run_id", "kind", "level"],
+  "properties": {
+    "schema": { "const": "marketing-event/v1" },
+    "ts": { "type": "string" },
+    "run_id": { "type": "string" },
+    "kind": { "type": "string" },
+    "level": { "enum": ["info", "warn", "error"] },
+    "piece_id": { "type": "string" },
+    "client": { "type": "string" },
+    "provider": { "type": "string" },
+    "phase": { "type": "string" },
+    "verdict": { "type": "string" },
+    "data": { "type": "object" }
+  }
+}
