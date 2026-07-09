@@ -18,7 +18,7 @@
  * sees the same attempt memory. Absence never blocks the TS loop.
  */
 
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { resolve, join } from "node:path";
 import { spawnSync } from "node:child_process";
 import { listPieces } from "../pieces/store";
@@ -34,6 +34,7 @@ import {
   recordAttempt,
 } from "../loop/journal";
 import { writeTuple, WorkerGovernor } from "../yool/board";
+import { publishVerified, receiptPath } from "../publish/verify-pipeline";
 
 export type LoopMode = "drain" | "converge";
 
@@ -53,6 +54,7 @@ export interface LoopSummary {
   blocked: number;
   failures: number;
   skipped_stalled: number;
+  published: number;
   promoted: number;
   stopped_reason: "drained" | "all_stalled" | "max_iter" | "converged";
 }
@@ -127,6 +129,7 @@ export async function runLoop(opts: LoopOptions): Promise<LoopSummary> {
     blocked: 0,
     failures: 0,
     skipped_stalled: 0,
+    published: 0,
     promoted: 0,
     stopped_reason: "max_iter",
   };
@@ -280,6 +283,24 @@ export async function runLoop(opts: LoopOptions): Promise<LoopSummary> {
     }
   }
 
+  // Publish pass: every scheduled piece goes through the verified pipeline
+  // (manifest contract → claims gate → compliance → publish → receipt).
+  // DRY_RUN (default) writes drafts + receipts and never fakes `published`.
+  for (const piece of listPieces({ piecesDir, status: "scheduled", client: opts.client })) {
+    const fm = piece.frontmatter;
+    const rp = receiptPath(root, fm.client, fm.date.slice(0, 10), fm.id);
+    if (existsSync(rp)) {
+      try {
+        const prior = JSON.parse(readFileSync(rp, "utf8"));
+        if (prior.verdict === "published") continue;
+      } catch {
+        // unreadable receipt → run the pipeline again
+      }
+    }
+    const receipt = await publishVerified(fm.id, { root });
+    if (receipt.verdict === "published") summary.published++;
+  }
+
   // Promote pass: winners → paused ads drafts, losers → learnings. Runs on
   // whatever analytics exist; a fresh host simply promotes nothing.
   const promoteResult = await runPromoteLoop({ root });
@@ -311,7 +332,8 @@ export async function cliEntry(argv: string[]): Promise<void> {
   process.stdout.write(
     `loop: mode=${summary.mode} iterations=${summary.iterations} processed=${summary.processed} ` +
       `advanced=${summary.advanced} blocked=${summary.blocked} failures=${summary.failures} ` +
-      `stalled=${summary.skipped_stalled} promoted=${summary.promoted} stop=${summary.stopped_reason}\n`,
+      `stalled=${summary.skipped_stalled} published=${summary.published} promoted=${summary.promoted} ` +
+      `stop=${summary.stopped_reason}\n`,
   );
   if (summary.failures > 0 && summary.advanced === 0) {
     process.exitCode = 2;
