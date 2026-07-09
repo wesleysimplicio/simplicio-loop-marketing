@@ -56,6 +56,7 @@
     "test:e2e:headed": "playwright test --headed",
     "typecheck": "tsc --noEmit",
     "lint": "node scripts/lint-conventions.mjs",
+    "budget": "node scripts/token-budget.mjs",
     "router:check": "bash .ralph/provider-check.sh",
     "cli": "node bin/marketing-engine.mjs",
     "cli:init": "node bin/marketing-engine.mjs init",

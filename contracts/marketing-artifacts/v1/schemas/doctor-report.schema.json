@@ -1,0 +1,57 @@
+{
+  "$id": "marketing-doctor-report/v1",
+  "type": "object",
+  "required": ["schema", "ts", "root", "dry_run", "env", "pieces", "events", "savings", "loop", "operator"],
+  "properties": {
+    "schema": { "const": "marketing-doctor-report/v1" },
+    "ts": { "type": "string" },
+    "root": { "type": "string" },
+    "dry_run": { "type": "boolean" },
+    "env": {
+      "type": "object",
+      "required": ["providers_with_keys", "kill_switch_run_log"],
+      "properties": {
+        "providers_with_keys": { "type": "array", "items": { "type": "string" } },
+        "kill_switch_run_log": { "type": "boolean" }
+      }
+    },
+    "pieces": { "type": "object" },
+    "events": {
+      "type": "object",
+      "required": ["path", "present", "count", "gate_fail_rate", "stalls"],
+      "properties": {
+        "present": { "type": "boolean" },
+        "count": { "type": "integer" },
+        "gate_fail_rate": { "type": "number" },
+        "stalls": { "type": "integer" }
+      }
+    },
+    "savings": {
+      "type": "object",
+      "required": ["count", "saved_total", "chain_ok"],
+      "properties": {
+        "count": { "type": "integer" },
+        "saved_total": { "type": "number" },
+        "chain_ok": { "type": "boolean" }
+      }
+    },
+    "loop": {
+      "type": "object",
+      "required": ["journal_present", "items", "stalled_items"],
+      "properties": {
+        "journal_present": { "type": "boolean" },
+        "items": { "type": "integer" },
+        "stalled_items": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "operator": {
+      "type": "object",
+      "required": ["hooks_present", "action_gate_selftest", "python_workers"],
+      "properties": {
+        "hooks_present": { "type": "boolean" },
+        "action_gate_selftest": { "enum": ["pass", "fail", "not_run"] },
+        "python_workers": { "enum": ["resolved", "absent"] }
+      }
+    }
+  }
+}

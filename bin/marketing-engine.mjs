@@ -24,7 +24,9 @@ Commands:
   generate    Run generation loop (DRY_RUN-safe)
   promote     Run promotion loop
   loop        Autonomous loop: drain the piece backlog with attempt memory
-              (journal, stall skip) then promote; DRY_RUN-safe
+              (journal, stall skip) then publish-verify and promote; DRY_RUN-safe
+  doctor      Self-diagnostic: env keys, event stream, savings chain, loop
+              journal, operator hooks (human on stderr, JSON on stdout)
   campaign    Plan a piece queue from a CAMPAIGN.md brief, or review one
   new-piece   Create a new piece markdown from the template
   status      Show pipeline state (counts + recent runs + 24h cost)
@@ -671,6 +673,12 @@ function commandPromote(args) {
   spawnTsx(script, extra, hostRoot);
 }
 
+function commandDoctor(args) {
+  const hostRoot = resolveHostRoot(args);
+  const script = join(PACKAGE_ROOT, "lib", "cli", "doctor.ts");
+  spawnTsx(script, args._.slice(1), hostRoot);
+}
+
 function commandLoop(args) {
   const hostRoot = resolveHostRoot(args);
   const script = join(PACKAGE_ROOT, "lib", "cli", "loop.ts");
@@ -767,6 +775,9 @@ function main() {
       return;
     case "loop":
       commandLoop(args);
+      return;
+    case "doctor":
+      commandDoctor(args);
       return;
     case "campaign":
       commandCampaign(args);
