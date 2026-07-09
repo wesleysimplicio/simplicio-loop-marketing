@@ -1,0 +1,11 @@
+{
+  "schema": "marketing-loop-state/v1",
+  "ts": "1970-01-01T00:00:00.000Z",
+  "run_id": "run-fixture",
+  "item_id": "PIECE-fixture-001",
+  "attempt": 1,
+  "action": "generate",
+  "gate": "fail",
+  "fingerprint": "6ba4ef1168655c21",
+  "note": "fixture"
+}

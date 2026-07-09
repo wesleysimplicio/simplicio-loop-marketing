@@ -23,6 +23,8 @@ Commands:
   check       Validate provider env keys
   generate    Run generation loop (DRY_RUN-safe)
   promote     Run promotion loop
+  loop        Autonomous loop: drain the piece backlog with attempt memory
+              (journal, stall skip) then promote; DRY_RUN-safe
   campaign    Plan a piece queue from a CAMPAIGN.md brief, or review one
   new-piece   Create a new piece markdown from the template
   status      Show pipeline state (counts + recent runs + 24h cost)
@@ -37,8 +39,10 @@ Commands:
 Options:
   --force         Overwrite existing files during init
   --root          Override host project root (default: cwd)
-  --max-iter <N>  Cap iterations on generate / promote
+  --max-iter <N>  Cap iterations on generate / promote / loop
   --window <Nd>   Window for promote / cost / ab-report (default 7d)
+  --mode <m>      loop mode: drain (default) or converge
+  --client <slug> loop: only process pieces for this client
 
 Docs: https://github.com/wesleysimplicio/marketing-engine
 `;
@@ -599,7 +603,7 @@ function replayOutput(fd, text) {
   writeSync(fd, text);
 }
 
-function spawnTsx(scriptPath, extraArgs, hostRoot) {
+function spawnTsx(scriptPath, extraArgs, hostRoot, options = {}) {
   const tsx = resolveTsx();
   if (!tsx) {
     console.error(
@@ -629,10 +633,15 @@ function spawnTsx(scriptPath, extraArgs, hostRoot) {
   if (env.DRY_RUN === undefined) env.DRY_RUN = "true";
   const scriptUrl = pathToFileURL(scriptPath).href;
   const evalCode = `import(${JSON.stringify(scriptUrl)}).then((m) => m.cliEntry(${JSON.stringify(extraArgs)}))`;
+  // Long-running commands (the loop) stream in real time via stdio:
+  // "inherit"; short commands keep the buffered replay (default) so their
+  // output ordering is stable.
   const result = spawnSync(process.execPath, [tsx, "--eval", evalCode], {
     cwd: hostRoot,
     env,
-    encoding: "utf8",
+    ...(options.stdio === "inherit"
+      ? { stdio: "inherit" }
+      : { encoding: "utf8" }),
   });
   replayOutput(process.stdout.fd, result.stdout);
   replayOutput(process.stderr.fd, result.stderr);
@@ -660,6 +669,18 @@ function commandPromote(args) {
   const extra = [];
   if (args.window) extra.push("--window", args.window);
   spawnTsx(script, extra, hostRoot);
+}
+
+function commandLoop(args) {
+  const hostRoot = resolveHostRoot(args);
+  const script = join(PACKAGE_ROOT, "lib", "cli", "loop.ts");
+  // --mode / --client are loop-local flags: they flow through args._ so the
+  // global parser never swallows flags other subcommands (new-piece) own.
+  const extra = [...args._.slice(1)];
+  if (args.maxIter !== null && args.maxIter !== undefined) {
+    extra.push("--max-iter", String(args.maxIter));
+  }
+  spawnTsx(script, extra, hostRoot, { stdio: "inherit" });
 }
 
 function commandCampaign(args) {
@@ -743,6 +764,9 @@ function main() {
       return;
     case "promote":
       commandPromote(args);
+      return;
+    case "loop":
+      commandLoop(args);
       return;
     case "campaign":
       commandCampaign(args);

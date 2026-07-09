@@ -25,7 +25,7 @@ import { runGate, writeWatcherReport } from "../gate/watcher-gate";
 import { encodeToon } from "../format/toon";
 import { emitEvent } from "../observability/events";
 
-interface GenerateOptions {
+export interface GenerateOptions {
   root: string;
   piecesDir?: string;
   outputsDir?: string;
@@ -229,7 +229,7 @@ export async function runGenerateLoop(
   return summary;
 }
 
-async function processPiece(
+export async function processPiece(
   piece: { frontmatter: PieceFrontmatter; body: string },
   opts: GenerateOptions,
 ): Promise<void> {
