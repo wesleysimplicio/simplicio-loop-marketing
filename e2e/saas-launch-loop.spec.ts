@@ -16,6 +16,8 @@ import { appendSnapshot, readSnapshots, computeAccrual, classifyByAccrual } from
 import { checkGuardrails, recordPromotionAttempt, DEFAULT_GUARDRAILS } from "../lib/promotion/budget-guardrail";
 import { appendLearning } from "../lib/cli/promote";
 import { writeTuple, readBoard } from "../lib/yool/board";
+import { runLoop } from "../lib/cli/loop";
+import { serializePiece } from "../lib/pieces/frontmatter";
 
 /**
  * Issue #58 — end-to-end mocked SaaS launch loop.
@@ -281,4 +283,88 @@ test("mocked SaaS launch loop wires campaign -> pieces -> compliance -> gate -> 
   expect(board.some((t) => t.class === "publish.dry_run")).toBe(true);
   expect(board.some((t) => t.class === "winner.promote")).toBe(true);
   expect(board.some((t) => t.class === "loser.learning")).toBe(true);
+});
+
+/**
+ * The same journey, driven by the ONE command the loop protocol binds:
+ * `marketing-engine loop` (runLoop). Pieces drain through generate's real
+ * gates, scheduled pieces go through the verified publish pipeline, and
+ * the promote pass turns the analytics winner into a paused ads draft —
+ * no manual lane chaining, all state auditable (events, journal, board,
+ * receipts).
+ */
+test("capstone: the autonomous loop command drives brief -> publish -> promote end-to-end", async () => {
+  process.env.DRY_RUN = "true";
+  const host = mkdtempSync(join(tmpdir(), "me-capstone-"));
+  const ws = join(host, ".marketing-engine");
+  mkdirSync(join(ws, "pieces"), { recursive: true });
+  mkdirSync(join(ws, "data"), { recursive: true });
+
+  for (const id of ["PIECE-cap-winner", "PIECE-cap-loser"]) {
+    writeFileSync(
+      join(ws, "pieces", `${id}.md`),
+      serializePiece(
+        {
+          id,
+          client: "mock-saas",
+          date: "2026-07-02",
+          status: "draft",
+          type: "reel",
+          pillar: "education",
+          platforms: ["instagram"],
+          locale: "en",
+        },
+        "# Brief\n\nLaunch our new product.\n",
+      ),
+    );
+  }
+  // Mocked analytics: one clear winner, one clear loser (>=100 impressions).
+  const analytics = [
+    { piece_id: "PIECE-cap-winner", client: "mock-saas", channel: "instagram", impressions: 1000, saves: 90, captured_at: new Date().toISOString() },
+    { piece_id: "PIECE-cap-loser", client: "mock-saas", channel: "instagram", impressions: 1000, saves: 1, captured_at: new Date().toISOString() },
+  ];
+  writeFileSync(
+    join(ws, "data", "analytics.jsonl"),
+    analytics.map((r) => JSON.stringify(r)).join("\n") + "\n",
+  );
+
+  const prevCwd = process.cwd();
+  process.chdir(host);
+  let summary;
+  try {
+    summary = await runLoop({ root: host, mode: "drain", maxIter: 5 });
+  } finally {
+    process.chdir(prevCwd);
+  }
+
+  // Both pieces advanced through generate's gates and the publish pipeline.
+  expect(summary.advanced).toBe(2);
+  expect(summary.published).toBe(2);
+  expect(summary.stopped_reason).toBe("drained");
+  for (const id of ["PIECE-cap-winner", "PIECE-cap-loser"]) {
+    const dir = join(ws, "outputs", "mock-saas", "2026-07-02", id);
+    expect(existsSync(join(dir, "manifest.json"))).toBe(true);
+    const receipt = JSON.parse(readFileSync(join(dir, "publish-receipt.json"), "utf8"));
+    expect(receipt.verdict).toBe("published");
+    expect(receipt.dry_run).toBe(true);
+    expect(receipt.claims_tag).toBe("MEASURED");
+  }
+
+  // The promote pass turned the winner into a PAUSED ads draft with
+  // guardrails, and the loser into a learning entry.
+  expect(summary.promoted).toBe(1);
+  const draft = JSON.parse(
+    readFileSync(
+      join(ws, "outputs", "mock-saas", "2026-07-02", "PIECE-cap-winner", "ads-draft.json"),
+      "utf8",
+    ),
+  );
+  expect(draft.paused).toBe(true);
+  expect(draft.guardrails).toBeDefined();
+  const learnings = readFileSync(join(ws, "data", "learnings.md"), "utf8");
+  expect(learnings).toContain("PIECE-cap-loser");
+
+  // Auditable state: yool tuples per piece, journal attempts, event stream.
+  const board = readBoard(ws);
+  expect(board.filter((t) => t.class === "piece.plan" && t.status === "done")).toHaveLength(2);
 });

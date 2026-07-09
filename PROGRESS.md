@@ -2,8 +2,9 @@
 
 ## Current Status
 
-In progress — autonomous-loop evolution plan (see PRD.md) on
-`claude/simplicio-loop-marketing-plan-e52ccv`. F0–F5 done.
+Completed — autonomous-loop evolution plan (PRD.md, phases F0–F8) on
+`claude/simplicio-loop-marketing-plan-e52ccv`. Final report in
+GOAL_RESULT.md; full suite 217 passed / 0 failed.
 
 ## Checkpoints
 

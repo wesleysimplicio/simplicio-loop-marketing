@@ -1,7 +1,7 @@
 {
   "estimator": "heuristic:chars-div-4",
   "threshold_growth": 0.25,
-  "generated_at": "2026-07-09T22:37:41.914Z",
+  "generated_at": "2026-07-09T22:43:03.752Z",
   "artifacts": [
     {
       "label": "CLAUDE.md",
@@ -21,7 +21,7 @@
     },
     {
       "label": "bin/marketing-engine.mjs",
-      "tokens": 6040
+      "tokens": 6144
     },
     {
       "label": "lib/cli/generate.ts",
