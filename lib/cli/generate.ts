@@ -412,12 +412,15 @@ async function processPiece(
 
   // === WATCHER GATE (N-Nest style) ===
   // Agent produced the output above; now the watcher independently verifies.
+  // The gate checks the caption that will actually ship (the per-platform
+  // variant, which carries the pillar hashtag), not the raw LLM output.
+  const primaryPlatform = fm.platforms[0] ?? "instagram";
   const watcherInput = {
     piece_id: fm.id,
     script: copy.result.output ?? "",
-    caption: captionText,
+    caption: platformCaptions[primaryPlatform] ?? captionText,
     brief,
-    platform: fm.platforms[0] ?? "instagram",
+    platform: primaryPlatform,
     pillar: fm.pillar,
   };
   const watcherReport = runGate(watcherInput);

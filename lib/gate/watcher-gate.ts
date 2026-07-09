@@ -119,15 +119,25 @@ export function runWatcherChecks(input: WatcherInput): WatcherCheck[] {
   });
 
   // 4. No placeholder text leaked
+  // Under DRY_RUN the mock providers stamp their output with a
+  // "[mock-<name>]" attestation; that marker is expected in simulation and
+  // must not read as a leaked placeholder. Outside DRY_RUN the same marker
+  // IS a mock leak into a production path and keeps blocking.
+  const scriptForPlaceholders =
+    process.env.DRY_RUN === "true"
+      ? input.script.replace(/\[mock-[a-z0-9_-]+\]/gi, "")
+      : input.script;
   const placeholders = [
-    /\[.*?\]/,
+    // Bracketed text is placeholder-shaped, except pure numbers ("[1]",
+    // "[2]") which are citation/list-length markers, not fill-me-in slots.
+    /\[(?!\d+\])[^\]]*\]/,
     /\bTODO\b/i,
     /\bFIXME\b/i,
     /\bINSERT\b/i,
     /\blorem ipsum\b/i,
   ];
   for (const ph of placeholders) {
-    const m = ph.exec(input.script);
+    const m = ph.exec(scriptForPlaceholders);
     if (m) {
       checks.push({
         channel: "script.placeholder",

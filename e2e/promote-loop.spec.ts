@@ -11,6 +11,7 @@ import { join } from "node:path";
 import { classify } from "../lib/promotion/classifier";
 import { runPromoteLoop } from "../lib/cli/promote";
 import { serializePiece } from "../lib/pieces/frontmatter";
+import { writeWatcherReport } from "../lib/gate/watcher-gate";
 
 test("classify identifies top 20% winners by save_rate", () => {
   const rows = [];
@@ -83,6 +84,23 @@ test("runPromoteLoop writes ads-draft.json for winners and learnings for losers"
       "# Brief\n\nTop performer.\n",
     ),
   );
+  // Promotion requires a MEASURED watcher report (claims gate blocks paid
+  // spend on unverified pieces) — seed the report generate would have written.
+  writeWatcherReport(workspaceRoot, {
+    piece_id: "p10",
+    tag: "MEASURED",
+    passed: true,
+    checked: [
+      {
+        channel: "script.topic_coverage",
+        claimed: "script covers brief topic (>=30% key terms)",
+        recomputed: "100% key term coverage",
+        match: true,
+        severity: "block",
+      },
+    ],
+    checked_at: new Date().toISOString(),
+  });
   const r = await runPromoteLoop({ root: host, windowDays: 7 });
   expect(r.promoted).toBeGreaterThanOrEqual(1);
   expect(r.losers).toBeGreaterThanOrEqual(1);

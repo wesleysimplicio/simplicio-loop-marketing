@@ -2,9 +2,43 @@
 
 ## Current Status
 
-Completed — epic #46 (issues #47-#60) implemented on `claude/open-issues-95whqo`.
+In progress — autonomous-loop evolution plan (see PRD.md) on
+`claude/simplicio-loop-marketing-plan-e52ccv`. F0 done.
 
 ## Checkpoints
+
+### Checkpoint 5 (2026-07-09, F0 — green baseline + hygiene)
+
+Status: completed
+
+Task: Phase F0 of PRD.md — fix the 4 pre-existing red e2e specs, add convention
+lint, gitignore runtime state, fill PRD.md.
+
+Result:
+- Root cause of the 4 red specs: the watcher-gate (commit b396280) blocked all
+  DRY_RUN runs — the `[mock-<name>]` attestation stamped by mock LLMs tripped
+  the placeholder check, the gate received the raw caption (without the
+  per-platform `#pillar` hashtag), and the mock echoed only 40 chars of prompt
+  so topic-coverage was 0%. Fixes: gate strips the mock marker under DRY_RUN
+  only (outside DRY_RUN it still blocks — mock-leak detector), gate now checks
+  the shipping per-platform caption, placeholder regex no longer flags pure
+  numeric brackets (`[2]` TOON list markers / citations), mock echoes up to
+  2000 chars. `promote-loop.spec.ts` updated to seed the MEASURED watcher
+  report the claims gate requires by design (test predated the gate).
+- New `scripts/lint-conventions.mjs` (node builtins only) + `npm run lint`:
+  no console.log in lib/ outside lib/cli/, no `__mocks__` import outside
+  provider registries/tests, provider-neutral skills stay neutral in prose,
+  `.env` never tracked.
+- `.gitignore`: `.simplicio/*` except `ledger/`, `.orchestrator/*` except
+  `savings/`; untracked committed runtime state (cache/locks/runs/inventories).
+- PRD.md filled with the phased plan (F0–F8).
+
+Validation:
+- `npx playwright test` — 186 passed, 0 failed.
+- `npm run typecheck` — clean.
+- `npm run lint` — clean.
+
+Next: F1 (two-track observability, `marketing-event/v1`).
 
 ### Checkpoint 4 (2026-07-02, epic #46)
 
