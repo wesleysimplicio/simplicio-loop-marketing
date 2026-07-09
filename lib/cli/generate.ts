@@ -23,6 +23,7 @@ import {
 } from "../qa/tech-specs";
 import { runGate, writeWatcherReport } from "../gate/watcher-gate";
 import { encodeToon } from "../format/toon";
+import { emitEvent } from "../observability/events";
 
 interface GenerateOptions {
   root: string;
@@ -183,16 +184,45 @@ export async function runGenerateLoop(
   for (let i = 0; i < Math.min(pieces.length, max); i++) {
     const piece = pieces[i];
     const fm = piece.frontmatter;
+    emitEvent(opts.root, {
+      kind: "piece_start",
+      piece_id: fm.id,
+      client: fm.client,
+      phase: "generate",
+    });
     try {
       await processPiece(piece, opts);
       summary.advanced++;
+      emitEvent(opts.root, {
+        kind: "piece_advanced",
+        piece_id: fm.id,
+        client: fm.client,
+        phase: "generate",
+        verdict: "scheduled",
+      });
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       if (msg.startsWith("compliance-block:") || msg.startsWith("tech-specs-block:")) {
         summary.blocked++;
+        emitEvent(opts.root, {
+          kind: "gate_fail",
+          level: "warn",
+          piece_id: fm.id,
+          client: fm.client,
+          phase: "generate",
+          verdict: msg.split(":")[0],
+        });
       } else {
         summary.failures++;
         process.stderr.write(`[generate] piece ${fm.id} failed: ${msg}\n`);
+        emitEvent(opts.root, {
+          kind: "piece_failed",
+          level: "error",
+          piece_id: fm.id,
+          client: fm.client,
+          phase: "generate",
+          data: { message: msg.slice(0, 500) },
+        });
       }
     }
   }
@@ -428,6 +458,14 @@ async function processPiece(
     engineRoot(opts.root),
     watcherReport,
   );
+  emitEvent(opts.root, {
+    kind: watcherReport.passed ? "gate_pass" : "gate_fail",
+    level: watcherReport.passed ? "info" : "warn",
+    piece_id: fm.id,
+    client: fm.client,
+    phase: "watcher-gate",
+    verdict: watcherReport.tag,
+  });
 
   if (!watcherReport.passed) {
     // Watcher found discrepancies → route to review
@@ -485,6 +523,14 @@ async function processPiece(
     fallback_used: copy.fallback_triggered || captionResult.fallback_triggered,
   };
   writeManifest(join(pieceDir, "manifest.json"), manifest);
+  emitEvent(opts.root, {
+    kind: "manifest_written",
+    piece_id: fm.id,
+    client: fm.client,
+    phase: "generate",
+    provider: copy.provider_used,
+    data: { manifest_path: join(pieceDir, "manifest.json") },
+  });
 
   transitionStatus(fm.id, "draft", "scheduled", {
     piecesDir: piecesRootFor(opts),

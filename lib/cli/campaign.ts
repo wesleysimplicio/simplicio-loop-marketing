@@ -6,6 +6,7 @@ import {
   organicPhaseActive,
   reviewCampaign,
 } from "../campaigns/campaign";
+import { emitEvent } from "../observability/events";
 
 export async function cliEntry(argv: string[]): Promise<void> {
   const root = process.cwd();
@@ -42,6 +43,12 @@ export async function cliEntry(argv: string[]): Promise<void> {
   const brief = loadCampaignBrief(resolved);
   const queue = planPieceQueue(brief);
   const organic = organicPhaseActive(brief);
+  emitEvent(root, {
+    kind: "campaign_planned",
+    phase: "campaign",
+    client: brief.client_id,
+    data: { campaign_id: brief.id, pieces_queued: queue.length, organic_phase_active: organic },
+  });
   process.stdout.write(
     `campaign: id=${brief.id} pieces_queued=${queue.length} organic_phase_active=${organic}\n`,
   );
