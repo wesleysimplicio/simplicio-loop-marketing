@@ -9,7 +9,10 @@ abstract class BaseMockLLM implements LLMProvider {
   async generate(prompt: string, opts: LLMGenerateOptions): Promise<GenerationResult> {
     const tokens = 100;
     const cost_usd = this.estimateCost(tokens, tokens);
-    const snippet = prompt.slice(0, 40);
+    // Echo enough of the prompt that brief terms survive into the mock
+    // output — a real LLM incorporates the brief, and downstream gates
+    // (watcher topic-coverage) verify exactly that.
+    const snippet = prompt.slice(0, 2000);
     return {
       ok: true,
       provider: this.name,

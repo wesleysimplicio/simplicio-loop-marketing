@@ -32,6 +32,34 @@
             "command": "node ./bin/hook-runner.js claude pre-commit-if-needed"
           }
         ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ./hooks/action_gate.py"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ./hooks/orient_rewrite.py"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ./hooks/loop_stop.py"
+          }
+        ]
       }
     ]
   },

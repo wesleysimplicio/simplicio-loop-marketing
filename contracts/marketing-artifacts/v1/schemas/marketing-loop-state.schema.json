@@ -1,0 +1,16 @@
+{
+  "$id": "marketing-loop-state/v1",
+  "type": "object",
+  "required": ["schema", "ts", "run_id", "item_id", "attempt", "action", "gate", "fingerprint"],
+  "properties": {
+    "schema": { "const": "marketing-loop-state/v1" },
+    "ts": { "type": "string" },
+    "run_id": { "type": "string" },
+    "item_id": { "type": "string" },
+    "attempt": { "type": "integer" },
+    "action": { "type": "string" },
+    "gate": { "enum": ["pass", "fail", "blocked", "skipped"] },
+    "fingerprint": { "type": ["string", "null"] },
+    "note": { "type": "string" }
+  }
+}

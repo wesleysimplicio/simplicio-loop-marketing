@@ -1,0 +1,31 @@
+{
+  "schema": "marketing-publish-receipt/v1",
+  "ts": "1970-01-01T00:00:00.000Z",
+  "piece_id": "PIECE-fixture-001",
+  "client": "fixture-client",
+  "provider": "adaptlypost",
+  "dry_run": true,
+  "verdict": "published",
+  "claims_tag": "MEASURED",
+  "attempts": 1,
+  "stages": [
+    {
+      "stage": "manifest_valid",
+      "ok": true
+    },
+    {
+      "stage": "claims_gate",
+      "ok": true
+    },
+    {
+      "stage": "compliance",
+      "ok": true
+    },
+    {
+      "stage": "publish",
+      "ok": true,
+      "detail": "dry-run draft written"
+    }
+  ],
+  "post_ref": "https://adaptlypost.test/drafts/PIECE-fixture-001"
+}

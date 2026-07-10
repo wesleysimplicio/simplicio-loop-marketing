@@ -1,0 +1,40 @@
+{
+  "$id": "marketing-manifest/v1",
+  "type": "object",
+  "required": [
+    "schema",
+    "generated_at",
+    "piece_id",
+    "client",
+    "date",
+    "providers",
+    "prompts",
+    "cost_estimate_usd",
+    "compliance_report_path",
+    "outputs"
+  ],
+  "properties": {
+    "schema": { "const": "marketing-manifest/v1" },
+    "generated_at": { "type": "string" },
+    "piece_id": { "type": "string" },
+    "client": { "type": "string" },
+    "date": { "type": "string" },
+    "providers": {
+      "type": "object",
+      "properties": {
+        "llm": { "type": "object", "required": ["name"] },
+        "image": { "type": "object", "required": ["name"] },
+        "video": { "type": "object", "required": ["name"] }
+      }
+    },
+    "prompts": { "type": "object" },
+    "cost_estimate_usd": { "type": "number" },
+    "tokens_in": { "type": "number" },
+    "tokens_out": { "type": "number" },
+    "compliance_report_path": { "type": "string" },
+    "qa_report_path": { "type": "string" },
+    "watcher_report_path": { "type": "string" },
+    "outputs": { "type": "array", "items": { "type": "string" } },
+    "fallback_used": { "type": "boolean" }
+  }
+}

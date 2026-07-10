@@ -35,7 +35,10 @@ export interface ManifestPayload {
   fallback_used?: boolean;
 }
 
+export const MANIFEST_SCHEMA = "marketing-manifest/v1";
+
 export interface ManifestDocument extends Omit<ManifestPayload, "providers"> {
+  schema: typeof MANIFEST_SCHEMA;
   generated_at: string;
   providers: {
     llm?: ProviderDescriptor;
@@ -78,6 +81,7 @@ export function writeManifest(
   }
 
   const document: ManifestDocument = {
+    schema: MANIFEST_SCHEMA,
     generated_at: new Date().toISOString(),
     piece_id: payload.piece_id,
     client: payload.client,

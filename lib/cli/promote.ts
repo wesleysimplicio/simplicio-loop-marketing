@@ -11,6 +11,7 @@ import {
   DEFAULT_GUARDRAILS,
   recordPromotionAttempt,
 } from "../promotion/budget-guardrail";
+import { emitEvent } from "../observability/events";
 
 interface PromoteOptions {
   root: string;
@@ -212,6 +213,14 @@ export async function runPromoteLoop(opts: PromoteOptions): Promise<{
       process.stdout.write(
         `[promote] gate-blocked: ${w.piece_id} is ${claimsCheck.tag} — skipping promotion\n`,
       );
+      emitEvent(opts.root, {
+        kind: "promote_decision",
+        level: "warn",
+        piece_id: w.piece_id,
+        client: w.client,
+        phase: "promote",
+        verdict: `blocked:${claimsCheck.tag}`,
+      });
       appendLearning(gateRoot, {
         date: today,
         piece_id: w.piece_id,
@@ -262,6 +271,15 @@ export async function runPromoteLoop(opts: PromoteOptions): Promise<{
         meta_ads_draft_path: finalPath,
       })}\n`,
     );
+    emitEvent(opts.root, {
+      kind: "promote_decision",
+      piece_id: w.piece_id,
+      client: w.client,
+      phase: "promote",
+      verdict: "winner",
+      provider: adsProvider,
+      data: { save_rate: w.save_rate, ads_draft_path: finalPath },
+    });
     await maybeMarkMeasured(w.piece_id, opts);
   }
 

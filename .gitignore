@@ -11,3 +11,10 @@ playwright-report/
 .DS_Store
 dist/
 *.tsbuildinfo
+
+# Runtime state (product): keep only the auditable savings ledger tracked
+.simplicio/*
+!.simplicio/ledger/
+# Runtime state (agent operator, simplicio-loop convention)
+.orchestrator/*
+!.orchestrator/savings/

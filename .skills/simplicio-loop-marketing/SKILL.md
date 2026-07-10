@@ -94,3 +94,51 @@ browser/computer-use evidence — see the Yool worker-lane list in
   routing goes through `lib/providers/matrix.ts` (LLM/image/video) and
   `lib/integrations/broker.ts` (publish/schedule/metrics/ads/comments/
   evidence).
+
+## Executable loop protocol (simplicio-loop contract)
+
+The stages above are not a narrative — they run under the simplicio-loop
+iteration contract (`.claude/skills/simplicio-loop/SKILL.md`, installed as
+the operator layer; see `docs/OPERATOR.md` for the state split). The six
+invariants apply verbatim:
+
+1. **Evidence-gated exit.** The loop only stops on in-turn evidence: the
+   `marketing-engine loop` summary line, green spec output, or a written
+   receipt/manifest path. A claim with no evidence does not exit.
+2. **Exact promise.** Exit is signaled ONLY by the sentinel
+   `<promise>EXACT TEXT</promise>` equal to the agreed completion promise —
+   never a fuzzy "done".
+3. **Deterministic continuation.** Each turn re-feeds the same goal +
+   current state; state lives on disk, not in the conversation.
+4. **Bounded by construction.** `--max-iter` (CLI) / `max_iterations`
+   (operator) is set before iteration 1. The cap fires a handoff, never a
+   fake success.
+5. **Single source of truth.** Product state: `.simplicio/loop/journal.jsonl`
+   (schema `marketing-loop-state/v1`, written by `lib/loop/journal.ts`) +
+   the yool board. Operator state: `.orchestrator/loop/*` (journal, anchor,
+   backlog — the Python workers).
+6. **Two modes.** `converge` (one campaign/piece pushed to done, stall
+   escalation) vs `drain` (queue breadth; empty rounds terminate).
+
+Mechanical bindings when the operator workers are available (fail-open —
+absent workers never block the TS loop, see `lib/cli/loop.ts`):
+
+```bash
+# scope freeze (acceptance criteria come from PRD.md / the campaign brief)
+python3 "$SIMPLICIO_LOOP_ROOT/scripts/task_anchor.py" set --goal "<goal>" --ac "<AC1>" --ac "<AC2>"
+# backlog decomposition (multi-piece campaigns; depends_on honored)
+python3 "$SIMPLICIO_LOOP_ROOT/scripts/task_backlog.py" init --goal "<goal>" --items-file <plan.json>
+# attempt memory read at the top of every turn (anti-oscillation)
+python3 "$SIMPLICIO_LOOP_ROOT/scripts/loop_journal.py" resume
+# done gate — exit 12 while any AC is unverified; "done" is never self-declared
+python3 "$SIMPLICIO_LOOP_ROOT/scripts/task_anchor.py" gate
+```
+
+The product-side equivalents always run regardless of the operator:
+`marketing-engine loop --mode drain --max-iter N` drives the piece queue
+with the TS journal (fingerprinted failures, `PROGRESS|STALLED` verdicts,
+skip-after-K-identical-failures), emits `marketing-event/v1` on every
+transition, and appends `simplicio.savings-event/v1` receipts when a skip
+avoids re-derivation. Claims discipline: every output line a consumer acts
+on is tagged `MEASURED` / `CANON` / `UNVERIFIED` by the watcher gate — an
+`UNVERIFIED` piece never leaves `draft` and is never promoted.

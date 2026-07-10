@@ -2,32 +2,65 @@
 
 ## Summary
 
-Absorbed Asolaria N-Nest gate + claims-gate into the marketing loop. The generate loop now runs an independent watcher verification pass on every output before allowing draft→scheduled transition. Every piece receives a `claims_tag` (`MEASURED` | `CANON` | `UNVERIFIED`). The promote loop checks the claims gate and blocks UNVERIFIED pieces from ad creation.
+Evolved the marketing engine from "complete pipeline driven by a playbook"
+into an **autonomous loop with durable memory, central observability and
+fail-closed gates**, porting the proven patterns of the sibling repos
+(simplicio-loop, simplicio-dev-cli, simplicio-mapper) — phases F0–F8 of
+PRD.md, all delivered.
 
-## Changed Files
+- `marketing-engine loop` drains the piece backlog through the real gates
+  with attempt memory (fingerprinted failures, STALLED skip after 3
+  identical failures, estimated savings receipt per skip), then runs the
+  verified publish pipeline and the promote pass. Modes drain/converge,
+  bounded by `--max-iter`, DRY_RUN default.
+- Two-track observability (`marketing-event/v1` stream), hash-chained
+  savings ledger (`proof.kind` always "estimated", labeled estimator),
+  versioned artifact contracts with producer-generated fixtures and a
+  two-sided drift gate, `marketing-engine doctor`, convention lint and a
+  token-budget guard with negative self-test.
+- simplicio-loop operator layer installed (skills, loop_stop/orient hooks,
+  fail-closed action_gate 15/15) with the super-skill upgraded from
+  playbook to executable protocol; state split documented in
+  docs/OPERATOR.md; real-provider wiring documented (credential-gated) in
+  docs/MCP-TRANSPORT.md.
+- Fixed the 4 e2e specs red since the watcher gate landed (mock marker vs
+  placeholder heuristic; per-platform caption; TOON numeric brackets; mock
+  echo length).
 
-- `lib/gate/watcher-gate.ts` — new: N-Nest style watcher gate with 5 check channels (pillar hashtag, topic coverage, caption length, placeholders, overpromise language)
-- `lib/gate/claims-gate.ts` — new: claims discipline rules, classification logic, gate enforcement at promote time
-- `.skills/watcher-gate/SKILL.md` — new: skill manifest documenting gate rules, integration points, and DoD
-- `lib/cli/generate.ts` — modified: watcher gate runs after compliance passes; piece routes to review on gate failure; manifest includes `watcher_report_path`
-- `lib/cli/promote.ts` — modified: claims gate blocks UNVERIFIED winners; `maybeMarkMeasured` sets `claims_tag: MEASURED`
-- `lib/pieces/frontmatter.ts` — modified: added `ClaimsTag` type, `claims_tag` and `watcher_report_path` fields
-- `lib/data/manifest.ts` — modified: added `watcher_report_path` to `ManifestPayload` and `ManifestDocument`
-- `.specs/pieces/piece-template.md` — modified: added `claims_tag: UNVERIFIED` frontmatter default and gate DoD checklist item
-- `CHANGELOG.md` — modified: documented unreleased changes
+## Changed Files (highlights)
+
+- `lib/cli/loop.ts`, `lib/loop/journal.ts`, `bin/marketing-engine.mjs` — the loop command (+ `doctor`, stdio streaming, flag passthrough fix)
+- `lib/publish/verify-pipeline.ts` — verified publication with classified retry + receipts
+- `lib/observability/{events,savings}.ts` — event stream + savings ledger
+- `lib/contracts/{validate,registry}.ts`, `contracts/marketing-artifacts/v1/` — contracts, schemas, fixtures
+- `lib/cli/doctor.ts`, `scripts/token-budget.mjs`, `scripts/lint-conventions.mjs`, `scripts/gen-fixtures.mjs`
+- `lib/gate/watcher-gate.ts`, `lib/providers/__mocks__/llm.ts`, `lib/cli/generate.ts`, `lib/cli/promote.ts` — gate fixes + instrumentation
+- `.claude/skills/`, `hooks/`, `.claude/settings.json`, `docs/OPERATOR.md`, `docs/MCP-TRANSPORT.md`, `.skills/simplicio-loop-marketing/SKILL.md`
+- `PRD.md`, `PROGRESS.md`, `CHANGELOG.md`, `.gitignore`
 
 ## Validation Commands
 
 ```bash
 npm run typecheck
+npm run lint
+npm run budget
+npx playwright test
+node bin/marketing-engine.mjs loop --root <tmp-host> --max-iter 2
+node bin/marketing-engine.mjs doctor
 ```
 
 ## Validation Results
 
-- typecheck: pass
-
-## Commit Message
-
-```
-feat(marketing): absorb Asolaria gate + claims discipline
-```
+- `npx playwright test` — **217 passed, 0 failed** (baseline was 182 passed /
+  4 failed; +31 new specs: events 5, savings-ledger 6, contracts 5,
+  loop-drain 6, publish-verify 6, doctor 2, capstone loop-driven 1, plus the
+  4 repaired).
+- `npm run typecheck` — clean. `npm run lint` — clean. `npm run budget` —
+  PASS (self-test proves the guard bites).
+- Real CLI on a fresh host: `loop --max-iter 2` → `advanced=1 published=1
+  stop=drained`, journal at `.simplicio/loop/journal.jsonl`, publish receipt
+  and manifest written; `doctor` reports operator hooks present, action-gate
+  selftest pass, python workers resolved.
+- Operator workers: `loop_journal.py` / `task_anchor.py` / `task_backlog.py`
+  selftests OK (source checkout), `hooks/action_gate.py selftest` 15/15,
+  `token_budget.py --self-test` OK.

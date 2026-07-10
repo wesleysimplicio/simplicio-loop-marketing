@@ -1,0 +1,39 @@
+{
+  "estimator": "heuristic:chars-div-4",
+  "threshold_growth": 0.25,
+  "generated_at": "2026-07-09T22:43:03.752Z",
+  "artifacts": [
+    {
+      "label": "CLAUDE.md",
+      "tokens": 2956
+    },
+    {
+      "label": "AGENTS.md",
+      "tokens": 2425
+    },
+    {
+      "label": "PRD.md",
+      "tokens": 1262
+    },
+    {
+      "label": ".skills/simplicio-loop-marketing/SKILL.md",
+      "tokens": 1865
+    },
+    {
+      "label": "bin/marketing-engine.mjs",
+      "tokens": 6144
+    },
+    {
+      "label": "lib/cli/generate.ts",
+      "tokens": 4729
+    },
+    {
+      "label": "lib/cli/loop.ts",
+      "tokens": 2893
+    },
+    {
+      "label": "lib/publish/verify-pipeline.ts",
+      "tokens": 2413
+    }
+  ]
+}

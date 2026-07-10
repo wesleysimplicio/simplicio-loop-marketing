@@ -23,8 +23,9 @@ import {
 } from "../qa/tech-specs";
 import { runGate, writeWatcherReport } from "../gate/watcher-gate";
 import { encodeToon } from "../format/toon";
+import { emitEvent } from "../observability/events";
 
-interface GenerateOptions {
+export interface GenerateOptions {
   root: string;
   piecesDir?: string;
   outputsDir?: string;
@@ -183,23 +184,52 @@ export async function runGenerateLoop(
   for (let i = 0; i < Math.min(pieces.length, max); i++) {
     const piece = pieces[i];
     const fm = piece.frontmatter;
+    emitEvent(opts.root, {
+      kind: "piece_start",
+      piece_id: fm.id,
+      client: fm.client,
+      phase: "generate",
+    });
     try {
       await processPiece(piece, opts);
       summary.advanced++;
+      emitEvent(opts.root, {
+        kind: "piece_advanced",
+        piece_id: fm.id,
+        client: fm.client,
+        phase: "generate",
+        verdict: "scheduled",
+      });
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       if (msg.startsWith("compliance-block:") || msg.startsWith("tech-specs-block:")) {
         summary.blocked++;
+        emitEvent(opts.root, {
+          kind: "gate_fail",
+          level: "warn",
+          piece_id: fm.id,
+          client: fm.client,
+          phase: "generate",
+          verdict: msg.split(":")[0],
+        });
       } else {
         summary.failures++;
         process.stderr.write(`[generate] piece ${fm.id} failed: ${msg}\n`);
+        emitEvent(opts.root, {
+          kind: "piece_failed",
+          level: "error",
+          piece_id: fm.id,
+          client: fm.client,
+          phase: "generate",
+          data: { message: msg.slice(0, 500) },
+        });
       }
     }
   }
   return summary;
 }
 
-async function processPiece(
+export async function processPiece(
   piece: { frontmatter: PieceFrontmatter; body: string },
   opts: GenerateOptions,
 ): Promise<void> {
@@ -412,12 +442,15 @@ async function processPiece(
 
   // === WATCHER GATE (N-Nest style) ===
   // Agent produced the output above; now the watcher independently verifies.
+  // The gate checks the caption that will actually ship (the per-platform
+  // variant, which carries the pillar hashtag), not the raw LLM output.
+  const primaryPlatform = fm.platforms[0] ?? "instagram";
   const watcherInput = {
     piece_id: fm.id,
     script: copy.result.output ?? "",
-    caption: captionText,
+    caption: platformCaptions[primaryPlatform] ?? captionText,
     brief,
-    platform: fm.platforms[0] ?? "instagram",
+    platform: primaryPlatform,
     pillar: fm.pillar,
   };
   const watcherReport = runGate(watcherInput);
@@ -425,6 +458,14 @@ async function processPiece(
     engineRoot(opts.root),
     watcherReport,
   );
+  emitEvent(opts.root, {
+    kind: watcherReport.passed ? "gate_pass" : "gate_fail",
+    level: watcherReport.passed ? "info" : "warn",
+    piece_id: fm.id,
+    client: fm.client,
+    phase: "watcher-gate",
+    verdict: watcherReport.tag,
+  });
 
   if (!watcherReport.passed) {
     // Watcher found discrepancies → route to review
@@ -482,6 +523,14 @@ async function processPiece(
     fallback_used: copy.fallback_triggered || captionResult.fallback_triggered,
   };
   writeManifest(join(pieceDir, "manifest.json"), manifest);
+  emitEvent(opts.root, {
+    kind: "manifest_written",
+    piece_id: fm.id,
+    client: fm.client,
+    phase: "generate",
+    provider: copy.provider_used,
+    data: { manifest_path: join(pieceDir, "manifest.json") },
+  });
 
   transitionStatus(fm.id, "draft", "scheduled", {
     piecesDir: piecesRootFor(opts),
