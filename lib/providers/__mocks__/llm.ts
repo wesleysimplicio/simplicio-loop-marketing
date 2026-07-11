@@ -19,11 +19,14 @@ abstract class BaseMockLLM implements LLMProvider {
       task: opts.task,
       output: `[mock-${this.name}] ${snippet}...`,
       tokens,
+      tokens_in: tokens,
+      tokens_out: tokens,
+      used_estimate: true,
+      prompt_format: opts.system ? "toon" : "json",
       cost_usd,
       latency_ms: 50,
     };
   }
-
   protected estimateCost(tokens_in: number, tokens_out: number): number {
     return (
       (tokens_in / 1000) * this.cost_per_1k_in +

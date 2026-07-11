@@ -117,6 +117,11 @@ export class ClaudeProvider extends RealLLMBase {
       task: opts.task,
       output: text,
       tokens: usage.tokens_in + usage.tokens_out,
+      tokens_in: usage.tokens_in,
+      tokens_out: usage.tokens_out,
+      used_estimate: usage.used_estimate,
+      prompt_format: opts.system ? "toon" : "json",
+      savings_tokens_est: 0,
       cost_usd: estimateCost({
         provider: "claude",
         model,
@@ -285,6 +290,11 @@ async function callOpenAICompatible(
     task: opts.task,
     output: text,
     tokens: usage.tokens_in + usage.tokens_out,
+    tokens_in: usage.tokens_in,
+    tokens_out: usage.tokens_out,
+    used_estimate: usage.used_estimate,
+    prompt_format: opts.system ? "toon" : "json",
+    savings_tokens_est: 0,
     cost_usd: estimateCost({
       provider: providerName,
       model,

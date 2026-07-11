@@ -106,6 +106,13 @@ function pieceContext(fm: PieceFrontmatter): Record<string, unknown> {
   return ctx;
 }
 
+function stableClientSystemContext(root: string, client: string): string | undefined {
+  const dir = resolve(engineRoot(root), "clients", client);
+  const files = ["BRAND.md", "COMPLIANCE.md", "CHANNELS.md", "PERSONAS.md", "PILLARS.md", "SPECS.md"];
+  const sections = files.filter((name) => existsSync(join(dir, name))).map((name) => `## ${name}\n${readFileSync(join(dir, name), "utf8").slice(0, 12000)}`);
+  return sections.length > 0 ? sections.join("\n\n") : undefined;
+}
+
 function outputsRootFor(opts: GenerateOptions): string {
   return opts.outputsDir ?? resolve(engineRoot(opts.root), "outputs");
 }
@@ -251,6 +258,7 @@ export async function processPiece(
   const copyRow = llmRow(tasks.copy, matrix);
   const primaryLLM = llmOverride ?? copyRow.default;
   const fallbackLLM = copyRow.fallback;
+  const stableSystem = stableClientSystemContext(opts.root, fm.client);
 
   const lessons = readLearningsForBrief(opts.root, fm.client);
   const brief = `${piece.body.slice(0, 800)}${lessons.length ? "\\n\\nDurable measured learnings to avoid:\\n" + lessons.map((lesson) => `- ${lesson}`).join("\\n") : ""}`;
@@ -259,16 +267,19 @@ export async function processPiece(
   const scriptPrompt = `${encodeToon(pieceContext(fm))}\n\n${brief}`;
 
   const copy = await runWithFallback({
+    piece_id: fm.id,
+    prompt_format: "toon",
     task: tasks.copy,
     primaryName: primaryLLM,
     fallbackName: fallbackLLM,
     log_path: usageLogPath,
     primary: () =>
-      getLLMProviderByName(primaryLLM).generate(scriptPrompt, { task: tasks.copy }),
+      getLLMProviderByName(primaryLLM).generate(scriptPrompt, { task: tasks.copy, system: stableSystem }),
     fallback: fallbackLLM
       ? () =>
           getLLMProviderByName(fallbackLLM).generate(scriptPrompt, {
             task: tasks.copy,
+            system: stableSystem,
           })
       : undefined,
   });
@@ -279,6 +290,8 @@ export async function processPiece(
   );
 
   const captionResult = await runWithFallback({
+    piece_id: fm.id,
+    prompt_format: "json",
     task: "caption",
     primaryName: llmOverride ?? llmRow("caption", matrix).default,
     fallbackName: llmRow("caption", matrix).fallback,
@@ -286,7 +299,7 @@ export async function processPiece(
     primary: () =>
       getLLMProviderByName(llmOverride ?? llmRow("caption", matrix).default).generate(
         `Caption for: ${brief.slice(0, 200)}`,
-        { task: "caption" },
+        { task: "caption", system: stableSystem },
       ),
     fallback: llmRow("caption", matrix).fallback
       ? () =>
@@ -294,6 +307,7 @@ export async function processPiece(
             llmRow("caption", matrix).fallback ?? "claude",
           ).generate(`Caption for: ${brief.slice(0, 200)}`, {
             task: "caption",
+            system: stableSystem,
           })
       : undefined,
   });
@@ -518,8 +532,8 @@ export async function processPiece(
       video: tasks.video ? brief : undefined,
     },
     cost_estimate_usd: totalCost,
-    tokens_in: copy.result.tokens ?? 0,
-    tokens_out: captionResult.result.tokens ?? 0,
+    tokens_in: (copy.result.tokens_in ?? 0) + (captionResult.result.tokens_in ?? 0),
+    tokens_out: (copy.result.tokens_out ?? 0) + (captionResult.result.tokens_out ?? 0),
     compliance_report_path: complianceResult.report_path,
     qa_report_path: qaReportPath,
     watcher_report_path: watcherReportPath,

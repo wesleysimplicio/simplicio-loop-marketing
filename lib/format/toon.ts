@@ -60,7 +60,7 @@ function needsQuoting(s: string): boolean {
   if (s !== s.trim()) return true; // leading/trailing whitespace
   if (/[,:\n]/.test(s)) return true; // structural delimiters
   if (s === "true" || s === "false" || s === "null") return true;
-  if (NUMBER_LIKE_RE.test(s)) return true;
+  if (NUMBER_LIKE_RE.test(s) || s.startsWith('\"') || s.endsWith('\"')) return true;
   return false;
 }
 

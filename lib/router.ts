@@ -32,10 +32,17 @@ export interface UsageEntry {
   task: string;
   provider: string;
   tokens?: number;
+  tokens_in?: number;
+  tokens_out?: number;
+  used_estimate?: boolean;
+  prompt_format?: "toon" | "json";
+  savings_tokens_est?: number;
+  piece_id?: string;
   cost_usd?: number;
   ok?: boolean;
   error?: string;
   fallback_used?: boolean;
+  fallback_reason?: string;
   attempt?: number;
   latency_ms?: number;
 }
@@ -46,6 +53,11 @@ interface UsageLogLine extends UsageEntry {
 
 interface UsageLikeResult {
   tokens?: number;
+  tokens_in?: number;
+  tokens_out?: number;
+  used_estimate?: boolean;
+  prompt_format?: "toon" | "json";
+  savings_tokens_est?: number;
   cost_usd?: number;
   latency_ms?: number;
   attempt?: number;
@@ -61,36 +73,16 @@ export function logUsage(entry: UsageEntry, override_path?: string): void {
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
   const line: UsageLogLine = {
     timestamp: new Date().toISOString(),
-    task: entry.task,
-    provider: entry.provider,
-    tokens: entry.tokens,
-    cost_usd: entry.cost_usd,
-    ok: entry.ok,
-    error: entry.error,
-    fallback_used: entry.fallback_used,
-    attempt: entry.attempt,
-    latency_ms: entry.latency_ms,
+    ...entry,
   };
   appendFileSync(log_path, `${JSON.stringify(line)}\n`, { encoding: "utf8" });
 }
 
-function usageFromResult(result: unknown, offset: number): Required<Pick<UsageEntry, "attempt">> &
-  Pick<UsageEntry, "tokens" | "cost_usd" | "latency_ms"> {
-  if (!result || typeof result !== "object") {
-    return { attempt: offset + 1 };
-  }
-
+function usageFromResult(result: unknown, offset: number): UsageLikeResult & { attempt: number } {
+  if (!result || typeof result !== "object") return { attempt: offset + 1 };
   const usage = result as UsageLikeResult;
-  const attempt = typeof usage.attempt === "number" && usage.attempt > 0
-    ? usage.attempt
-    : 1;
-
-  return {
-    attempt: offset + attempt,
-    tokens: usage.tokens,
-    cost_usd: usage.cost_usd,
-    latency_ms: usage.latency_ms,
-  };
+  const attempt = typeof usage.attempt === "number" && usage.attempt > 0 ? usage.attempt : 1;
+  return { ...usage, attempt: offset + attempt };
 }
 
 export interface FallbackOptions<T> {
@@ -100,6 +92,9 @@ export interface FallbackOptions<T> {
   primaryName: string;
   fallbackName?: string;
   log_path?: string;
+  piece_id?: string;
+  prompt_format?: "toon" | "json";
+  savings_tokens_est?: number;
   retryBackoffMs?: number;
   shouldRetry?: (err: unknown) => boolean;
 }
@@ -142,12 +137,16 @@ export async function runWithFallback<T>(
         {
           task: opts.task,
           provider: opts.primaryName,
+          ...usage,
           tokens: usage.tokens,
           cost_usd: usage.cost_usd,
           ok: true,
           fallback_used: false,
           attempt: usage.attempt,
           latency_ms: usage.latency_ms ?? (Date.now() - t0),
+          piece_id: opts.piece_id,
+          prompt_format: opts.prompt_format ?? usage.prompt_format,
+          savings_tokens_est: usage.savings_tokens_est ?? opts.savings_tokens_est,
         },
         opts.log_path,
       );
@@ -168,6 +167,9 @@ export async function runWithFallback<T>(
           fallback_used: false,
           attempt: primaryAttempts,
           latency_ms: Date.now() - t0,
+          fallback_reason: `primary_failed:${primaryMessage.split(":")[0]}`,
+          piece_id: opts.piece_id,
+          prompt_format: opts.prompt_format,
         },
         opts.log_path,
       );
@@ -192,12 +194,17 @@ export async function runWithFallback<T>(
       {
         task: opts.task,
         provider: opts.fallbackName,
+        ...usage,
         tokens: usage.tokens,
         cost_usd: usage.cost_usd,
         ok: true,
         fallback_used: true,
         attempt: usage.attempt,
         latency_ms: usage.latency_ms ?? (Date.now() - t1),
+        piece_id: opts.piece_id,
+        prompt_format: opts.prompt_format ?? usage.prompt_format,
+        savings_tokens_est: usage.savings_tokens_est ?? opts.savings_tokens_est,
+        fallback_reason: `primary_failed:${primaryMessage.split(":")[0]}`,
       },
       opts.log_path,
     );
@@ -218,6 +225,9 @@ export async function runWithFallback<T>(
         fallback_used: true,
         attempt: fallbackAttempt,
         latency_ms: Date.now() - t1,
+        fallback_reason: `primary_failed:${primaryMessage.split(":")[0]}`,
+        piece_id: opts.piece_id,
+        prompt_format: opts.prompt_format,
       },
       opts.log_path,
     );
