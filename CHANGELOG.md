@@ -1,3 +1,8 @@
+## 0.4.0 - 2026-07-11
+
+- Completed programming backlog #65-#79 with autonomous-loop gates, observability, doctor, watcher, retrospective, and DRY_RUN autoresearch.
+- Added Windows-safe convention lint and 236-test release gate.
+
 # Changelog
 
 All notable changes to this project are documented here. Format based on
@@ -334,3 +339,4 @@ Autonomous SaaS marketing loop across social networks and dev communities (epic 
 - Remotion video explainer (PT-BR + EN) under `video/`.
 - Bilingual README + SETUP + CONTRIBUTING + AGENTS.md (charter) + Apache-2.0
   LICENSE.
+
