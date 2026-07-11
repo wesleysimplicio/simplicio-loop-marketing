@@ -11,7 +11,8 @@ import {
   DEFAULT_GUARDRAILS,
   recordPromotionAttempt,
 } from "../promotion/budget-guardrail";
-import { emitEvent } from "../observability/events";`nimport { assertDoctorHealthy } from "./doctor";
+import { emitEvent } from "../observability/events";
+import { assertDoctorHealthy } from "./doctor";
 
 interface PromoteOptions {
   root: string;
@@ -187,7 +188,8 @@ export async function runPromoteLoop(opts: PromoteOptions): Promise<{
   losers: number;
   skipped: number;
 }> {
-  process.env.DRY_RUN = process.env.DRY_RUN ?? "true";`n  if (process.env.DRY_RUN !== "true") assertDoctorHealthy(opts.root);
+  process.env.DRY_RUN = process.env.DRY_RUN ?? "true";
+  if (process.env.DRY_RUN !== "true") assertDoctorHealthy(opts.root);
   const analyticsPath =
     opts.analyticsPath ?? resolve(dataRootFor(opts), "analytics.jsonl");
   const outputsRoot = outputsRootFor(opts);
