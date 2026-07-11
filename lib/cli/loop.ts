@@ -32,6 +32,7 @@ import {
   itemVerdict,
   nextAttempt,
   recordAttempt,
+  strategyForAttempt,
 } from "../loop/journal";
 import { writeTuple, WorkerGovernor } from "../yool/board";
 import { publishVerified, receiptPath } from "../publish/verify-pipeline";
@@ -258,8 +259,9 @@ export async function runLoop(opts: LoopOptions): Promise<LoopSummary> {
       recordAttempt(root, {
         item_id: id,
         attempt,
-        action: "generate",
+        action: `generate:${strategyForAttempt(attempt)}`,
         gate,
+        stage: gate === "blocked" ? "compliance" : "copy",
         ...(failureText !== undefined && { failure_text: failureText, note: failureText.slice(0, 200) }),
       });
       mirrorToOperator(root, operatorWorker, {
