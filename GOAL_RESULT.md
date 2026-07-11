@@ -1,5 +1,16 @@
 # Goal Result
 
+## Current run — 2026-07-11
+
+All programming issues in the active backlog (#65–#79) were implemented or audited
+for executable scope using six parallel workers and integrated on branch
+`codex/finish-all-programming`. #78 has no executable acceptance criterion; #79 is
+implemented as a fixed-judge, compliance-gated, holdout-evaluated `DRY_RUN` loop.
+
+Final validation: `npm run typecheck` PASS, `npm run lint` PASS, `npm run budget` PASS,
+`npx playwright test` PASS (236/236). Publication actions were not triggered by the
+autoresearch path (`published: false`, `dry_run: true`).
+
 ## Summary
 
 Evolved the marketing engine from "complete pipeline driven by a playbook"

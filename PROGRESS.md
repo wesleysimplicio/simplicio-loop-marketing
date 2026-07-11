@@ -1,5 +1,25 @@
 # Progress Log
 
+## Checkpoint 7 (2026-07-11 — issues #65–#79)
+
+Status: completed on `codex/finish-all-programming` pending PR/release publication.
+
+Result:
+- Added campaign anchors, durable journals/stall detection, evidence gates, reports,
+  fail-closed action gates, local `check`, doctor, watcher, retrospective learnings,
+  prompt-cache/usage telemetry, and a fixed-judge compliance-gated autoresearch loop.
+- Fixed Windows path handling in the convention lint and repaired the doctor guard
+  integration conflict found during cross-worker integration.
+- Issue #78 was audited as narrative-only with no executable AC; issue #79 now has a
+  DRY_RUN-only implementation with fixed judge manifest, holdout, cost/usage rows,
+  savings receipt, and E2E coverage.
+
+Validation:
+- `npm run typecheck` — pass.
+- `npm run lint` — pass.
+- `npm run budget` — pass.
+- `npx playwright test` — 236 passed, 0 failed.
+
 ## Current Status
 
 Completed — autonomous-loop evolution plan (PRD.md, phases F0–F8) on
