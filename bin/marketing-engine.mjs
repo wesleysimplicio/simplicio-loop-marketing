@@ -36,6 +36,8 @@ Commands:
   alerts      Tail recent failures from runs + usage logs
   sync        Pull pieces from Notion calendar
   schedule    Install/uninstall cron / launchd entries
+  watcher     Run one fail-closed self-paced campaign wake
+  retrospective Mine deduped durable lessons from campaign evidence
   help        Show this message
 
 Options:
@@ -747,6 +749,16 @@ function commandSchedule(args) {
   spawnTsx(script, args._.slice(1), hostRoot);
 }
 
+function commandWatcher(args) {
+  const script = join(PACKAGE_ROOT, "lib", "cli", "watcher.ts");
+  spawnTsx(script, args._.slice(1), resolveHostRoot(args), { stdio: "inherit" });
+}
+
+function commandRetrospective(args) {
+  const script = join(PACKAGE_ROOT, "lib", "cli", "retrospective.ts");
+  spawnTsx(script, args._.slice(1), resolveHostRoot(args), { stdio: "inherit" });
+}
+
 function main() {
   const argv = process.argv.slice(2);
   const args = parseArgs(argv);
@@ -805,6 +817,12 @@ function main() {
       return;
     case "schedule":
       commandSchedule(args);
+      return;
+    case "watcher":
+      commandWatcher(args);
+      return;
+    case "retrospective":
+      commandRetrospective(args);
       return;
     default:
       console.error(`Unknown command: ${cmd}`);

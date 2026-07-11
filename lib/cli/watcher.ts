@@ -1,0 +1,3 @@
+import { runWatcherCycle } from "../watcher/self-paced";
+export async function cliEntry(argv: string[]): Promise<void> { const i = argv.indexOf("--max-cycles"); const max = Number(i >= 0 ? argv[i + 1] : process.env.MARKETING_WATCHER_MAX_CYCLES ?? 96); const result = await runWatcherCycle(process.cwd(), { maxCyclesPerDay: max }); process.stdout.write(`${JSON.stringify(result, null, 2)}\n`); if (result.status === "blocked") process.exitCode = 2; }
+if (import.meta.url.endsWith("/watcher.ts")) cliEntry(process.argv.slice(2)).catch((err) => { process.stderr.write(`watcher failed: ${String(err)}\n`); process.exit(1); });

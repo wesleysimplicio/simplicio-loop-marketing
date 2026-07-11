@@ -23,7 +23,9 @@ import {
 } from "../qa/tech-specs";
 import { runGate, writeWatcherReport } from "../gate/watcher-gate";
 import { encodeToon } from "../format/toon";
-import { emitEvent } from "../observability/events";`nimport { assertDoctorHealthy } from "./doctor";
+import { emitEvent } from "../observability/events";
+import { readLearningsForBrief } from "../learning/retrospective";
+import { assertDoctorHealthy } from "./doctor";
 
 export interface GenerateOptions {
   root: string;
@@ -162,7 +164,8 @@ function techSpecTargetsFor(
 export async function runGenerateLoop(
   opts: GenerateOptions,
 ): Promise<GenerateSummary> {
-  process.env.DRY_RUN = process.env.DRY_RUN ?? "true";`n  if (process.env.DRY_RUN !== "true") assertDoctorHealthy(opts.root);
+  process.env.DRY_RUN = process.env.DRY_RUN ?? "true";
+  if (process.env.DRY_RUN !== "true") assertDoctorHealthy(opts.root);
   if (opts.matrixPath) {
     process.env.PROVIDERS_MATRIX_PATH = opts.matrixPath;
   }
@@ -249,7 +252,8 @@ export async function processPiece(
   const primaryLLM = llmOverride ?? copyRow.default;
   const fallbackLLM = copyRow.fallback;
 
-  const brief = piece.body.slice(0, 800);
+  const lessons = readLearningsForBrief(opts.root, fm.client);
+  const brief = `${piece.body.slice(0, 800)}${lessons.length ? "\\n\\nDurable measured learnings to avoid:\\n" + lessons.map((lesson) => `- ${lesson}`).join("\\n") : ""}`;
   // Structured piece metadata goes into the prompt as TOON, not JSON — same
   // information, fewer tokens on the wire to the LLM.
   const scriptPrompt = `${encodeToon(pieceContext(fm))}\n\n${brief}`;
@@ -600,3 +604,4 @@ if (
     process.exit(1);
   });
 }
+

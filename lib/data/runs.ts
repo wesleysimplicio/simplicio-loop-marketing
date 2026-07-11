@@ -2,7 +2,10 @@ import { appendFileSync, existsSync, mkdirSync, readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 
 export interface RunEntryInput {
-  piece_id: string;
+  piece_id?: string;
+  cycle_id?: string;
+  actions?: string[];
+  tokens_estimate?: number;
   client?: string;
   providers_used: string[];
   cost_estimate_usd: number;
@@ -31,7 +34,10 @@ export function appendRunLog(
 
   const row: RunRow = {
     timestamp: new Date().toISOString(),
-    piece_id: entry.piece_id,
+    piece_id: entry.piece_id ?? "",
+    cycle_id: entry.cycle_id,
+    actions: entry.actions,
+    tokens_estimate: entry.tokens_estimate,
     client: entry.client,
     providers_used: entry.providers_used,
     cost_estimate_usd: entry.cost_estimate_usd,
@@ -63,3 +69,4 @@ export function readRuns(path: string): RunRow[] {
 
   return rows;
 }
+
