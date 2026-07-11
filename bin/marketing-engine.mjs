@@ -40,6 +40,7 @@ Commands:
   schedule    Install/uninstall cron / launchd entries
   watcher     Run one fail-closed self-paced campaign wake
   retrospective Mine deduped durable lessons from campaign evidence
+  autoresearch  Run a fixed-judge, compliance-gated copy optimization loop (DRY_RUN only)
   help        Show this message
 
 Options:
@@ -773,6 +774,12 @@ function commandRetrospective(args) {
   spawnTsx(script, args._.slice(1), resolveHostRoot(args), { stdio: "inherit" });
 }
 
+function commandAutoresearch(args) {
+  const hostRoot = resolveHostRoot(args);
+  const script = join(PACKAGE_ROOT, "lib", "cli", "autoresearch.ts");
+  spawnTsx(script, args._.slice(1), hostRoot, { stdio: "inherit" });
+}
+
 function main() {
   const argv = process.argv.slice(2);
   const args = parseArgs(argv);
@@ -843,6 +850,9 @@ function main() {
       return;
     case "retrospective":
       commandRetrospective(args);
+      return;
+    case "autoresearch":
+      commandAutoresearch(args);
       return;
     default:
       console.error(`Unknown command: ${cmd}`);
