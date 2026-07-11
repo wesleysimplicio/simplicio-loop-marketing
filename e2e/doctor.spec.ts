@@ -79,3 +79,38 @@ test("doctor report reflects a real loop run (events, journal, savings, pieces)"
   expect(report.pieces.draft).toBe(1);
   expect(validateArtifact(report, loadSchemaRegistry()).errors).toEqual([]);
 });
+
+test("doctor names missing live credentials as blocked without exposing values", () => {
+  const previousDryRun = process.env.DRY_RUN;
+  const previousClaude = process.env.ANTHROPIC_API_KEY;
+  process.env.DRY_RUN = "false";
+  delete process.env.ANTHROPIC_API_KEY;
+  try {
+    const report = buildDoctorReport(mkdtempSync(join(tmpdir(), "me-doctor-env-")));
+    const credential = report.checks.find((item) => item.id === "provider.claude.credential");
+    expect(credential?.status).toBe("blocked");
+    expect(credential?.detail).not.toContain("sk-");
+    expect(report.has_blocked).toBe(true);
+  } finally {
+    if (previousDryRun === undefined) delete process.env.DRY_RUN;
+    else process.env.DRY_RUN = previousDryRun;
+    if (previousClaude === undefined) delete process.env.ANTHROPIC_API_KEY;
+    else process.env.ANTHROPIC_API_KEY = previousClaude;
+  }
+});
+
+test("doctor reports a named blocked check when a toolchain is unavailable", () => {
+  const previous = process.env.MARKETING_ENGINE_DOCTOR_MISSING;
+  process.env.MARKETING_ENGINE_DOCTOR_MISSING = "ffmpeg";
+  try {
+    const report = buildDoctorReport(mkdtempSync(join(tmpdir(), "me-doctor-toolchain-")));
+    expect(report.checks).toContainEqual({
+      id: "toolchain.ffmpeg",
+      status: "blocked",
+      detail: "ffmpeg is missing from PATH",
+    });
+  } finally {
+    if (previous === undefined) delete process.env.MARKETING_ENGINE_DOCTOR_MISSING;
+    else process.env.MARKETING_ENGINE_DOCTOR_MISSING = previous;
+  }
+});
