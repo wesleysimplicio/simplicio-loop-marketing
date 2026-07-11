@@ -1,6 +1,7 @@
 import { appendFileSync, existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import type { PieceFrontmatter } from "../pieces/frontmatter";
+import { checkActionGate } from "../gate/action-gate";
 
 export interface MetaAdsDraft {
   piece_id: string;
@@ -71,6 +72,8 @@ export async function createCampaign(
   if (isDryRun()) {
     return { ok: true, path: finalPath };
   }
+  const gate = checkActionGate({ root, action: "ads_activate", pieceId: piece.id, campaignId: piece.campaign, dailyBudgetUsd: draft.daily_budget_usd, spendCeilingUsd: draft.daily_budget_usd });
+  if (!gate.ok) return { ok: false, path: finalPath, error: `action-gate blocked: ${gate.reasons.join("; ")}` };
   if (process.env.META_ADS_MCP_ACTIVE !== "true") {
     return {
       ok: false,

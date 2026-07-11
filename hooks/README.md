@@ -55,7 +55,7 @@ Wire it as a Claude `PreToolUse` Bash hook (the installer does this) AND/OR a gi
 
 ```bash
 # git pre-push: secret-scan the staged diff, block on a hit (zero CI cost)
-printf '#!/bin/sh\npython3 hooks/action_gate.py check --staged\n' > .git/hooks/pre-push
+printf '#!/bin/sh\npython3 hooks/action_gate.py check --staged\nnpm run check\n' > .git/hooks/pre-push
 chmod +x .git/hooks/pre-push
 ```
 

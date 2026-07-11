@@ -26,6 +26,7 @@ import { enforceClaimsGate } from "../gate/claims-gate";
 import { loadSchemaRegistry } from "../contracts/registry";
 import { validateArtifact } from "../contracts/validate";
 import { emitEvent } from "../observability/events";
+import { checkActionGate } from "../gate/action-gate";
 
 export const RECEIPT_SCHEMA = "marketing-publish-receipt/v1";
 export const MAX_ATTEMPTS = 5;
@@ -35,7 +36,8 @@ export type FailureClass =
   | "invalid_manifest"
   | "claims_gate_blocked"
   | "compliance_blocked"
-  | "provider_error";
+  | "provider_error"
+  | "action_gate_blocked";
 
 export interface ReceiptStage {
   stage: string;
@@ -224,6 +226,11 @@ export async function publishVerified(
     return finish("blocked", 0, claimsTag, { failure_class: "compliance_blocked" });
   }
   stages.push({ stage: "compliance", ok: true });
+  if (!dryRun) {
+    const gate = checkActionGate({ root: eRoot, action: "publish", pieceId, campaignId: fm.campaign });
+    stages.push({ stage: "action_gate", ok: gate.ok, detail: gate.ok ? "human approval found" : gate.reasons.join("; ") });
+    if (!gate.ok) return finish("blocked", 0, claimsTag, { failure_class: "action_gate_blocked" });
+  }
 
   // --- stage 4: publish with classified retry ------------------------------
   let captions: Record<string, string> = {};
