@@ -19,8 +19,11 @@
 import { execFileSync } from "node:child_process";
 import { readFileSync, readdirSync, statSync, existsSync } from "node:fs";
 import { join, relative } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const ROOT = new URL("..", import.meta.url).pathname;
+// URL.pathname is POSIX-shaped on Windows (/C:/...), which caused paths such
+// as C:\\C:\\... and made the local gate fail before checking any files.
+const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const violations = [];
 
 function walk(dir, out = []) {
