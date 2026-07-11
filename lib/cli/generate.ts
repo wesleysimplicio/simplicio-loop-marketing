@@ -26,6 +26,7 @@ import { encodeToon } from "../format/toon";
 import { emitEvent } from "../observability/events";
 import { readLearningsForBrief } from "../learning/retrospective";
 import { assertDoctorHealthy } from "./doctor";
+import { gateEvidence } from "../gate/evidence";
 
 export interface GenerateOptions {
   root: string;
@@ -212,7 +213,7 @@ export async function runGenerateLoop(
       });
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      if (msg.startsWith("compliance-block:") || msg.startsWith("tech-specs-block:")) {
+      if (msg.startsWith("compliance-block:") || msg.startsWith("tech-specs-block:") || msg.startsWith("evidence-block:")) {
         summary.blocked++;
         emitEvent(opts.root, {
           kind: "gate_fail",
@@ -315,7 +316,10 @@ export async function processPiece(
   const captionText = captionResult.result.output ?? "";
   const captionPrompt = `Caption for: ${brief.slice(0, 200)}`;
   const platformCaptions: Record<string, string> = {};
-  for (const platform of fm.platforms) {
+  // The evidence contract is intentionally stable across campaigns: every
+  // piece carries the four canonical review variants, even when publishing
+  // is currently limited to a subset of channels.
+  for (const platform of ["instagram", "tiktok", "linkedin", "x"]) {
     const max = platform === "x" ? 240 : platform === "tiktok" ? 150 : 1500;
     const trimmed = captionText.length > max ? captionText.slice(0, max) : captionText;
     platformCaptions[platform] = `${trimmed} #${fm.pillar}`;
@@ -550,25 +554,18 @@ export async function processPiece(
     data: { manifest_path: join(pieceDir, "manifest.json") },
   });
 
-  transitionStatus(fm.id, "draft", "scheduled", {
-    piecesDir: piecesRootFor(opts),
-  });
-  const scheduled = readPiece(fm.id, {
-    piecesDir: piecesRootFor(opts),
-  });
-  scheduled.frontmatter.compliance_report = complianceResult.report_path;
-  scheduled.frontmatter.claims_tag = watcherReport.tag;
-  scheduled.frontmatter.watcher_report_path = watcherReportPath;
+  // Persist the evidence references while still in draft; the shared evidence
+  // gate must pass before the state transition is allowed.
+  const pending = readPiece(fm.id, { piecesDir: piecesRootFor(opts) });
+  pending.frontmatter.compliance_report = complianceResult.report_path;
+  pending.frontmatter.claims_tag = watcherReport.tag;
+  pending.frontmatter.watcher_report_path = watcherReportPath;
   writeFileSync(
     pieceFilePath(fm.id, {
       piecesDir: piecesRootFor(opts),
     }),
-    serializePiece(scheduled.frontmatter, scheduled.body),
+    serializePiece(pending.frontmatter, pending.body),
   );
-  if (fm.notion_page_id && process.env.NOTION_TOKEN) {
-    await pushStatus(fm.id, "scheduled", { root: opts.root });
-  }
-
   appendRunLog(
     {
       piece_id: fm.id,
@@ -581,6 +578,23 @@ export async function processPiece(
     },
     engineRoot(opts.root),
   );
+
+  const evidence = gateEvidence(opts.root, fm.id, {
+    outputsDir: outputsRootFor(opts),
+    piecesDir: piecesRootFor(opts),
+  });
+  if (!evidence.pass) {
+    appendRunLog(
+      { piece_id: fm.id, client: fm.client, providers_used: [copy.provider_used, imageUsed, videoUsed].filter((p): p is string => Boolean(p)), cost_estimate_usd: totalCost, status: "blocked", notes: `evidence-gate: ${evidence.missing.join(", ")}` },
+      engineRoot(opts.root),
+    );
+    throw new Error(`evidence-block:${fm.id}: ${evidence.missing.join(", ")}`);
+  }
+
+  transitionStatus(fm.id, "draft", "scheduled", { piecesDir: piecesRootFor(opts) });
+  if (fm.notion_page_id && process.env.NOTION_TOKEN) {
+    await pushStatus(fm.id, "scheduled", { root: opts.root });
+  }
 }
 
 export async function cliEntry(argv: string[]): Promise<void> {

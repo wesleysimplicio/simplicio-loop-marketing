@@ -27,6 +27,8 @@ Commands:
               (journal, stall skip) then publish-verify and promote; DRY_RUN-safe
   doctor      Self-diagnostic: env keys, event stream, savings chain, loop
               journal, operator hooks (human on stderr, JSON on stdout)
+  evidence    evidence gate <piece-id> (JSON, fail-closed)
+  report      report build <piece-id> [--require-evidence] (mechanical markdown)
   campaign    Plan a piece queue from a CAMPAIGN.md brief, or review one
   new-piece   Create a new piece markdown from the template
   status      Show pipeline state (counts + recent runs + 24h cost)
@@ -681,6 +683,18 @@ function commandDoctor(args) {
   spawnTsx(script, args._.slice(1), hostRoot);
 }
 
+function commandEvidence(args) {
+  const hostRoot = resolveHostRoot(args);
+  const script = join(PACKAGE_ROOT, "lib", "cli", "evidence.ts");
+  spawnTsx(script, args._.slice(2), hostRoot);
+}
+
+function commandReport(args) {
+  const hostRoot = resolveHostRoot(args);
+  const script = join(PACKAGE_ROOT, "lib", "cli", "report.ts");
+  spawnTsx(script, args._.slice(2), hostRoot);
+}
+
 function commandLoop(args) {
   const hostRoot = resolveHostRoot(args);
   const script = join(PACKAGE_ROOT, "lib", "cli", "loop.ts");
@@ -790,6 +804,12 @@ function main() {
       return;
     case "doctor":
       commandDoctor(args);
+      return;
+    case "evidence":
+      commandEvidence(args);
+      return;
+    case "report":
+      commandReport(args);
       return;
     case "campaign":
       commandCampaign(args);
