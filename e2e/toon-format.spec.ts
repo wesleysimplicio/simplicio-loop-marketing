@@ -85,6 +85,12 @@ test("quotes strings only when required and round-trips them", () => {
   expect(roundTrip(value)).toEqual(value);
 });
 
+test("round-trips strings wrapped in quotes", () => {
+  const value = { quoted: '"quoted"' };
+  expect(encodeToon(value)).toContain(`quoted: ${JSON.stringify(value.quoted)}`);
+  expect(roundTrip(value)).toEqual(value);
+});
+
 test("round-trips a realistic piece-brief-style payload with a compliance report shape", () => {
   const value = {
     piece_id: "p-001",

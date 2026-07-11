@@ -52,6 +52,8 @@ test("runWithFallback triggers fallback on primary error and logs both", async (
   expect(lines[1].ok).toBe(true);
   expect(lines[1].fallback_used).toBe(true);
   expect(lines[1].provider).toBe("fb");
+  expect(lines[0].fallback_reason).toBe("primary_failed:synthetic primary fail");
+  expect(lines[1].fallback_reason).toBe("primary_failed:synthetic primary fail");
 });
 
 test("runWithFallback retries primary once for retryable errors before fallback", async () => {

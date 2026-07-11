@@ -82,6 +82,9 @@ test("generate loop processes a draft piece end-to-end with mocks under DRY_RUN"
     expect(usage.length).toBeGreaterThanOrEqual(2);
     expect(usage.map((line) => line.task)).toEqual(["script", "caption"]);
     expect(usage.every((line) => typeof line.provider === "string")).toBe(true);
+    expect(usage.every((line) => typeof line.tokens_in === "number" && typeof line.tokens_out === "number")).toBe(true);
+    expect(usage.map((line) => line.prompt_format)).toEqual(["toon", "json"]);
+    expect(usage.every((line) => line.piece_id === "PIECE-test-001")).toBe(true);
     const updated = readFileSync(
       join(piecesDir, "PIECE-test-001.md"),
       "utf8",

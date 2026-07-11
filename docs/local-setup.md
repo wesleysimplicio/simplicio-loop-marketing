@@ -30,6 +30,9 @@ Se quiser exercitar o workspace completo da engine:
 ```bash
 cp .env.example .env   # ou use .marketing-engine/.env em um host repo inicializado
 node bin/marketing-engine.mjs check
+
+# Full local pre-push gate
+npm run check
 ```
 
 ## Validate

@@ -27,6 +27,8 @@ Commands:
               (journal, stall skip) then publish-verify and promote; DRY_RUN-safe
   doctor      Self-diagnostic: env keys, event stream, savings chain, loop
               journal, operator hooks (human on stderr, JSON on stdout)
+  evidence    evidence gate <piece-id> (JSON, fail-closed)
+  report      report build <piece-id> [--require-evidence] (mechanical markdown)
   campaign    Plan a piece queue from a CAMPAIGN.md brief, or review one
   new-piece   Create a new piece markdown from the template
   status      Show pipeline state (counts + recent runs + 24h cost)
@@ -36,6 +38,9 @@ Commands:
   alerts      Tail recent failures from runs + usage logs
   sync        Pull pieces from Notion calendar
   schedule    Install/uninstall cron / launchd entries
+  watcher     Run one fail-closed self-paced campaign wake
+  retrospective Mine deduped durable lessons from campaign evidence
+  autoresearch  Run a fixed-judge, compliance-gated copy optimization loop (DRY_RUN only)
   help        Show this message
 
 Options:
@@ -679,6 +684,18 @@ function commandDoctor(args) {
   spawnTsx(script, args._.slice(1), hostRoot);
 }
 
+function commandEvidence(args) {
+  const hostRoot = resolveHostRoot(args);
+  const script = join(PACKAGE_ROOT, "lib", "cli", "evidence.ts");
+  spawnTsx(script, args._.slice(2), hostRoot);
+}
+
+function commandReport(args) {
+  const hostRoot = resolveHostRoot(args);
+  const script = join(PACKAGE_ROOT, "lib", "cli", "report.ts");
+  spawnTsx(script, args._.slice(2), hostRoot);
+}
+
 function commandLoop(args) {
   const hostRoot = resolveHostRoot(args);
   const script = join(PACKAGE_ROOT, "lib", "cli", "loop.ts");
@@ -747,6 +764,22 @@ function commandSchedule(args) {
   spawnTsx(script, args._.slice(1), hostRoot);
 }
 
+function commandWatcher(args) {
+  const script = join(PACKAGE_ROOT, "lib", "cli", "watcher.ts");
+  spawnTsx(script, args._.slice(1), resolveHostRoot(args), { stdio: "inherit" });
+}
+
+function commandRetrospective(args) {
+  const script = join(PACKAGE_ROOT, "lib", "cli", "retrospective.ts");
+  spawnTsx(script, args._.slice(1), resolveHostRoot(args), { stdio: "inherit" });
+}
+
+function commandAutoresearch(args) {
+  const hostRoot = resolveHostRoot(args);
+  const script = join(PACKAGE_ROOT, "lib", "cli", "autoresearch.ts");
+  spawnTsx(script, args._.slice(1), hostRoot, { stdio: "inherit" });
+}
+
 function main() {
   const argv = process.argv.slice(2);
   const args = parseArgs(argv);
@@ -779,6 +812,12 @@ function main() {
     case "doctor":
       commandDoctor(args);
       return;
+    case "evidence":
+      commandEvidence(args);
+      return;
+    case "report":
+      commandReport(args);
+      return;
     case "campaign":
       commandCampaign(args);
       return;
@@ -805,6 +844,15 @@ function main() {
       return;
     case "schedule":
       commandSchedule(args);
+      return;
+    case "watcher":
+      commandWatcher(args);
+      return;
+    case "retrospective":
+      commandRetrospective(args);
+      return;
+    case "autoresearch":
+      commandAutoresearch(args);
       return;
     default:
       console.error(`Unknown command: ${cmd}`);

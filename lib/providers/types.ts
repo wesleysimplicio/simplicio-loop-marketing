@@ -35,6 +35,11 @@ export interface GenerationResult<T = string> {
   output?: T;
   error?: string;
   tokens?: number;
+  tokens_in?: number;
+  tokens_out?: number;
+  used_estimate?: boolean;
+  prompt_format?: "toon" | "json";
+  savings_tokens_est?: number;
   cost_usd?: number;
   latency_ms?: number;
   attempt?: number;

@@ -37,6 +37,10 @@ export interface JournalRecord {
   gate: Gate;
   fingerprint: string | null;
   note?: string;
+  stage?: "copy" | "creative" | "critic" | "compliance" | "watcher-gate" | "tech-specs";
+  strategy?: string;
+  provider?: string;
+  cost_estimate?: number;
 }
 
 export interface ItemVerdict {
@@ -79,6 +83,10 @@ export interface RecordAttemptInput {
   /** Raw failure text — fingerprinted; omit for pass/skipped. */
   failure_text?: string;
   note?: string;
+  stage?: JournalRecord["stage"];
+  strategy?: string;
+  provider?: string;
+  cost_estimate?: number;
 }
 
 /** Append one attempt. Fail-open: returns null on write trouble. */
@@ -96,6 +104,10 @@ export function recordAttempt(
     gate: input.gate,
     fingerprint: input.failure_text ? fingerprint(input.failure_text) : null,
     ...(input.note !== undefined && { note: input.note }),
+    ...(input.stage !== undefined && { stage: input.stage }),
+    ...(input.strategy !== undefined && { strategy: input.strategy }),
+    ...(input.provider !== undefined && { provider: input.provider }),
+    ...(input.cost_estimate !== undefined && { cost_estimate: input.cost_estimate }),
   };
   try {
     const path = journalPath(root);
@@ -106,6 +118,22 @@ export function recordAttempt(
   } catch {
     return null;
   }
+}
+
+export const STRATEGY_LADDER = ["rewrite-hook", "change-format", "change-provider", "human-review"] as const;
+export type Strategy = (typeof STRATEGY_LADDER)[number];
+
+/** Pick a new provider-neutral strategy after a repeated gate failure. */
+export function strategyForAttempt(attempt: number): Strategy {
+  return STRATEGY_LADDER[Math.min(Math.max(attempt - 1, 0), STRATEGY_LADDER.length - 1)];
+}
+
+export function nextStrategy(root: string, itemId: string, k = DEFAULT_STALL_K): Strategy {
+  const attempts = readJournal(root).filter((r) => r.item_id === itemId && r.gate !== "skipped");
+  const last = attempts.at(-1);
+  if (!last || last.gate === "pass") return STRATEGY_LADDER[0];
+  const verdict = itemVerdict(root, itemId, k);
+  return verdict.verdict === "STALLED" ? STRATEGY_LADDER[Math.min(attempts.length, STRATEGY_LADDER.length - 1)] : strategyForAttempt(attempts.length + 1);
 }
 
 export function readJournal(root: string): JournalRecord[] {

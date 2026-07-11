@@ -12,6 +12,7 @@ import {
   recordPromotionAttempt,
 } from "../promotion/budget-guardrail";
 import { emitEvent } from "../observability/events";
+import { assertDoctorHealthy } from "./doctor";
 
 interface PromoteOptions {
   root: string;
@@ -188,6 +189,7 @@ export async function runPromoteLoop(opts: PromoteOptions): Promise<{
   skipped: number;
 }> {
   process.env.DRY_RUN = process.env.DRY_RUN ?? "true";
+  if (process.env.DRY_RUN !== "true") assertDoctorHealthy(opts.root);
   const analyticsPath =
     opts.analyticsPath ?? resolve(dataRootFor(opts), "analytics.jsonl");
   const outputsRoot = outputsRootFor(opts);

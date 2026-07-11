@@ -19,8 +19,11 @@
 import { execFileSync } from "node:child_process";
 import { readFileSync, readdirSync, statSync, existsSync } from "node:fs";
 import { join, relative } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const ROOT = new URL("..", import.meta.url).pathname;
+// URL.pathname is POSIX-shaped on Windows (/C:/...), which caused paths such
+// as C:\\C:\\... and made the local gate fail before checking any files.
+const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const violations = [];
 
 function walk(dir, out = []) {
@@ -40,7 +43,7 @@ function walk(dir, out = []) {
 // --- Rule 1: no console.log in lib/ outside lib/cli/ -----------------------
 const libFiles = walk(join(ROOT, "lib")).filter((p) => p.endsWith(".ts"));
 for (const file of libFiles) {
-  const rel = relative(ROOT, file);
+  const rel = relative(ROOT, file).split(String.fromCharCode(92)).join("/");
   if (rel.startsWith(join("lib", "cli") + "/")) continue;
   const lines = readFileSync(file, "utf8").split("\n");
   lines.forEach((line, i) => {
@@ -56,7 +59,7 @@ for (const file of libFiles) {
 // --- Rule 2: __mocks__ imports only in provider registries and tests -------
 const MOCK_IMPORT_ALLOWED = /^(lib\/providers\/[^/]+\.ts|lib\/providers\/__mocks__\/|e2e\/|tests\/)/;
 for (const file of libFiles) {
-  const rel = relative(ROOT, file);
+  const rel = relative(ROOT, file).split(String.fromCharCode(92)).join("/");
   if (MOCK_IMPORT_ALLOWED.test(rel)) continue;
   const lines = readFileSync(file, "utf8").split("\n");
   lines.forEach((line, i) => {

@@ -1,0 +1,3 @@
+import { runRetrospective } from "../learning/retrospective";
+export async function cliEntry(argv: string[]): Promise<void> { const ci = argv.indexOf("--campaign"); const li = argv.indexOf("--client"); const campaign = ci >= 0 ? argv[ci + 1] : "unscoped"; const client = li >= 0 ? argv[li + 1] : "default"; process.stdout.write(`${JSON.stringify(await runRetrospective(process.cwd(), campaign, { client }), null, 2)}\n`); }
+if (import.meta.url.endsWith("/retrospective.ts")) cliEntry(process.argv.slice(2)).catch((err) => { process.stderr.write(`retrospective failed: ${String(err)}\n`); process.exit(1); });

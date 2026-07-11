@@ -99,6 +99,7 @@ The router picks it up automatically. Existing skills do not change.
 - `simplicio-loop-marketing` — root super-skill orchestrator for the autonomous SaaS marketing loop (discover → orient → decide → create → verify → publish → measure → promote → learn); sequences the lanes below by capability, never by vendor.
 - `content-engineering-authentic` — renders the five evidence-aware content templates (dev article, social derivative, video script, Reddit/forum answer, launch thread); marks missing evidence explicitly instead of inventing it.
 - `watcher-gate` — N-Nest style independent verification pass; tags every output `MEASURED` / `CANON` / `UNVERIFIED`.
+- `rtk-cli` — token-efficient shell inspection and validation helper.
 
 ## Skills Available (planned, code lives in `lib/` without a matching `.skills/*/SKILL.md` yet)
 
