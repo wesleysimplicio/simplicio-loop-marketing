@@ -23,7 +23,7 @@ import {
 } from "../qa/tech-specs";
 import { runGate, writeWatcherReport } from "../gate/watcher-gate";
 import { encodeToon } from "../format/toon";
-import { emitEvent } from "../observability/events";
+import { emitEvent } from "../observability/events";`nimport { assertDoctorHealthy } from "./doctor";
 
 export interface GenerateOptions {
   root: string;
@@ -162,7 +162,7 @@ function techSpecTargetsFor(
 export async function runGenerateLoop(
   opts: GenerateOptions,
 ): Promise<GenerateSummary> {
-  process.env.DRY_RUN = process.env.DRY_RUN ?? "true";
+  process.env.DRY_RUN = process.env.DRY_RUN ?? "true";`n  if (process.env.DRY_RUN !== "true") assertDoctorHealthy(opts.root);
   if (opts.matrixPath) {
     process.env.PROVIDERS_MATRIX_PATH = opts.matrixPath;
   }
