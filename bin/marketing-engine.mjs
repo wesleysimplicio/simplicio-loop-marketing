@@ -30,6 +30,7 @@ Commands:
   evidence    evidence gate <piece-id> (JSON, fail-closed)
   report      report build <piece-id> [--require-evidence] (mechanical markdown)
   campaign    Plan a piece queue from a CAMPAIGN.md brief, or review one
+  anchor      Freeze/check/gate a campaign anchor with durable AC receipts
   new-piece   Create a new piece markdown from the template
   status      Show pipeline state (counts + recent runs + 24h cost)
   logs        Tail data/llm-usage.jsonl
@@ -714,6 +715,12 @@ function commandCampaign(args) {
   spawnTsx(script, args._.slice(1), hostRoot);
 }
 
+function commandAnchor(args) {
+  const hostRoot = resolveHostRoot(args);
+  const script = join(PACKAGE_ROOT, "lib", "cli", "anchor.ts");
+  spawnTsx(script, args._.slice(1), hostRoot, { stdio: "inherit" });
+}
+
 function commandNewPiece(args) {
   const hostRoot = resolveHostRoot(args);
   const script = join(PACKAGE_ROOT, "lib", "cli", "new-piece.ts");
@@ -820,6 +827,9 @@ function main() {
       return;
     case "campaign":
       commandCampaign(args);
+      return;
+    case "anchor":
+      commandAnchor(args);
       return;
     case "new-piece":
       commandNewPiece(args);
