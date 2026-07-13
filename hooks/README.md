@@ -61,9 +61,10 @@ chmod +x .git/hooks/pre-push
 
 It blocks (exit 2): force-push / history rewrite (`filter-branch`), remote-ref deletion,
 mass-delete (`rm -rf /`), destructive DDL (`DROP DATABASE`), infra teardown (`terraform destroy`),
-and any commit/push whose staged diff contains a secret (AWS/GitHub/Slack/OpenAI keys, private
-keys, hardcoded credentials — placeholder-aware). `python3 hooks/action_gate.py selftest` proves
-the ruleset (14/14).
+deletion or overwrite attempts under `outputs/` / `.marketing-engine/outputs/`, and any
+commit/push whose staged diff contains a secret (AWS/GitHub/Slack/OpenAI keys, private keys,
+hardcoded credentials — placeholder-aware). `python3 hooks/action_gate.py selftest` proves
+the ruleset mechanically.
 
 ## The always-works one (no wiring needed)
 
