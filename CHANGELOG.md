@@ -13,6 +13,8 @@ All notable changes to this project are documented here. Format based on
 
 ### Added
 
+- **Asolaria narrative package** (issue #78, repo-local scope only): canonical [SIMPLICIO-MAP-OF-MAPS.md](./SIMPLICIO-MAP-OF-MAPS.md), [REDUCTIONS.md](./REDUCTIONS.md), and the bounded campaign artifact set under `.specs/strategy/campaigns/2026-Q3-asolaria-on-metal/` (`CAMPAIGN.md`, `HYPOTHESIS.md`, `ROUTING.md`, `LANDING.md`, `DEMO.md`, `CASE-STUDY.md`) plus a fixture-backed unit test verifying required docs, links, and explicit external dependencies.
+
 Autonomous-loop evolution — the best patterns of the sibling repos (simplicio-loop, simplicio-dev-cli, simplicio-mapper) ported into the engine (see PRD.md):
 
 - **`marketing-engine loop`** (`lib/cli/loop.ts`, `lib/loop/journal.ts`): one command drains the draft-piece backlog through generate's real gates with durable attempt memory — stable failure fingerprints in `.simplicio/loop/journal.jsonl` (`marketing-loop-state/v1`), `PROGRESS|STALLED` verdicts, and skip-after-3-identical-failures instead of retrying forever; `--mode drain|converge`, `--max-iter`, `--client`; yool-board tuple per piece; optional fail-open bridge to the simplicio-loop Python journal (`MARKETING_LOOP_PY_WORKERS=1`).

@@ -1,5 +1,18 @@
 # Progress Log
 
+## Checkpoint 8 (2026-07-13 — issue #78 Asolaria narrative package)
+
+Status: completed on local branch, repo-local scope only.
+
+Result:
+- Audited issue #78 live and confirmed the ask is mostly narrative/publication-oriented, with several outputs depending on an external site not present in this repo.
+- Added a repo-local Asolaria integration package instead of touching engine core: `SIMPLICIO-MAP-OF-MAPS.md`, `REDUCTIONS.md`, and a bounded campaign folder under `.specs/strategy/campaigns/2026-Q3-asolaria-on-metal/` containing `CAMPAIGN.md`, `HYPOTHESIS.md`, `ROUTING.md`, `LANDING.md`, `DEMO.md`, and `CASE-STUDY.md`.
+- Added `tests/fixtures/asolaria-artifacts.json` and `tests/unit/asolaria-docs.test.cjs` so the required docs, cross-links, reduction count, and external-dependency boundaries are mechanically checked.
+- Updated `README.md` and `CHANGELOG.md` to surface the package without altering loop/provider/gate code.
+
+Validation:
+- `node --test tests/unit/asolaria-docs.test.cjs` — pass.
+
 ## Checkpoint 7 (2026-07-11 — issues #65–#79)
 
 Status: completed on `codex/finish-all-programming` pending PR/release publication.

@@ -1,0 +1,46 @@
+{
+  "campaign_id": "2026-Q3-asolaria-on-metal",
+  "required_docs": [
+    {
+      "path": "SIMPLICIO-MAP-OF-MAPS.md",
+      "must_include": ["Asolaria", "REDUCTIONS.md", ".specs/product/VISION.md", "External dependencies kept explicit"]
+    },
+    {
+      "path": "REDUCTIONS.md",
+      "must_include": ["Reduction 1", "Reduction 4", "What is still external"]
+    },
+    {
+      "path": ".specs/strategy/campaigns/2026-Q3-asolaria-on-metal/CAMPAIGN.md",
+      "must_include": ["2026-Q3-asolaria-on-metal", "repo-local package is complete", "Public deployment"]
+    },
+    {
+      "path": ".specs/strategy/campaigns/2026-Q3-asolaria-on-metal/LANDING.md",
+      "must_include": ["Simplicio + Asolaria", "Proof blocks", "simpleti.com.br/simplicio/on-metal"]
+    },
+    {
+      "path": ".specs/strategy/campaigns/2026-Q3-asolaria-on-metal/DEMO.md",
+      "must_include": ["five-step operator journey", "SIMPLICIO-MAP-OF-MAPS.md", "External media dependencies"]
+    },
+    {
+      "path": ".specs/strategy/campaigns/2026-Q3-asolaria-on-metal/CASE-STUDY.md",
+      "must_include": ["What is not claimed yet", "production conversion rates", "Recommended public follow-up"]
+    }
+  ],
+  "external_dependencies": [
+    {
+      "deliverable": "public landing deployment",
+      "status": "external",
+      "targets": ["simpleti.com.br/simplicio/on-metal", "site navigation / section wiring"]
+    },
+    {
+      "deliverable": "public demo media",
+      "status": "external",
+      "targets": ["recorded screen capture", "hosted MP4 or GIF"]
+    },
+    {
+      "deliverable": "live campaign analytics",
+      "status": "external",
+      "targets": ["production analytics", "public traffic results"]
+    }
+  ]
+}
