@@ -34,6 +34,8 @@ test("help shows the new commands", () => {
     "alerts",
     "sync",
     "schedule",
+    "watcher",
+    "retrospective",
   ]) {
     expect(r.stdout).toContain(c);
   }
