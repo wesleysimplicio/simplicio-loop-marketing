@@ -126,19 +126,43 @@ test("drain mode: advances good pieces, stalls the persistent failure, books sav
     ).toBe(true);
   }
   // Failing piece stayed draft — never silently advanced.
-  expect(readFileSync(join(piecesDir, "PIECE-loop-fail.md"), "utf8")).toMatch(/status: draft/);
+  expect(readFileSync(join(piecesDir, "PIECE-loop-fail.md"), "utf8")).toMatch(/status: review/);
 
-  // Journal: 3 identical-fingerprint fails + 1 skip for the stalled piece.
+  // Journal: 3 identical-fingerprint fails + 1 blocked human-review handoff
+  // instead of a 4th identical retry.
   const journal = readJournal(host).filter((r) => r.item_id === "PIECE-loop-fail");
   expect(journal.filter((r) => r.gate === "fail")).toHaveLength(3);
   expect(new Set(journal.filter((r) => r.gate === "fail").map((r) => r.fingerprint)).size).toBe(1);
-  expect(journal.filter((r) => r.gate === "skipped")).toHaveLength(1);
+  expect(journal.filter((r) => r.gate === "blocked")).toHaveLength(1);
+  expect(journal.map((r) => r.strategy)).toEqual([
+    "rewrite-hook",
+    "change-format",
+    "change-provider",
+    "human-review",
+  ]);
+  expect(journal.map((r) => r.action)).toEqual([
+    "generate:rewrite-hook",
+    "generate:change-format",
+    "generate:change-provider",
+    "generate:human-review",
+  ]);
+  expect(journal.at(-1)?.note).toContain("routed to review");
 
   // The skip booked an ESTIMATED savings receipt on an intact chain.
   const savings = savingsSummary(host);
   expect(savings.count).toBe(1);
   expect(savings.by_source["loop:journal-skip"].count).toBe(1);
   expect(savings.chain.ok).toBe(true);
+
+  const pieceJournalPath = join(
+    ws,
+    "outputs",
+    "badclient",
+    "2026-05-08",
+    "PIECE-loop-fail",
+    "journal.jsonl",
+  );
+  expect(existsSync(pieceJournalPath)).toBe(false);
 
   // Events: loop lifecycle + stall.
   const events = eventsSummary(host, 50);
@@ -152,6 +176,38 @@ test("drain mode: advances good pieces, stalls the persistent failure, books sav
   expect(byId.get("piece.plan:PIECE-loop-001")?.status).toBe("done");
   expect(byId.get("piece.plan:PIECE-loop-002")?.status).toBe("done");
   expect(byId.get("piece.plan:PIECE-loop-fail")?.status).toBe("blocked");
+});
+
+test("journal rows are mirrored into the piece output directory when it exists", async () => {
+  process.env.DRY_RUN = "true";
+  const { host, ws, piecesDir } = makeHost();
+  writeGoodPiece(piecesDir, "PIECE-loop-journal");
+  const prevCwd = process.cwd();
+  process.chdir(host);
+  try {
+    await runLoop({ root: host, mode: "drain", maxIter: 3 });
+  } finally {
+    process.chdir(prevCwd);
+  }
+  const pieceJournal = join(
+    ws,
+    "outputs",
+    "acme",
+    "2026-05-08",
+    "PIECE-loop-journal",
+    "journal.jsonl",
+  );
+  expect(existsSync(pieceJournal)).toBe(true);
+  const rows = readFileSync(pieceJournal, "utf8").trim().split("\n").map((line) => JSON.parse(line));
+  expect(rows).toHaveLength(1);
+  expect(rows[0]).toMatchObject({
+    item_id: "PIECE-loop-journal",
+    client: "acme",
+    date: "2026-05-08",
+    action: "generate:rewrite-hook",
+    gate: "pass",
+    strategy: "rewrite-hook",
+  });
 });
 
 test("drain mode stops with 'drained' when every piece advances", async () => {

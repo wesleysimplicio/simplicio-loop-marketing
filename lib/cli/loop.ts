@@ -22,6 +22,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { resolve, join } from "node:path";
 import { spawnSync } from "node:child_process";
 import { listPieces } from "../pieces/store";
+import { transitionStatus } from "../pieces/store";
 import type { ParsedPiece } from "../pieces/frontmatter";
 import { processPiece } from "./generate";
 import { runPromoteLoop } from "./promote";
@@ -31,8 +32,8 @@ import {
   DEFAULT_STALL_K,
   itemVerdict,
   nextAttempt,
+  nextStrategy,
   recordAttempt,
-  strategyForAttempt,
 } from "../loop/journal";
 import { writeTuple, WorkerGovernor } from "../yool/board";
 import { publishVerified, receiptPath } from "../publish/verify-pipeline";
@@ -161,14 +162,26 @@ export async function runLoop(opts: LoopOptions): Promise<LoopSummary> {
       const verdict = itemVerdict(root, id, stallK);
       if (verdict.verdict === "STALLED") {
         if (!stalledLogged.has(id)) {
+          const strategy = nextStrategy(root, id, stallK);
           stalledLogged.add(id);
           summary.skipped_stalled++;
+          if (strategy === "human-review" && piece.frontmatter.status === "draft") {
+            transitionStatus(id, "draft", "review", { piecesDir });
+          }
           recordAttempt(root, {
             item_id: id,
             attempt: verdict.attempts + 1,
-            action: "generate",
-            gate: "skipped",
-            note: `stalled after ${verdict.attempts} attempts on fingerprint ${verdict.last_fingerprint}`,
+            client: piece.frontmatter.client,
+            campaign: piece.frontmatter.campaign,
+            date: piece.frontmatter.date,
+            action: `generate:${strategy}`,
+            gate: strategy === "human-review" ? "blocked" : "skipped",
+            stage: "copy",
+            strategy,
+            fingerprint_override: verdict.last_fingerprint,
+            note: strategy === "human-review"
+              ? `stalled after ${verdict.attempts} attempts on fingerprint ${verdict.last_fingerprint}; routed to review`
+              : `stalled after ${verdict.attempts} attempts on fingerprint ${verdict.last_fingerprint}`,
           });
           emitEvent(root, {
             kind: "stall_detected",
@@ -176,7 +189,7 @@ export async function runLoop(opts: LoopOptions): Promise<LoopSummary> {
             piece_id: id,
             phase: "loop",
             verdict: "STALLED",
-            data: { attempts: verdict.attempts, fingerprint: verdict.last_fingerprint },
+            data: { attempts: verdict.attempts, fingerprint: verdict.last_fingerprint, strategy },
           });
           // The skip is a REAL avoided re-derivation: the journal knows this
           // exact attempt fails. Booked as estimated, never measured.
@@ -223,12 +236,13 @@ export async function runLoop(opts: LoopOptions): Promise<LoopSummary> {
         payload: { attempt, iteration: iter },
       });
       summary.processed++;
+      const strategy = nextStrategy(root, id, stallK);
       emitEvent(root, {
         kind: "piece_start",
         piece_id: id,
         client: piece.frontmatter.client,
         phase: "loop",
-        data: { attempt, iteration: iter },
+        data: { attempt, iteration: iter, strategy },
       });
       let gate: "pass" | "fail" | "blocked" = "pass";
       let failureText: string | undefined;
@@ -258,10 +272,14 @@ export async function runLoop(opts: LoopOptions): Promise<LoopSummary> {
       }
       recordAttempt(root, {
         item_id: id,
+        client: piece.frontmatter.client,
+        campaign: piece.frontmatter.campaign,
+        date: piece.frontmatter.date,
         attempt,
-        action: `generate:${strategyForAttempt(attempt)}`,
+        action: `generate:${strategy}`,
         gate,
         stage: gate === "blocked" ? "compliance" : "copy",
+        strategy,
         ...(failureText !== undefined && { failure_text: failureText, note: failureText.slice(0, 200) }),
       });
       mirrorToOperator(root, operatorWorker, {

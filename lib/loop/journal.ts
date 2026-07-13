@@ -32,6 +32,9 @@ export interface JournalRecord {
   ts: string;
   run_id: string;
   item_id: string;
+  client?: string;
+  campaign?: string;
+  date?: string;
   attempt: number;
   action: string;
   gate: Gate;
@@ -56,6 +59,20 @@ export function journalPath(root: string): string {
   return resolve(root, ".simplicio", "loop", "journal.jsonl");
 }
 
+function engineRoot(root: string): string {
+  const nested = resolve(root, ".marketing-engine");
+  return existsSync(nested) ? nested : root;
+}
+
+export function pieceJournalPath(
+  root: string,
+  client: string,
+  date: string,
+  itemId: string,
+): string {
+  return resolve(engineRoot(root), "outputs", client, date.slice(0, 10), itemId, "journal.jsonl");
+}
+
 /**
  * Stable failure fingerprint: normalize away line/column numbers, absolute
  * paths, hex ids, timestamps and durations before hashing, so retries of
@@ -77,11 +94,15 @@ export function fingerprint(failureText: string): string {
 
 export interface RecordAttemptInput {
   item_id: string;
+  client?: string;
+  campaign?: string;
+  date?: string;
   attempt: number;
   action: string;
   gate: Gate;
   /** Raw failure text — fingerprinted; omit for pass/skipped. */
   failure_text?: string;
+  fingerprint_override?: string | null;
   note?: string;
   stage?: JournalRecord["stage"];
   strategy?: string;
@@ -99,10 +120,17 @@ export function recordAttempt(
     ts: new Date().toISOString(),
     run_id: runId(),
     item_id: input.item_id,
+    ...(input.client !== undefined && { client: input.client }),
+    ...(input.campaign !== undefined && { campaign: input.campaign }),
+    ...(input.date !== undefined && { date: input.date.slice(0, 10) }),
     attempt: input.attempt,
     action: input.action,
     gate: input.gate,
-    fingerprint: input.failure_text ? fingerprint(input.failure_text) : null,
+    fingerprint: input.fingerprint_override !== undefined
+      ? input.fingerprint_override
+      : input.failure_text
+        ? fingerprint(input.failure_text)
+        : null,
     ...(input.note !== undefined && { note: input.note }),
     ...(input.stage !== undefined && { stage: input.stage }),
     ...(input.strategy !== undefined && { strategy: input.strategy }),
@@ -110,10 +138,16 @@ export function recordAttempt(
     ...(input.cost_estimate !== undefined && { cost_estimate: input.cost_estimate }),
   };
   try {
-    const path = journalPath(root);
-    const dir = dirname(path);
-    if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
-    appendFileSync(path, `${JSON.stringify(rec)}\n`, "utf8");
+    const globalPath = journalPath(root);
+    const globalDir = dirname(globalPath);
+    if (!existsSync(globalDir)) mkdirSync(globalDir, { recursive: true });
+    appendFileSync(globalPath, `${JSON.stringify(rec)}\n`, "utf8");
+    if (input.client && input.date) {
+      const piecePath = pieceJournalPath(root, input.client, input.date, input.item_id);
+      const pieceDir = dirname(piecePath);
+      if (!existsSync(pieceDir)) mkdirSync(pieceDir, { recursive: true });
+      appendFileSync(piecePath, `${JSON.stringify(rec)}\n`, "utf8");
+    }
     return rec;
   } catch {
     return null;
