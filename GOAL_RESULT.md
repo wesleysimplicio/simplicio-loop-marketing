@@ -7,6 +7,8 @@ for executable scope using six parallel workers and integrated on branch
 `codex/finish-all-programming`. #78 has no executable acceptance criterion; #79 is
 implemented as a fixed-judge, compliance-gated, holdout-evaluated `DRY_RUN` loop.
 
+Follow-up on 2026-07-13: issue #78 now has a repo-local narrative package instead of staying audit-only. The work adds canonical docs, campaign artifacts, and a focused unit test, while keeping public-site, demo hosting, and live analytics explicitly marked as external dependencies.
+
 Final validation: `npm run typecheck` PASS, `npm run lint` PASS, `npm run budget` PASS,
 `npx playwright test` PASS (236/236). Publication actions were not triggered by the
 autoresearch path (`published: false`, `dry_run: true`).

@@ -4,7 +4,7 @@ Este repo roda com **duas camadas de orquestração** que nunca competem entre s
 
 | Camada | Quem escreve | Diretório de estado | Conteúdo |
 |---|---|---|---|
-| **Produto** (marketing-engine, TS) | `lib/observability/*`, `lib/loop/journal.ts`, `lib/cli/loop.ts` | `.simplicio/` | `events.jsonl` (`marketing-event/v1`), `ledger/marketing-savings-events.jsonl` (`simplicio.savings-event/v1`, hash-chained), `loop/journal.jsonl` (`marketing-loop-state/v1`) |
+| **Produto** (marketing-engine, TS) | `lib/observability/*`, `lib/loop/journal.ts`, `lib/cli/loop.ts` | `.simplicio/` | `events.jsonl` (`marketing-event/v1`), `ledger/marketing-savings-events.jsonl` (`simplicio.savings-event/v1`, hash-chained), `loop/journal.jsonl` (`marketing-loop-state/v1`, mirrored into `outputs/<client>/<date>/<piece>/journal.jsonl` when the piece directory exists) |
 | **Operador** (agente/sessão, Python) | workers do plugin simplicio-loop | `.orchestrator/` | `loop/` (scratchpad, journal, anchor, done flag), `backlog/backlog.jsonl`, `tee/` (evidências), `savings/` (ledger trackeado) |
 
 Regra de bolso: `.simplicio/` é o **estado do produto** (auditável, contratos

@@ -16,6 +16,7 @@ test("doctor report on an empty host is healthy and contract-valid", () => {
   expect(report.events.present).toBe(false);
   expect(report.loop.journal_present).toBe(false);
   expect(report.savings.chain_ok).toBe(true); // empty chain is intact
+  expect(report.operator.python_workers).toBe("absent");
   expect(validateArtifact(report, loadSchemaRegistry()).errors).toEqual([]);
 });
 
@@ -76,7 +77,7 @@ test("doctor report reflects a real loop run (events, journal, savings, pieces)"
   expect(report.savings.count).toBe(1);
   expect(report.savings.chain_ok).toBe(true);
   expect(report.pieces.scheduled).toBe(1);
-  expect(report.pieces.draft).toBe(1);
+  expect(report.loop.stalled_items).toContain("PIECE-doc-fail");
   expect(validateArtifact(report, loadSchemaRegistry()).errors).toEqual([]);
 });
 
@@ -109,6 +110,27 @@ test("doctor reports a named blocked check when a toolchain is unavailable", () 
       status: "blocked",
       detail: "ffmpeg is missing from PATH",
     });
+    expect(report.has_blocked).toBe(true);
+  } finally {
+    if (previous === undefined) delete process.env.MARKETING_ENGINE_DOCTOR_MISSING;
+    else process.env.MARKETING_ENGINE_DOCTOR_MISSING = previous;
+  }
+});
+
+test("doctor reports hook worker availability explicitly", () => {
+  const previous = process.env.MARKETING_ENGINE_DOCTOR_MISSING;
+  process.env.MARKETING_ENGINE_DOCTOR_MISSING = "python";
+  try {
+    const host = mkdtempSync(join(tmpdir(), "me-doctor-python-"));
+    mkdirSync(join(host, "hooks"), { recursive: true });
+    writeFileSync(join(host, "hooks", "action_gate.py"), "# stub");
+    const report = buildDoctorReport(host);
+    expect(report.checks).toContainEqual({
+      id: "operator.python-workers",
+      status: "blocked",
+      detail: `${process.platform === "win32" ? "python" : "python3"} is unavailable for hook workers`,
+    });
+    expect(report.operator.python_workers).toBe("absent");
   } finally {
     if (previous === undefined) delete process.env.MARKETING_ENGINE_DOCTOR_MISSING;
     else process.env.MARKETING_ENGINE_DOCTOR_MISSING = previous;

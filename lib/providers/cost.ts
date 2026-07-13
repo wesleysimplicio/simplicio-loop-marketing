@@ -102,7 +102,7 @@ export function resolveUsageWithFallback(input: {
   output: string;
   tokens_in?: number;
   tokens_out?: number;
-}): { tokens_in: number; tokens_out: number; used_estimate: boolean } {
+}): { tokens_in: number; tokens_out: number; used_estimate: boolean; fallback_reason?: string } {
   const hasRealUsage =
     input.tokens_in !== undefined && input.tokens_out !== undefined;
 
@@ -126,5 +126,6 @@ export function resolveUsageWithFallback(input: {
     tokens_in: estimateTokens(input.prompt),
     tokens_out: estimateTokens(input.output),
     used_estimate: true,
+    fallback_reason: `usage_missing:${warningKey}`,
   };
 }

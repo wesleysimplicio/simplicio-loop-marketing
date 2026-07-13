@@ -37,12 +37,15 @@ export interface UsageEntry {
   used_estimate?: boolean;
   prompt_format?: "toon" | "json";
   savings_tokens_est?: number;
+  cache_status?: "hit" | "enabled" | "not_requested" | "unsupported";
+  cache_read_input_tokens?: number;
+  cache_creation_input_tokens?: number;
+  fallback_reason?: string;
   piece_id?: string;
   cost_usd?: number;
   ok?: boolean;
   error?: string;
   fallback_used?: boolean;
-  fallback_reason?: string;
   attempt?: number;
   latency_ms?: number;
 }

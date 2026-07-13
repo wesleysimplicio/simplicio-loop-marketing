@@ -116,7 +116,16 @@ export function gateAnchor(
 ): AnchorGate {
   const anchor = readAnchor(root, client, campaign);
   const unverified = anchor.piece_acceptance.filter((a) => statuses[a.id] !== true).map((a) => a.id);
-  if (unverified.length && !override) return { pass: false, status: "blocked", unverified, override_logged: false };
+  if (unverified.length && !override) {
+    anchor.status_events.push({
+      at: new Date().toISOString(),
+      kind: "gate",
+      status: "blocked",
+      reason: `unverified:${unverified.join(",")}`,
+    });
+    writeFileSync(anchorPath(root, client, campaign), `${JSON.stringify(anchor, null, 2)}\n`, "utf8");
+    return { pass: false, status: "blocked", unverified, override_logged: false };
+  }
   if (unverified.length && !override?.reason?.trim()) throw new Error("anchor: human override requires a reason");
   const at = override?.at ?? new Date().toISOString();
   if (override && unverified.length) anchor.status_events.push({ at, kind: "human_override", status: "complete", reason: override.reason.trim() });

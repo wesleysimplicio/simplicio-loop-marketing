@@ -81,6 +81,10 @@ IRREVERSIBLE = [
      "history rewrite across the repo — irreversible for everyone"),
     (re.compile(r"\brm\s+-rf?\s+(/|~|\.|\*|\$HOME)(\s|$)"),
      "recursive delete of a root/home/cwd/glob — mass-file deletion"),
+    (re.compile(r"\b(rm|del|erase)\b.*\b(outputs[/\\]|\.marketing-engine[/\\]outputs[/\\])", re.I),
+     "deleting outputs/evidence artifacts is append-only and requires a human"),
+    (re.compile(r"\b(mv|move|cp|copy)\b.*\b(outputs[/\\]|\.marketing-engine[/\\]outputs[/\\])", re.I),
+     "overwriting/moving outputs evidence artifacts requires a human"),
     (re.compile(r"\b(DROP\s+(DATABASE|TABLE|SCHEMA)|TRUNCATE\s+TABLE)\b", re.I),
      "destructive schema/data DDL"),
     (re.compile(r"\bterraform\s+destroy\b|\bkubectl\s+delete\s+(namespace|ns|pv|deployment)\b", re.I),
@@ -354,12 +358,15 @@ def cmd_selftest(_opts):
     chk("force-lease.block", act("git push --force-with-lease"), "block")
     chk("filter-branch.block", act("git filter-branch --tree-filter x HEAD"), "block")
     chk("rmrf-root.block", act("rm -rf /"), "block")
+    chk("outputs-delete.block", act("rm outputs/acme/2026-05-08/p1/evidence.png"), "block")
+    chk("outputs-overwrite.block", act("cp draft.png outputs/acme/2026-05-08/p1/evidence.png"), "block")
     chk("drop-db.block", act("psql -c 'DROP DATABASE prod'"), "block")
     chk("tf-destroy.block", act("terraform destroy -auto-approve"), "block")
     # benign commands are NOT classified as irreversible
     chk("status.allow", act("git status"), "allow")
     chk("normal-push.allow", act("git push -u origin feature"), "allow")
     chk("rm-file.allow", act("rm -f build/tmp.o"), "allow")
+    chk("cp-file.allow", act("cp draft.png tmp/evidence.png"), "allow")
     chk("ls.allow", act("ls -la && grep -rn foo src/"), "allow")
     # secret-scan (text mode, placeholder-aware). Fixtures built so this source file stays clean.
     fake_aws = "AKIA" + "QRSTUVWX01234567"          # matches AKIA[0-9A-Z]{16}, no placeholder word

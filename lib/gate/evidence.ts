@@ -25,12 +25,18 @@ function addMissing(missing: string[], label: string): void {
   if (!missing.includes(label)) missing.push(label);
 }
 
+function isEvidenceArtifactPath(path: string): boolean {
+  return /\.(png|jpe?g|webp|webm|mp4|html|trace\.zip)$/i.test(path);
+}
+
 function evidenceCandidates(root: string, outputDir: string, manifest: Record<string, unknown>): string[] {
   const paths: string[] = [];
   const listed = Array.isArray(manifest.outputs) ? manifest.outputs : [];
-  for (const value of listed) if (typeof value === "string" && existsSync(value)) paths.push(value);
-  const watcher = manifest.watcher_report_path;
-  if (typeof watcher === "string" && existsSync(watcher)) paths.push(watcher);
+  for (const value of listed) {
+    if (typeof value === "string" && existsSync(value) && isEvidenceArtifactPath(value)) {
+      paths.push(value);
+    }
+  }
   for (const dir of [join(root, "test-results"), join(root, "playwright-report"), join(root, "data", "evidence"), join(outputDir, "evidence")]) {
     if (!existsSync(dir)) continue;
     const walk = (current: string): void => {

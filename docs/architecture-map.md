@@ -6,7 +6,7 @@
 - Frontend: none in the main package; the `video/` subproject renders Remotion assets separately
 - Backend: none; execution happens through CLI commands under `bin/marketing-engine.mjs` + `lib/cli/*.ts`
 - Database: none; state is file-backed under `.marketing-engine/data/` and `outputs/`
-- Jobs/workers: generate loop, promote loop, Notion sync, and schedule installers for cron / launchd
+- Jobs/workers: generate loop, promote loop, self-paced watcher wakes, retrospective learnings, Notion sync, and schedule installers for cron / launchd
 - External integrations: LLM/image/video providers, AdaptlyPost, Meta Ads, Notion, Playwright, GitHub Actions
 
 ## Local URLs
@@ -32,7 +32,7 @@ Maintainer or AI agent
 ## Key Directories
 
 - `bin/` — published CLI entrypoint and command dispatch
-- `lib/cli/` — operational commands (`generate`, `promote`, `status`, `sync`, `schedule`, etc.)
+- `lib/cli/` — operational commands (`generate`, `promote`, `watcher`, `retrospective`, `status`, `sync`, `schedule`, etc.)
 - `lib/providers/` — provider contracts, matrix, mocks, and concrete adapters
 - `lib/gate/` — watcher / claims discipline before promotion
 - `lib/publish/` — publishing and ads handoff surfaces
@@ -50,6 +50,8 @@ Maintainer or AI agent
 
 - Command output: stdout / stderr from `bin/marketing-engine.mjs`
 - Runtime logs: `.marketing-engine/data/runs.jsonl`, `llm-usage.jsonl`, `promotions.jsonl`, `analytics.jsonl`
+- Self-paced watcher receipts: `data/watcher-state.json`, `data/watcher-next.json`
+- Durable learnings: `data/learnings.jsonl`, `.marketing-engine/clients/<slug>/learnings.md`
 - Gate artifacts: `.marketing-engine/data/gate/*.json`
 - Evidence: `playwright-report/`, `test-results/`, attached CLI stdout/stderr artifacts in Playwright
 - Change history: `CHANGELOG.md`, `PROGRESS.md`, `GOAL_RESULT.md`

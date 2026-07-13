@@ -1,9 +1,9 @@
 import { test, expect } from "@playwright/test";
-import { mkdtempSync } from "node:fs";
+import { existsSync, mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { anchorPath, checkAnchor, createAnchor, gateAnchor, readAnchor } from "../lib/loop/anchor";
-import { fingerprint, nextStrategy } from "../lib/loop/journal";
+import { fingerprint, nextStrategy, pieceJournalPath, recordAttempt } from "../lib/loop/journal";
 
 test("campaign anchor freezes plan and blocks unverified acceptance", () => {
   const root = mkdtempSync(join(tmpdir(), "me-anchor-"));
@@ -26,4 +26,16 @@ test("journal fingerprint and strategy ladder are deterministic", () => {
   expect(fingerprint("compliance failed at /tmp/a:42 after 2s")).toBe(fingerprint("COMPLIANCE failed at /tmp/b:99 after 9s"));
   const root = mkdtempSync(join(tmpdir(), "me-journal-"));
   expect(nextStrategy(root, "piece-1")).toBe("rewrite-hook");
+  recordAttempt(root, {
+    item_id: "piece-1",
+    client: "acme",
+    campaign: "launch",
+    date: "2026-05-08T12:34:56.000Z",
+    attempt: 1,
+    action: "generate:rewrite-hook",
+    gate: "fail",
+    strategy: "rewrite-hook",
+    failure_text: "compliance failed at /tmp/a:42 after 2s",
+  });
+  expect(existsSync(pieceJournalPath(root, "acme", "2026-05-08", "piece-1"))).toBe(true);
 });

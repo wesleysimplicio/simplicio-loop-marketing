@@ -118,6 +118,7 @@ Regras de roteamento e racional em [.specs/architecture/PROVIDERS.md](./.specs/a
 | `check` | Valida chaves de env dos providers |
 | `generate` | Roda loop de geração (DRY_RUN-safe) |
 | `promote` | Roda loop de promoção |
+| `anchor` | Cria/confere/gateia anchors de campanha e roda selftest do anchor |
 
 ## Arquitetura
 
