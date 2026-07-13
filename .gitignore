@@ -17,4 +17,7 @@ dist/
 !.simplicio/ledger/
 # Runtime state (agent operator, simplicio-loop convention)
 .orchestrator/*
+
+# Simplicio local runtime worktrees
+.claude/worktrees/
 !.orchestrator/savings/
