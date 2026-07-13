@@ -34,6 +34,7 @@ export interface GenerateOptions {
   outputsDir?: string;
   maxIter?: number;
   matrixPath?: string;
+  evidenceGate?: typeof gateEvidence;
 }
 
 interface GenerateSummary {
@@ -579,7 +580,7 @@ export async function processPiece(
     engineRoot(opts.root),
   );
 
-  const evidence = gateEvidence(opts.root, fm.id, {
+  const evidence = (opts.evidenceGate ?? gateEvidence)(opts.root, fm.id, {
     outputsDir: outputsRootFor(opts),
     piecesDir: piecesRootFor(opts),
   });

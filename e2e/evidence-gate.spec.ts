@@ -1,9 +1,16 @@
 import { test, expect } from "@playwright/test";
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from "node:fs";
+import { spawnSync } from "node:child_process";
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import { dirname, join, resolve } from "node:path";
 import { serializePiece, type PieceFrontmatter } from "../lib/pieces/frontmatter";
 import { gateEvidence } from "../lib/gate/evidence";
+import { runGenerateLoop } from "../lib/cli/generate";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const CLI = resolve(__dirname, "..", "bin", "marketing-engine.mjs");
 
 function fixture() {
   const root = mkdtempSync(join(tmpdir(), "me-evidence-"));
@@ -39,3 +46,88 @@ for (const [file, label] of [["manifest.json", "manifest.json"], ["compliance.js
     expect(gateEvidence(f.root, f.id).missing.some((m) => m.includes(label))).toBe(true);
   });
 }
+
+test("missing watcher report is named by the gate", () => {
+  const f = fixture();
+  rmSync(join(f.root, ".marketing-engine", "data", "gate", `${f.id}.json`));
+  expect(gateEvidence(f.root, f.id).missing).toContain("watcher_report_path");
+});
+
+test("missing run logs are named by the gate", () => {
+  const f = fixture();
+  rmSync(join(f.root, ".marketing-engine", "data", "runs.jsonl"));
+  rmSync(join(f.root, ".marketing-engine", "data", "llm-usage.jsonl"));
+  expect(gateEvidence(f.root, f.id).missing).toEqual(
+    expect.arrayContaining(["data/runs.jsonl", "data/llm-usage.jsonl"]),
+  );
+});
+
+test("watcher json alone is not treated as a completion artifact", () => {
+  const f = fixture();
+  rmSync(join(f.out, "evidence.png"));
+  const result = gateEvidence(f.root, f.id);
+  expect(result.pass).toBe(false);
+  expect(result.missing).toContain("evidence artifact (Playwright/watcher)");
+});
+
+test("evidence gate CLI prints JSON and exits non-zero on missing evidence", () => {
+  const f = fixture();
+  rmSync(join(f.out, "evidence.png"));
+  const result = spawnSync(
+    process.execPath,
+    [CLI, "evidence", "gate", f.id, "--root", f.root],
+    { encoding: "utf8" },
+  );
+  expect(result.status).toBe(3);
+  const parsed = JSON.parse(result.stdout);
+  expect(parsed).toMatchObject({
+    piece_id: f.id,
+    pass: false,
+  });
+  expect(parsed.missing).toContain("evidence artifact (Playwright/watcher)");
+});
+
+test("generate loop ignores completion claim when evidence gate fails", async () => {
+  process.env.DRY_RUN = "true";
+  const host = mkdtempSync(join(tmpdir(), "me-evidence-block-"));
+  const workspaceRoot = join(host, ".marketing-engine");
+  const piecesDir = join(workspaceRoot, "pieces");
+  mkdirSync(piecesDir, { recursive: true });
+  mkdirSync(join(workspaceRoot, "data"), { recursive: true });
+
+  const fm: PieceFrontmatter = {
+    id: "PIECE-evidence-block-001",
+    client: "acme",
+    date: "2026-05-08",
+    status: "draft",
+    type: "reel",
+    pillar: "education",
+    platforms: ["instagram", "tiktok"],
+    locale: "en",
+  };
+  writeFileSync(
+    join(piecesDir, `${fm.id}.md`),
+    serializePiece(fm, "# Brief\n\nLaunch our new product.\n"),
+  );
+
+  const prevCwd = process.cwd();
+  process.chdir(host);
+  try {
+    const summary = await runGenerateLoop({
+      root: host,
+      evidenceGate: () => ({
+        piece_id: fm.id,
+        pass: false,
+        missing: ["evidence artifact (Playwright/watcher)"],
+        evidence_paths: [],
+      }),
+    });
+    expect(summary.blocked).toBeGreaterThanOrEqual(1);
+    expect(summary.advanced).toBe(0);
+    const updated = readFileSync(join(piecesDir, `${fm.id}.md`), "utf8");
+    expect(updated).toMatch(/status: draft/);
+    expect(updated).toMatch(/watcher_report_path:/);
+  } finally {
+    process.chdir(prevCwd);
+  }
+});
