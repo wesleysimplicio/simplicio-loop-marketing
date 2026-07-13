@@ -13,6 +13,8 @@ test("autoresearch records a fixed judge, holdout, cost, and DRY_RUN receipt", a
   expect(manifest.judge).toMatchObject({ version: "judge/v1", temperature: 0 });
   expect(manifest.published).toBe(false);
   expect(manifest.validation_set.holdout_count).toBe(1);
+  expect(manifest.validation_set.briefs_sha256).toMatch(/^[a-f0-9]{16}$/);
+  expect(manifest.post_run_verification).toMatchObject({ pass: true, winners: 1 });
   expect(manifest.total_cost_usd).toBeGreaterThan(0);
   expect((await readFile(join(root, "data", "llm-usage.jsonl"), "utf8")).trim()).not.toBe("");
 });

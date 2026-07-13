@@ -23,7 +23,7 @@ const KEYS: Record<string,string> = { claude:"ANTHROPIC_API_KEY", codex:"OPENAI_
 const rootOf = (root:string) => existsSync(resolve(root,".marketing-engine")) ? resolve(root,".marketing-engine") : root;
 const c = (id:string,status:DoctorStatus,detail:string):DoctorCheck => ({id,status,detail});
 const missing = (id:string) => (process.env.MARKETING_ENGINE_DOCTOR_MISSING ?? "").split(",").map((x)=>x.trim()).includes(id);
-function run(name:string,args:string[]=[],timeout=20000) { const exe=process.platform==="win32" && (name==="ffmpeg"||name==="npx") ? `${name}.cmd` : name; return spawnSync(exe,args,{timeout,encoding:"utf8",stdio:["ignore","pipe","pipe"]}); }
+function run(name:string,args:string[]=[],timeout=20000) { const exe=process.platform==="win32" && name==="npx" ? `${name}.cmd` : name; return spawnSync(exe,args,{timeout,encoding:"utf8",stdio:["ignore","pipe","pipe"]}); }
 function pythonName(): string { return process.platform === "win32" ? "python" : "python3"; }
 function toolChecks():DoctorCheck[] {
   const out:DoctorCheck[]=[]; const node=Number(process.versions.node.split(".")[0]); out.push(c("runtime.node",node>=18?"ok":"blocked",`Node ${process.version}; requires >=18`));

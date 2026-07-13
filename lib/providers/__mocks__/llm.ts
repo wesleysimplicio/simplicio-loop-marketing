@@ -23,6 +23,9 @@ abstract class BaseMockLLM implements LLMProvider {
       tokens_out: tokens,
       used_estimate: true,
       prompt_format: opts.system ? "toon" : "json",
+      cache_status: opts.system ? "enabled" : "not_requested",
+      cache_read_input_tokens: 0,
+      cache_creation_input_tokens: opts.system ? tokens : 0,
       cost_usd,
       latency_ms: 50,
     };

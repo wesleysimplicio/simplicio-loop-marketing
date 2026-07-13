@@ -40,6 +40,10 @@ export interface GenerationResult<T = string> {
   used_estimate?: boolean;
   prompt_format?: "toon" | "json";
   savings_tokens_est?: number;
+  cache_status?: "hit" | "enabled" | "not_requested" | "unsupported";
+  cache_read_input_tokens?: number;
+  cache_creation_input_tokens?: number;
+  fallback_reason?: string;
   cost_usd?: number;
   latency_ms?: number;
   attempt?: number;

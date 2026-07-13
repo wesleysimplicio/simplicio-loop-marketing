@@ -127,6 +127,7 @@ Routing rules and rationale live in [.specs/architecture/PROVIDERS.md](./.specs/
 | `check` | Validate provider env keys |
 | `generate` | Run generation loop (DRY_RUN-safe) |
 | `promote` | Run promotion loop |
+| `anchor` | Create/check/gate campaign anchors and run anchor selftest |
 
 ## Architecture
 
@@ -153,6 +154,16 @@ This repository now ships with an applied [llm-project-mapper](https://github.co
 - Entry docs: [AGENTS.md](./AGENTS.md), [PRD.md](./PRD.md), [PROGRESS.md](./PROGRESS.md), [GOAL_RESULT.md](./GOAL_RESULT.md)
 - Mapper-owned operational docs: [docs/local-setup.md](./docs/local-setup.md), [docs/domain-map.md](./docs/domain-map.md), [docs/architecture-map.md](./docs/architecture-map.md), [docs/troubleshooting.md](./docs/troubleshooting.md), [docs/release-readiness.md](./docs/release-readiness.md)
 - Agent overlays: [.agents/README.md](./.agents/README.md), [.claude/settings.json](./.claude/settings.json), [INIT.md](./INIT.md)
+
+## Asolaria narrative package
+
+Issue #78's repo-local narrative deliverables live here:
+
+- [SIMPLICIO-MAP-OF-MAPS.md](./SIMPLICIO-MAP-OF-MAPS.md)
+- [REDUCTIONS.md](./REDUCTIONS.md)
+- [.specs/strategy/campaigns/2026-Q3-asolaria-on-metal/](./.specs/strategy/campaigns/2026-Q3-asolaria-on-metal/)
+
+These files package the Asolaria-inspired narrative in a way this repo can test and review locally. Public landing deployment, live demo media, and campaign analytics are still external follow-up work.
 
 ## Repo layout
 

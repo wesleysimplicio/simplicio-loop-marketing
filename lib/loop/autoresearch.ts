@@ -47,6 +47,14 @@ function deterministicScore(text: string, platform: string): Record<(typeof CRIT
   return score;
 }
 
+function cleanMockAttestation(text: string): string {
+  return text.replace(/^\[mock-[^\]]+\]\s*/i, "");
+}
+
+function providerAgnostic(text: string): boolean {
+  return !/\b(?:claude|codex|deepseek|ollama|openai|anthropic)\b/i.test(text);
+}
+
 export async function runAutoresearch(opts: AutoresearchOptions): Promise<AutoresearchResult> {
   process.env.DRY_RUN = "true";
   const runId = `autoresearch-${Date.now()}-${stableId(opts.client)}`;
@@ -76,11 +84,17 @@ export async function runAutoresearch(opts: AutoresearchOptions): Promise<Autore
       appendUsage(opts.root, { timestamp: new Date().toISOString(), run_id: runId, piece_id: `brief-${briefIndex}`, task: "caption", prompt_format: "json", used_estimate: Boolean(generated.used_estimate || judge.used_estimate), tokens_in: (generated.tokens_in ?? tokenEstimate(prompt)) + (judge.tokens_in ?? 0), tokens_out: (generated.tokens_out ?? tokenEstimate(text)) + (judge.tokens_out ?? 0), cost_estimate_usd: cost + (judge.cost_usd ?? 0), provider: generated.provider, dry_run: true });
       if (!winner || total > winner.total) winner = { text, score, total };
     }
-    rows.push({ run_id: runId, brief_index: briefIndex, kind: "winner", candidate: winner?.text ?? brief, score: winner?.score, score_total: winner?.total ?? 0 });
+    const winnerText = winner?.text ?? brief;
+    const verifiedText = cleanMockAttestation(winnerText);
+    const independentScore = deterministicScore(verifiedText, platforms[briefIndex % platforms.length]);
+    const provider_agnostic = providerAgnostic(verifiedText);
+    const postRunPass = provider_agnostic && independentScore.compliance && independentScore.platform_fit;
+    rows.push({ run_id: runId, brief_index: briefIndex, kind: "winner", candidate: winnerText, score: winner?.score, score_total: winner?.total ?? 0, post_run_verification: { pass: postRunPass, score: independentScore, provider_agnostic, dry_run: true } });
   }
   const holdout = opts.briefs.slice(-Math.min(3, opts.briefs.length)).map((brief, index) => ({ brief_index: index, brief, evaluated: true, anti_overfit: true, score: deterministicScore(brief, platforms[index % platforms.length]) }));
   writeFileSync(join(outDir, "holdout.json"), JSON.stringify(holdout, null, 2), "utf8");
-  const manifest = { schema: "marketing-autoresearch/v1", run_id: runId, client: opts.client, dry_run: true, published: false, judge: { version: "judge/v1", model: "router:caption", prompt: JUDGE_PROMPT, prompt_hash: stableId(JUDGE_PROMPT), temperature: 0 }, validation_set: { count: opts.briefs.length, holdout_count: holdout.length }, criteria: CRITERIA, iterations: rows.filter((row) => row.kind !== "winner").length, total_cost_usd: totalCost, artifacts: [iterationsPath, join(outDir, "holdout.json")] };
+  const winners = rows.filter((row) => row.kind === "winner");
+  const manifest = { schema: "marketing-autoresearch/v1", run_id: runId, client: opts.client, dry_run: true, published: false, judge: { version: "judge/v1", model: "router:caption", prompt: JUDGE_PROMPT, prompt_hash: stableId(JUDGE_PROMPT), temperature: 0 }, validation_set: { count: opts.briefs.length, holdout_count: holdout.length, briefs_sha256: stableId(opts.briefs.join("\n")) }, criteria: CRITERIA, iterations: rows.filter((row) => row.kind !== "winner").length, total_cost_usd: totalCost, post_run_verification: { pass: winners.every((row) => (row.post_run_verification as { pass?: boolean } | undefined)?.pass === true), winners: winners.length }, artifacts: [iterationsPath, join(outDir, "holdout.json")] };
   const manifestPath = join(outDir, "manifest.json");
   writeFileSync(manifestPath, JSON.stringify(manifest, null, 2), "utf8");
   appendSavingsEvent(opts.root, { source: "autoresearch", surfaces: ["caption", "judge"], tokens: { baseline_total: rows.length * 500, actual_total: rows.length * 250 }, methodology: "heuristic:autoresearch-run-baseline", note: runId });

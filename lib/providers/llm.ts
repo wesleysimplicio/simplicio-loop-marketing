@@ -97,7 +97,7 @@ export class ClaudeProvider extends RealLLMBase {
     }
     const data = (await res.json()) as {
       content: Array<{ type: string; text?: string }>;
-      usage?: { input_tokens?: number; output_tokens?: number };
+      usage?: { input_tokens?: number; output_tokens?: number; cache_read_input_tokens?: number; cache_creation_input_tokens?: number };
     };
     const text = data.content
       .filter((c) => c.type === "text")
@@ -122,6 +122,10 @@ export class ClaudeProvider extends RealLLMBase {
       used_estimate: usage.used_estimate,
       prompt_format: opts.system ? "toon" : "json",
       savings_tokens_est: 0,
+      cache_read_input_tokens: data.usage?.cache_read_input_tokens ?? 0,
+      cache_creation_input_tokens: data.usage?.cache_creation_input_tokens ?? 0,
+      cache_status: (data.usage?.cache_read_input_tokens ?? 0) > 0 ? "hit" : opts.system ? "enabled" : "not_requested",
+      fallback_reason: usage.fallback_reason,
       cost_usd: estimateCost({
         provider: "claude",
         model,
@@ -229,6 +233,11 @@ export class OllamaProvider extends RealLLMBase {
       task: opts.task,
       output: text,
       tokens: (data.prompt_eval_count ?? 0) + (data.eval_count ?? 0),
+      tokens_in: data.prompt_eval_count ?? 0,
+      tokens_out: data.eval_count ?? 0,
+      used_estimate: false,
+      prompt_format: opts.system ? "toon" : "json",
+      cache_status: "unsupported",
       cost_usd: 0,
       latency_ms: Date.now() - t0,
     };
@@ -294,8 +303,10 @@ async function callOpenAICompatible(
     tokens_out: usage.tokens_out,
     used_estimate: usage.used_estimate,
     prompt_format: opts.system ? "toon" : "json",
-    savings_tokens_est: 0,
-    cost_usd: estimateCost({
+      savings_tokens_est: 0,
+      cache_status: opts.system ? "unsupported" : "not_requested",
+      fallback_reason: usage.fallback_reason,
+      cost_usd: estimateCost({
       provider: providerName,
       model,
       tokens_in: usage.tokens_in,
