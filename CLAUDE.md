@@ -68,6 +68,31 @@ A piece is **only complete** when all gates above pass and Playwright evidence i
 - [ ] Run logged to `data/llm-usage.jsonl` and `data/runs.jsonl` (timestamp, providers used, cost estimate).
 - [ ] Outputs stored under `outputs/<client>/<date>/<piece-id>/` with `manifest.json`.
 
+## Definition of Done (per code change / issue / task)
+
+No issue or task on this repo closes without all seven of the following, with
+evidence (command + result), regardless of how small the change looks:
+
+1. **Implementation** — the actual code change.
+2. **Unit** — `npm run test:unit` (`tests/unit/**`).
+3. **Integration** — `npm run test:integration` (`tests/integration/**`).
+4. **System** — `npm run test:e2e` (Playwright specs under `e2e/`).
+5. **Regression** — `npm run test:regression` (`tests/regression/**`).
+6. **Benchmark** — `npm run bench` produces a measured number (ops/sec or ms/op) for the touched hot path.
+7. **Coverage ≥ 85%** — measured honestly across *all* of `lib/**/*.ts` (not just
+   the files a narrow suite happens to import). `npm run coverage` alone
+   under-reports this because c8's default (non-`--all`) mode only
+   instruments files the Node test runner actually imports; Playwright specs
+   run in a separate process and are invisible to that report. To get the
+   real number, merge `NODE_V8_COVERAGE` output from both `npm run test:node`
+   and `npx playwright test` into one temp dir, then run
+   `npx c8 report --temp-directory=<merged-dir> --all --include "lib/**/*.ts"`.
+
+`npm test` (`test:node` + `test:e2e`) must be 100% green before any of the
+above counts as done. This rule complements, but does not replace, the
+per-piece Definition of Done above (which governs the *content* pipeline);
+this one governs the *code* that implements it.
+
 ## How to Add a New Provider
 
 Three steps. No skill rewrite.
