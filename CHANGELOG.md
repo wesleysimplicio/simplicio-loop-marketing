@@ -14,6 +14,7 @@ All notable changes to this project are documented here. Format based on
 ### Added
 
 - **Asolaria narrative package** (issue #78, repo-local scope only): canonical [SIMPLICIO-MAP-OF-MAPS.md](./SIMPLICIO-MAP-OF-MAPS.md), [REDUCTIONS.md](./REDUCTIONS.md), and the bounded campaign artifact set under `.specs/strategy/campaigns/2026-Q3-asolaria-on-metal/` (`CAMPAIGN.md`, `HYPOTHESIS.md`, `ROUTING.md`, `LANDING.md`, `DEMO.md`, `CASE-STUDY.md`) plus a fixture-backed unit test verifying required docs, links, and explicit external dependencies.
+- **Asolaria package, deploy-ready follow-up** (issue #78 closeout): two self-contained static pages (`site/simplicio-on-metal/index.html`, `site/asolaria-integration/index.html`); a reproducible 5-iteration orientation-cost demo (`scripts/demo-asolaria-loop.mjs`, `npm run demo:asolaria`) writing `.specs/strategy/campaigns/2026-Q3-asolaria-on-metal/DEMO-RUN.md`; and a fail-closed reduction proof-trail benchmark (`scripts/reductions-benchmark.mjs`, `npm run benchmark:reductions`) writing `docs/evidence/reductions-benchmark.json`. All narrative docs cross-linked to the new artifacts; new unit tests spawn both scripts in `--check` mode.
 
 Autonomous-loop evolution — the best patterns of the sibling repos (simplicio-loop, simplicio-dev-cli, simplicio-mapper) ported into the engine (see PRD.md):
 

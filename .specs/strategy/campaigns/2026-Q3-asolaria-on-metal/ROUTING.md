@@ -11,6 +11,8 @@ This campaign stays provider-agnostic and DRY_RUN-safe.
 | [LANDING.md](./LANDING.md) | landing copy deck | site page, demo voiceover, hero copy |
 | [DEMO.md](./DEMO.md) | demo sequence | video script, README demo references, launch thread |
 | [CASE-STUDY.md](./CASE-STUDY.md) | long-form proof narrative | DEV.to article, LinkedIn doc post, sales collateral |
+| [site/simplicio-on-metal/index.html](../../../../site/simplicio-on-metal/index.html) | deploy-ready landing page | public landing once a real domain exists |
+| [site/asolaria-integration/index.html](../../../../site/asolaria-integration/index.html) | deploy-ready site section | marketing-site "Simplicio + Asolaria" section |
 
 ## Channel stance
 

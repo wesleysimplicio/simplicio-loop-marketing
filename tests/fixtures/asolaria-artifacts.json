@@ -23,7 +23,23 @@
     },
     {
       "path": ".specs/strategy/campaigns/2026-Q3-asolaria-on-metal/CASE-STUDY.md",
-      "must_include": ["What is not claimed yet", "production conversion rates", "Recommended public follow-up"]
+      "must_include": ["What is not claimed yet", "production conversion rates", "Recommended public follow-up", "reductions-benchmark.mjs"]
+    },
+    {
+      "path": "site/simplicio-on-metal/index.html",
+      "must_include": ["Simplicio on Metal", "simpleti.com.br/simplicio/on-metal", "scripts/demo-asolaria-loop.mjs"]
+    },
+    {
+      "path": "site/asolaria-integration/index.html",
+      "must_include": ["Agente Evolutivo no Metal", "what-is-asolaria", "issues/78"]
+    },
+    {
+      "path": "scripts/demo-asolaria-loop.mjs",
+      "must_include": ["heuristic:chars-div-4", "ITERATIONS"]
+    },
+    {
+      "path": "scripts/reductions-benchmark.mjs",
+      "must_include": ["REDUCTIONS.md", "stale proof link"]
     }
   ],
   "external_dependencies": [
