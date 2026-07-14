@@ -11,6 +11,9 @@ jobs:
           cache: "npm"
       - run: npm ci
       - run: npm run typecheck
+      # Unit + integration + regression + benchmark budget assertions —
+      # the Node test runner tier (fast, no browser needed).
+      - run: npm run test:node
       # Specs run on the Node test runner, not a browser context, so chromium is
       # not required. Avoids the --with-deps apt step that breaks on Ubuntu noble.
       - run: npm run test:e2e

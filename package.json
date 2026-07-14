@@ -52,8 +52,16 @@
     "LICENSE"
   ],
   "scripts": {
+    "test": "npm run test:node && npm run test:e2e",
+    "test:node": "node --import tsx/esm --test \"tests/unit/**/*.test.*\" \"tests/integration/**/*.test.*\" \"tests/regression/**/*.test.*\" \"tests/benchmark/**/*.test.*\"",
+    "test:unit": "node --import tsx/esm --test \"tests/unit/**/*.test.*\"",
+    "test:integration": "node --import tsx/esm --test \"tests/integration/**/*.test.*\"",
+    "test:regression": "node --import tsx/esm --test \"tests/regression/**/*.test.*\"",
+    "test:benchmark": "node --import tsx/esm --test \"tests/benchmark/**/*.test.*\"",
     "test:e2e": "playwright test",
     "test:e2e:headed": "playwright test --headed",
+    "bench": "node --import tsx/esm scripts/bench.mjs",
+    "coverage": "c8 --reporter=text --reporter=html --reporter=json-summary --exclude \"tests/**\" --exclude \"e2e/**\" --exclude \"scripts/**\" --exclude \"lib/providers/__mocks__/**\" npm run test:node",
     "typecheck": "tsc --noEmit",
     "lint": "node scripts/lint-conventions.mjs",
     "check": "node scripts/check.mjs",
@@ -72,6 +80,7 @@
   "devDependencies": {
     "@playwright/test": "^1.48.0",
     "@types/node": "^22.0.0",
+    "c8": "^11.0.0",
     "dotenv": "^16.4.5",
     "typescript": "^5.6.0"
   },

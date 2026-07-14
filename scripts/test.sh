@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-TEST_COMMAND="${TEST_COMMAND:-echo "Add project validation command here"}"
+TEST_COMMAND="${TEST_COMMAND:-npm test}"
 
 if [[ "$TEST_COMMAND" == \<* ]]; then
   echo "Set TEST_COMMAND or update scripts/test.sh with the real validation command."
