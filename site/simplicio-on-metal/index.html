@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Simplicio on Metal — reductions on metal</title>
+<meta name="description" content="Simplicio + Asolaria: turn technical marketing work into bounded maps, receipts, and governed loops instead of vague AI promises." />
+<style>
+  :root {
+    color-scheme: dark light;
+    --bg: #0b0d10;
+    --bg-panel: #12151a;
+    --fg: #e9edf1;
+    --muted: #9aa4b2;
+    --accent: #5ee1c2;
+    --border: #232830;
+    --code-bg: #0f1216;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg: #f7f8fa;
+      --bg-panel: #ffffff;
+      --fg: #16181d;
+      --muted: #5a6472;
+      --accent: #0f9d80;
+      --border: #e2e5ea;
+      --code-bg: #eef1f4;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.55;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 48px 24px 96px; }
+  header.hero { text-align: center; padding: 32px 0 40px; border-bottom: 1px solid var(--border); }
+  .kicker { color: var(--accent); text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.8rem; font-weight: 600; }
+  h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); margin: 12px 0 8px; }
+  .subhead { color: var(--muted); font-size: 1.05rem; max-width: 640px; margin: 0 auto 24px; }
+  .cta-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn {
+    display: inline-block; padding: 10px 20px; border-radius: 8px; text-decoration: none;
+    font-weight: 600; font-size: 0.95rem; border: 1px solid var(--border);
+  }
+  .btn.primary { background: var(--accent); color: #06110d; border-color: var(--accent); }
+  .btn.secondary { background: transparent; color: var(--fg); }
+  section { padding: 40px 0; border-bottom: 1px solid var(--border); }
+  section:last-of-type { border-bottom: none; }
+  h2 { font-size: 1.4rem; margin-bottom: 16px; }
+  ul.plain { padding-left: 20px; color: var(--muted); }
+  ul.plain li { margin-bottom: 6px; }
+  .proof-grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+  .card {
+    background: var(--bg-panel); border: 1px solid var(--border); border-radius: 10px;
+    padding: 18px; font-size: 0.92rem;
+  }
+  .card h3 { margin: 0 0 8px; font-size: 1rem; }
+  .card code { font-size: 0.82rem; }
+  code, pre { background: var(--code-bg); border-radius: 6px; }
+  code { padding: 2px 6px; }
+  pre { padding: 14px; overflow-x: auto; border: 1px solid var(--border); }
+  .callout {
+    background: var(--bg-panel); border: 1px dashed var(--border); border-radius: 10px;
+    padding: 16px 18px; color: var(--muted); font-size: 0.92rem;
+  }
+  footer { color: var(--muted); font-size: 0.85rem; text-align: center; padding-top: 24px; }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <div class="kicker">Simplicio &times; Asolaria</div>
+    <h1>Simplicio on Metal — reductions on metal</h1>
+    <p class="subhead">
+      Turn technical marketing work into bounded maps, receipts, and governed loops
+      instead of vague AI promises. Single binary. Local. Provider-agnostic.
+    </p>
+    <div class="cta-row">
+      <a class="btn primary" href="../../SIMPLICIO-MAP-OF-MAPS.md">Read the map of maps</a>
+      <a class="btn secondary" href="../../REDUCTIONS.md">Inspect the reduction catalog</a>
+    </div>
+  </header>
+
+  <section>
+    <h2>The problem</h2>
+    <ul class="plain">
+      <li>Most AI-marketing tooling asks operators to trust a black box.</li>
+      <li>Prompts are vague, provider coupling is hidden, evidence is optional.</li>
+      <li>Public claims routinely outrun what the underlying repo can actually prove.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>The promise</h2>
+    <ul class="plain">
+      <li>Routing is documented — vendor swaps are configuration, not rewrites.</li>
+      <li>Artifacts are local and inspectable — no hidden cloud state.</li>
+      <li>Campaign planning is a bounded set of documents, not tribal knowledge.</li>
+      <li>Promotion is gated behind budget guardrails and human approval.</li>
+      <li>Lessons persist across iterations via a durable, deduped journal.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Proof trail</h2>
+    <div class="proof-grid">
+      <div class="card">
+        <h3>Canonical map of maps</h3>
+        <p>Understand the repo through its canonical maps before touching runtime code.</p>
+        <code><a href="../../SIMPLICIO-MAP-OF-MAPS.md">SIMPLICIO-MAP-OF-MAPS.md</a></code>
+      </div>
+      <div class="card">
+        <h3>Reduction catalog</h3>
+        <p>Every promise reduces to a specific artifact, gate, or test — six reductions, each with a repo proof trail.</p>
+        <code><a href="../../REDUCTIONS.md">REDUCTIONS.md</a></code>
+      </div>
+      <div class="card">
+        <h3>5-iteration demo, reproducible</h3>
+        <p>Real orientation-cost numbers, measured from files in this repo, not simulated.</p>
+        <code>node scripts/demo-asolaria-loop.mjs</code>
+      </div>
+      <div class="card">
+        <h3>Reductions benchmark</h3>
+        <p>Verifies every reduction's proof links still exist and measures their on-disk footprint.</p>
+        <code>node scripts/reductions-benchmark.mjs</code>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Try it yourself</h2>
+    <pre><code>git clone https://github.com/wesleysimplicio/simplicio-loop-marketing
+cd simplicio-loop-marketing
+npm install
+node scripts/demo-asolaria-loop.mjs
+node scripts/reductions-benchmark.mjs</code></pre>
+    <p class="callout">
+      Both scripts are read-only against the repo, DRY_RUN-safe, and write their
+      receipts locally (<code>.specs/strategy/campaigns/2026-Q3-asolaria-on-metal/DEMO-RUN.md</code>
+      and <code>docs/evidence/reductions-benchmark.json</code>).
+    </p>
+  </section>
+
+  <section>
+    <h2>What is still external</h2>
+    <p class="callout">
+      This page is a repo-local, self-contained static asset — it renders correctly opened
+      directly from disk or served by any static host. Deploying it at a real domain
+      (for example <code>simpleti.com.br/simplicio/on-metal</code>), wiring site navigation,
+      and collecting production analytics remain external follow-up: they depend on a
+      real hosting target this repository does not own. See
+      <a href="../../.specs/strategy/campaigns/2026-Q3-asolaria-on-metal/CAMPAIGN.md">CAMPAIGN.md</a>
+      for the full external-dependency list.
+    </p>
+  </section>
+
+  <footer>
+    Built for issue #78 — <a href="https://github.com/wesleysimplicio/simplicio-loop-marketing">simplicio-loop-marketing</a>
+  </footer>
+
+</div>
+</body>
+</html>

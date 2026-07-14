@@ -160,6 +160,10 @@ npm run test:e2e
 node bin/marketing-engine.mjs help
 ```
 
+## Pacote narrativo Asolaria (issue #78)
+
+Ver seção "Asolaria narrative package" em [README.md](./README.md#asolaria-narrative-package): mapa de mapas, catálogo de reduções, e duas páginas estáticas prontas para deploy em `site/`.
+
 ## Contribuindo
 
 Veja [CONTRIBUTING.md](./CONTRIBUTING.md). Issues e PRs bem-vindos. Conventional commits obrigatórios. CI tem que passar checks de DoD antes do merge.

@@ -162,8 +162,12 @@ Issue #78's repo-local narrative deliverables live here:
 - [SIMPLICIO-MAP-OF-MAPS.md](./SIMPLICIO-MAP-OF-MAPS.md)
 - [REDUCTIONS.md](./REDUCTIONS.md)
 - [.specs/strategy/campaigns/2026-Q3-asolaria-on-metal/](./.specs/strategy/campaigns/2026-Q3-asolaria-on-metal/)
+- [site/simplicio-on-metal/index.html](./site/simplicio-on-metal/index.html) — deploy-ready "Simplicio on Metal" landing page
+- [site/asolaria-integration/index.html](./site/asolaria-integration/index.html) — deploy-ready "Simplicio + Asolaria" site section
+- `node scripts/demo-asolaria-loop.mjs` — reproducible 5-iteration orientation-cost demo
+- `node scripts/reductions-benchmark.mjs` — reproducible proof-trail benchmark for REDUCTIONS.md
 
-These files package the Asolaria-inspired narrative in a way this repo can test and review locally. Public landing deployment, live demo media, and campaign analytics are still external follow-up work.
+These files package the Asolaria-inspired narrative in a way this repo can test and review locally, including two static pages that are self-contained and deploy-ready. Actually publishing them at a real domain (e.g. `simpleti.com.br/simplicio/on-metal`), recording hosted demo media, and collecting live campaign analytics are still external follow-up work — this repository does not own that hosting target.
 
 ## Repo layout
 

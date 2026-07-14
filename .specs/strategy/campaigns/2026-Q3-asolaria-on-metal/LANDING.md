@@ -58,11 +58,19 @@ Simplicio's marketing engine takes a stricter path:
 5. Demo sequence
 6. Case-study CTA
 
+## Shipped static asset
+
+This copy deck is now also a real, self-contained static page:
+[site/simplicio-on-metal/index.html](../../../../site/simplicio-on-metal/index.html).
+It renders correctly opened directly from disk or served by any static host
+and links live to `SIMPLICIO-MAP-OF-MAPS.md`, `REDUCTIONS.md`, and the two
+reproducible scripts (`scripts/demo-asolaria-loop.mjs`,
+`scripts/reductions-benchmark.mjs`).
+
 ## External publishing dependencies
 
 This artifact still needs:
 
 - a real site target such as `simpleti.com.br/simplicio/on-metal`
-- page layout / design system integration
-- deploy pipeline
+- deploy pipeline / DNS wiring for that domain
 - production analytics

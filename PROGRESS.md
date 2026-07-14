@@ -1,5 +1,40 @@
 # Progress Log
 
+## Checkpoint 9 (2026-07-14 — issue #78 closeout: deploy-ready assets + reproducible scripts)
+
+Status: completed, ready for PR against `main`.
+
+Result:
+- Closed the remaining gap from Checkpoint 8: the narrative docs existed, but the
+  "landing page" and "site section" asks were still copy decks, and the "demo
+  loop" / "reproducible script" asks were still storyboards without code.
+- Added two self-contained, deploy-ready static pages: `site/simplicio-on-metal/index.html`
+  (P0 landing page) and `site/asolaria-integration/index.html` (P2 site section with
+  integration timeline and ecosystem map), plus `site/README.md` explaining how to
+  serve them locally and what remains external (a real hosting domain).
+- Added `scripts/demo-asolaria-loop.mjs`: a reproducible 5-iteration demo that
+  measures real orientation-reading token cost (heuristic:chars-div-4, the same
+  labeled estimator as `lib/observability/savings.ts`) across the five canonical
+  maps in `SIMPLICIO-MAP-OF-MAPS.md`, writing a regenerable receipt to
+  `.specs/strategy/campaigns/2026-Q3-asolaria-on-metal/DEMO-RUN.md`.
+- Added `scripts/reductions-benchmark.mjs`: the "script que qualquer um pode rodar"
+  the case study asked for — parses `REDUCTIONS.md`, fails closed on any stale
+  proof link, and writes a footprint receipt to `docs/evidence/reductions-benchmark.json`.
+- Wired both scripts into `package.json` (`npm run demo:asolaria`,
+  `npm run benchmark:reductions`) and cross-linked them from
+  `SIMPLICIO-MAP-OF-MAPS.md`, `REDUCTIONS.md`, `DEMO.md`, `CASE-STUDY.md`,
+  `LANDING.md`, `ROUTING.md`, `README.md`, and `README.pt-BR.md`.
+- Extended `tests/fixtures/asolaria-artifacts.json` and
+  `tests/unit/asolaria-docs.test.cjs` with checks that both scripts pass in
+  `--check` mode and that the new static pages stay dependency-free.
+
+Validation:
+- `node --test tests/unit/asolaria-docs.test.cjs` — 7/7 pass.
+- `node scripts/demo-asolaria-loop.mjs --check` — PASS (5/5 iterations).
+- `node scripts/reductions-benchmark.mjs --check` — PASS (0 stale proof links).
+- `node scripts/lint-conventions.mjs` — clean.
+- `node scripts/claims-audit.mjs` — PASS.
+
 ## Checkpoint 8 (2026-07-13 — issue #78 Asolaria narrative package)
 
 Status: completed on local branch, repo-local scope only.

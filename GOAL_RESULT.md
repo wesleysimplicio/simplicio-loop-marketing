@@ -9,6 +9,8 @@ implemented as a fixed-judge, compliance-gated, holdout-evaluated `DRY_RUN` loop
 
 Follow-up on 2026-07-13: issue #78 now has a repo-local narrative package instead of staying audit-only. The work adds canonical docs, campaign artifacts, and a focused unit test, while keeping public-site, demo hosting, and live analytics explicitly marked as external dependencies.
 
+Follow-up on 2026-07-14 (issue #78 closeout): the remaining repo-achievable gaps are filled with real artifacts instead of copy decks — two self-contained, deploy-ready static pages under `site/` (landing page + Asolaria integration site section), a reproducible 5-iteration demo script (`scripts/demo-asolaria-loop.mjs`), and a fail-closed reduction proof-trail benchmark script (`scripts/reductions-benchmark.mjs`). Public domain hosting, recorded demo media, and live analytics remain the only genuinely external items, and are called out explicitly in every doc that references them.
+
 Final validation: `npm run typecheck` PASS, `npm run lint` PASS, `npm run budget` PASS,
 `npx playwright test` PASS (236/236). Publication actions were not triggered by the
 autoresearch path (`published: false`, `dry_run: true`).

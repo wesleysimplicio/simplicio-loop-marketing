@@ -1,0 +1,171 @@
+{
+  "schema": "simplicio.reductions-benchmark/v1",
+  "generated_at": "2026-07-14T15:18:30.160Z",
+  "source": "REDUCTIONS.md",
+  "reduction_count": 6,
+  "stale_proof_links": [],
+  "reductions": [
+    {
+      "title": "Reduction 1 — provider rewrite to routing contract",
+      "proof_file_count": 4,
+      "footprint_bytes": 22461,
+      "files": [
+        {
+          "path": "README.md",
+          "exists": true,
+          "bytes": 11098
+        },
+        {
+          "path": ".specs/architecture/PROVIDERS.md",
+          "exists": true,
+          "bytes": 3060
+        },
+        {
+          "path": "lib/router.ts",
+          "exists": true,
+          "bytes": 7522
+        },
+        {
+          "path": "e2e/provider-router.spec.ts",
+          "exists": true,
+          "bytes": 781
+        }
+      ]
+    },
+    {
+      "title": "Reduction 2 — campaign intent to bounded artifact set",
+      "proof_file_count": 4,
+      "footprint_bytes": 17692,
+      "files": [
+        {
+          "path": ".specs/strategy/CAMPAIGN-template.md",
+          "exists": true,
+          "bytes": 3040
+        },
+        {
+          "path": "lib/cli/campaign.ts",
+          "exists": true,
+          "bytes": 2144
+        },
+        {
+          "path": "lib/campaigns/campaign.ts",
+          "exists": true,
+          "bytes": 9168
+        },
+        {
+          "path": "e2e/campaign-loop.spec.ts",
+          "exists": true,
+          "bytes": 3340
+        }
+      ]
+    },
+    {
+      "title": "Reduction 3 — generated content to evidence-aware content",
+      "proof_file_count": 4,
+      "footprint_bytes": 19937,
+      "files": [
+        {
+          "path": ".specs/pieces/templates/",
+          "exists": true,
+          "bytes": null
+        },
+        {
+          "path": "lib/content/templates.ts",
+          "exists": true,
+          "bytes": 4684
+        },
+        {
+          "path": "lib/compliance/community.ts",
+          "exists": true,
+          "bytes": 11340
+        },
+        {
+          "path": "e2e/content-templates.spec.ts",
+          "exists": true,
+          "bytes": 3913
+        }
+      ]
+    },
+    {
+      "title": "Reduction 4 — \"done\" as intuition to \"done\" as receipt",
+      "proof_file_count": 4,
+      "footprint_bytes": 9326,
+      "files": [
+        {
+          "path": "contracts/marketing-artifacts/v1/schemas/",
+          "exists": true,
+          "bytes": null
+        },
+        {
+          "path": "contracts/marketing-artifacts/v1/fixtures/",
+          "exists": true,
+          "bytes": null
+        },
+        {
+          "path": "lib/report/builder.ts",
+          "exists": true,
+          "bytes": 5192
+        },
+        {
+          "path": "e2e/contracts.spec.ts",
+          "exists": true,
+          "bytes": 4134
+        }
+      ]
+    },
+    {
+      "title": "Reduction 5 — manual promotion flow to guarded promotion",
+      "proof_file_count": 4,
+      "footprint_bytes": 22205,
+      "files": [
+        {
+          "path": "lib/promotion/budget-guardrail.ts",
+          "exists": true,
+          "bytes": 3737
+        },
+        {
+          "path": "lib/gate/action-gate.ts",
+          "exists": true,
+          "bytes": 3262
+        },
+        {
+          "path": "lib/publish/verify-pipeline.ts",
+          "exists": true,
+          "bytes": 10393
+        },
+        {
+          "path": "e2e/promotion.spec.ts",
+          "exists": true,
+          "bytes": 4813
+        }
+      ]
+    },
+    {
+      "title": "Reduction 6 — long-running marketing work to looped, inspectable state",
+      "proof_file_count": 4,
+      "footprint_bytes": 36451,
+      "files": [
+        {
+          "path": "lib/cli/loop.ts",
+          "exists": true,
+          "bytes": 13014
+        },
+        {
+          "path": "lib/loop/journal.ts",
+          "exists": true,
+          "bytes": 8448
+        },
+        {
+          "path": "lib/learning/retrospective.ts",
+          "exists": true,
+          "bytes": 5714
+        },
+        {
+          "path": "e2e/loop-drain.spec.ts",
+          "exists": true,
+          "bytes": 9275
+        }
+      ]
+    }
+  ]
+}

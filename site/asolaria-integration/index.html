@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Simplicio + Asolaria — Agente Evolutivo no Metal</title>
+<meta name="description" content="How the Simplicio ecosystem maps onto the Asolaria narrative: map of maps, reductions, and on-metal execution." />
+<style>
+  :root {
+    color-scheme: dark light;
+    --bg: #0b0d10;
+    --bg-panel: #12151a;
+    --fg: #e9edf1;
+    --muted: #9aa4b2;
+    --accent: #8fb8ff;
+    --border: #232830;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg: #f7f8fa;
+      --bg-panel: #ffffff;
+      --fg: #16181d;
+      --muted: #5a6472;
+      --accent: #2b5fd9;
+      --border: #e2e5ea;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.55;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 48px 24px 96px; }
+  h1 { font-size: clamp(1.6rem, 4vw, 2.3rem); margin-bottom: 8px; }
+  .subhead { color: var(--muted); margin-bottom: 32px; max-width: 640px; }
+  section { padding: 28px 0; border-bottom: 1px solid var(--border); }
+  section:last-of-type { border-bottom: none; }
+  h2 { font-size: 1.25rem; margin-bottom: 14px; }
+  .timeline { list-style: none; margin: 0; padding: 0; }
+  .timeline li {
+    position: relative; padding-left: 28px; padding-bottom: 20px; border-left: 2px solid var(--border);
+    margin-left: 8px;
+  }
+  .timeline li:last-child { border-left-color: transparent; }
+  .timeline li::before {
+    content: ""; position: absolute; left: -7px; top: 2px; width: 12px; height: 12px;
+    border-radius: 50%; background: var(--accent);
+  }
+  .timeline .t-label { font-weight: 600; }
+  .timeline .t-meta { color: var(--muted); font-size: 0.85rem; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+  th { color: var(--muted); font-weight: 600; }
+  a { color: var(--accent); }
+  .refs { color: var(--muted); font-size: 0.9rem; }
+  .refs li { margin-bottom: 6px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>Simplicio + Asolaria — Agente Evolutivo no Metal</h1>
+  <p class="subhead">
+    Section prepared for the Simplicio marketing site (P2, issue #78): how the
+    Simplicio ecosystem's own maps, reductions, and provider-agnostic runtime
+    read against the Asolaria narrative ("map of maps", "reductions in
+    everything", "ASI on metal, fabric and matrix").
+  </p>
+
+  <section>
+    <h2>Integration timeline</h2>
+    <ul class="timeline">
+      <li>
+        <div class="t-label">Repo-local maps existed first</div>
+        <div class="t-meta">VISION / DOMAIN / DESIGN / PROVIDERS / PLAYBOOKS specs, pre-dating this campaign</div>
+        <p>The engine already tracked product, architecture, operator, and strategy
+        maps separately — the raw material Asolaria's "map of maps" framing needed
+        a canonical index for.</p>
+      </li>
+      <li>
+        <div class="t-label">SIMPLICIO-MAP-OF-MAPS.md — canonical bridge</div>
+        <div class="t-meta"><a href="../../SIMPLICIO-MAP-OF-MAPS.md">SIMPLICIO-MAP-OF-MAPS.md</a></div>
+        <p>One index that names every local map, what it is for, and how each maps
+        onto the Asolaria narrative — without claiming capability the repo
+        doesn't have.</p>
+      </li>
+      <li>
+        <div class="t-label">REDUCTIONS.md — the reduction catalog</div>
+        <div class="t-meta"><a href="../../REDUCTIONS.md">REDUCTIONS.md</a> — 6 reductions, each with a repo proof trail</div>
+        <p>"How do we get reductions in everything" becomes six concrete,
+        file-and-test-backed reductions: provider routing, campaign bounding,
+        evidence-aware content, receipt-based completion, guarded promotion,
+        and looped iteration.</p>
+      </li>
+      <li>
+        <div class="t-label">Reproducible demo + benchmark scripts</div>
+        <div class="t-meta"><code>scripts/demo-asolaria-loop.mjs</code>, <code>scripts/reductions-benchmark.mjs</code></div>
+        <p>"On metal" becomes literal: these are plain Node scripts anyone can
+        run locally, with no cloud dependency, that measure real repo files
+        instead of asserting numbers.</p>
+      </li>
+      <li>
+        <div class="t-label">Simplicio on Metal landing page</div>
+        <div class="t-meta"><a href="../simplicio-on-metal/index.html">site/simplicio-on-metal/index.html</a></div>
+        <p>Self-contained static page, ready to deploy at a real domain once one
+        exists — the last repo-local step before public publishing.</p>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Ecosystem map</h2>
+    <table>
+      <thead>
+        <tr><th>Layer</th><th>Repo role</th><th>Reduction provided</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>simplicio-runtime</td><td>execution substrate</td><td>ad-hoc shell work &rarr; bounded runtime contracts</td></tr>
+        <tr><td>simplicio-mapper</td><td>repo survey/orientation</td><td>codebase discovery &rarr; compressed maps and queries</td></tr>
+        <tr><td>simplicio-dev-cli</td><td>deterministic operation</td><td>broad coding intent &rarr; bounded, test-backed tasks</td></tr>
+        <tr><td>simplicio-loop</td><td>iterative convergence</td><td>long-running work &rarr; evidence-gated loops</td></tr>
+        <tr><td>simplicio-loop-marketing</td><td>technical marketing execution</td><td>narrative-to-campaign work &rarr; auditable, DRY_RUN-safe artifacts</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Boundary: narrative inspiration vs capability claim</h2>
+    <p>
+      This section borrows Asolaria's framing language ("map of maps",
+      "reductions", "on metal") as narrative structure. It does not claim ASI,
+      autonomous self-rewriting, or any capability beyond what
+      <a href="../../REDUCTIONS.md">REDUCTIONS.md</a> and the linked tests can
+      demonstrate today. See
+      <a href="../../.specs/strategy/campaigns/2026-Q3-asolaria-on-metal/HYPOTHESIS.md">HYPOTHESIS.md</a>
+      for the falsifiable claims this narrative rests on.
+    </p>
+  </section>
+
+  <section>
+    <h2>References</h2>
+    <ul class="refs">
+      <li><a href="https://github.com/JesseBrown1980/what-is-asolaria---how-do-we-get-reductions-in-everything">what-is-asolaria — how do we get reductions in everything</a></li>
+      <li><a href="https://github.com/JesseBrown1980/Asolaria-ASI-On-Metal-Fabric-and-matrix">Asolaria-ASI-On-Metal-Fabric-and-matrix</a></li>
+      <li><a href="https://github.com/wesleysimplicio/simplicio">Simplicio ecosystem</a></li>
+      <li><a href="https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/78">Issue #78 — Integração Asolaria</a></li>
+    </ul>
+  </section>
+
+</div>
+</body>
+</html>

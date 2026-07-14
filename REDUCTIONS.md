@@ -70,11 +70,23 @@ This file only lists reductions that can be traced to code, specs, or tests in t
   - [e2e/loop-drain.spec.ts](./e2e/loop-drain.spec.ts)
 - Narrative angle: this reduces campaign drift into bounded iteration.
 
+## Reproducible verification
+
+Every proof link above can be re-checked mechanically, not just read:
+
+```bash
+node scripts/reductions-benchmark.mjs --check
+```
+
+The script fails closed if any listed proof file has gone stale, and (in its
+default, non-`--check` mode) writes a footprint receipt to
+`docs/evidence/reductions-benchmark.json`.
+
 ## What is still external
 
 The issue also asked for reductions measured on public landing pages and public campaign runs. Those remain external until they exist:
 
-- public site deployment
+- public site deployment (deploy-ready asset: [site/simplicio-on-metal/index.html](./site/simplicio-on-metal/index.html))
 - real production benchmark dashboards
 - public demo video export
 - live traffic / conversion data
