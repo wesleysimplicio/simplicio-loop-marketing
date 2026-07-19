@@ -56,6 +56,12 @@ Breaking changes: append `!` after the type/scope and explain in the body, e.g. 
 
 CI enforces these via [.github/workflows/dod.yml](./.github/workflows/dod.yml).
 
+On top of the checklist above, [`DOD.md`](./DOD.md) documents a 4th layer —
+property-based testing for resolution/fan-out logic (`fast-check`), real-content
+fixtures, an invariant review question, and asserting on observable results —
+adopted to close the gap where 100% coverage still shipped two silent
+corruption bugs in sibling repos. The PR template's checklist reflects it.
+
 ## Updating the changelog
 
 When a PR changes user-facing behavior, add a concise note under
