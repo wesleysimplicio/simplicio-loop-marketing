@@ -1,0 +1,17 @@
+name: internal-format-policy
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  policy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Check internal format boundaries
+        run: node scripts/check-internal-formats.mjs

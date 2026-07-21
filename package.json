@@ -75,7 +75,9 @@
     "cli:check": "node bin/marketing-engine.mjs check",
     "cli:generate": "node bin/marketing-engine.mjs generate",
     "cli:promote": "node bin/marketing-engine.mjs promote",
-    "smoke": "node bin/marketing-engine.mjs help && node bin/marketing-engine.mjs generate"
+    "smoke": "node bin/marketing-engine.mjs help && node bin/marketing-engine.mjs generate",
+    "format:policy": "node scripts/check-internal-formats.mjs",
+    "format:policy:strict": "node scripts/check-internal-formats.mjs --strict"
   },
   "devDependencies": {
     "@playwright/test": "^1.48.0",
