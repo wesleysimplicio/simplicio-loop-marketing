@@ -1,0 +1,117 @@
+# Simplicio internal-format inventory for simplicio-loop-marketing.
+version = 1
+policy = "simplicio-binary-internal-formats/v1"
+mode = "baseline"
+owner = "wesleysimplicio"
+
+[[paths]]
+pattern = "package.json"
+category = "toolchain_mandated"
+owner = "wesleysimplicio"
+target_format = "package-manager metadata"
+reason = "Required by Node/npm; never an application data or IPC format"
+review = "2026-10-01"
+
+[[paths]]
+pattern = ".starter-meta.json"
+category = "internal_persistence"
+owner = "wesleysimplicio"
+target_format = "TOML configuration, then HBP receipt where auditable"
+reason = "Generated mapper bootstrap metadata; migration required"
+review = "2026-10-01"
+
+[[paths]]
+pattern = "contracts/**"
+category = "historical_documentation"
+owner = "wesleysimplicio"
+target_format = "Versioned binary contract with external compatibility fixture"
+reason = "Checked-in contract fixtures are not runtime source of truth"
+review = "2026-10-01"
+
+[[paths]]
+pattern = "data/**"
+category = "internal_persistence"
+owner = "wesleysimplicio"
+target_format = "HBP for append-only runs/evidence; HBI for indexes"
+reason = "Generated campaign and provider state"
+review = "2026-10-01"
+
+[[paths]]
+pattern = ".marketing-engine/**"
+category = "internal_persistence"
+owner = "wesleysimplicio"
+target_format = "HBP for receipts; HBI for indexed artifacts"
+reason = "Host-project runtime state"
+review = "2026-10-01"
+
+[[paths]]
+pattern = "lib/data/manifest.ts"
+category = "internal_persistence"
+owner = "wesleysimplicio"
+target_format = "HBI snapshot plus external edge export when required"
+reason = "Manifest writer currently serializes internal campaign state"
+review = "2026-10-01"
+
+[[paths]]
+pattern = "lib/data/runs.ts"
+category = "internal_persistence"
+owner = "wesleysimplicio"
+target_format = "HBP append-only run ledger"
+reason = "Run log currently uses JSONL"
+review = "2026-10-01"
+
+[[paths]]
+pattern = "lib/loop/journal.ts"
+category = "internal_persistence"
+owner = "wesleysimplicio"
+target_format = "HBP append-only journal"
+reason = "Loop journal currently uses JSONL"
+review = "2026-10-01"
+
+[[paths]]
+pattern = "lib/gate/evidence.ts"
+category = "internal_persistence"
+owner = "wesleysimplicio"
+target_format = "Typed Runtime evidence query"
+reason = "Evidence gate currently reads JSON artifacts"
+review = "2026-10-01"
+
+[[paths]]
+pattern = "lib/providers/**"
+category = "third_party_protocol_boundary"
+owner = "wesleysimplicio"
+target_format = "Typed provider adapter"
+reason = "Provider APIs may mandate JSON; raw payload ends at adapter"
+review = "2026-10-01"
+
+[[paths]]
+pattern = "e2e/**"
+category = "third_party_protocol_boundary"
+owner = "wesleysimplicio"
+target_format = "Typed test fixture/adapter"
+reason = "Tests exercise externally mandated provider responses"
+review = "2026-10-01"
+
+[[paths]]
+pattern = "scripts/lint.js"
+category = "policy_scanner"
+owner = "wesleysimplicio"
+target_format = "Markdown output plus HBP evidence"
+reason = "Scanner source contains JSON validation patterns"
+review = "2026-10-01"
+
+[[paths]]
+pattern = "scripts/check-internal-formats.mjs"
+category = "policy_scanner"
+owner = "wesleysimplicio"
+target_format = "Markdown output plus HBP evidence"
+reason = "Scanner source is excluded from its own source scan"
+review = "2026-10-01"
+
+[[paths]]
+pattern = ".claude/**"
+category = "toolchain_mandated"
+owner = "wesleysimplicio"
+target_format = "Tool configuration"
+reason = "Host tooling metadata; not application state"
+review = "2026-10-01"
