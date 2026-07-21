@@ -78,13 +78,13 @@ function main() {
     }
   }
   console.log("# Simplicio internal-format policy");
-  console.log("\\nMode: " + (strict ? "strict" : "baseline"));
-  console.log("\\n## Allowed or explicitly bounded");
-  console.log(bounded.length ? bounded.sort().map((item) => "- " + item).join("\\n") : "- none");
-  console.log("\\n## Migration required");
-  console.log(migration.length ? migration.sort().map((item) => "- " + item).join("\\n") : "- none");
-  console.log("\\n## Unclassified");
-  console.log(unknown.length ? unknown.sort().map((item) => "- " + item).join("\\n") : "- none");
+  console.log("\nMode: " + (strict ? "strict" : "baseline"));
+  console.log("\n## Allowed or explicitly bounded");
+  console.log(bounded.length ? bounded.sort().map((item) => "- " + item).join("\n") : "- none");
+  console.log("\n## Migration required");
+  console.log(migration.length ? migration.sort().map((item) => "- " + item).join("\n") : "- none");
+  console.log("\n## Unclassified");
+  console.log(unknown.length ? unknown.sort().map((item) => "- " + item).join("\n") : "- none");
   if (unknown.length) process.exitCode = 1;
   else if (strict && migration.length) process.exitCode = 2;
 }
