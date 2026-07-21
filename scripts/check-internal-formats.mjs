@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { extname, join, relative, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const ROOT = resolve(import.meta.dirname, "..");
+const ROOT = resolve(fileURLToPath(new URL(".", import.meta.url)), "..");
 const POLICY = join(ROOT, "config", "json-boundaries.toml");
 const SKIP = new Set([".git", "node_modules", "dist", "build", "coverage", "test-results", "playwright-report"]);
 const JSON_SUFFIXES = new Set([".json", ".jsonl", ".ndjson"]);
@@ -49,7 +50,7 @@ function findEntry(path, entries) {
 }
 
 function sourceUsesInternalJson(text) {
-  return /(^|\\s)(import|from)\\s+json\\b|serde_json|JSON\\.parse\\s*\\(|JSON\\.stringify\\s*\\(|\\.jsonl\\b|\\.ndjson\\b/.test(text);
+  return /(^|\s)(import|from)\s+json\b|serde_json|JSON\.parse\s*\(|JSON\.stringify\s*\(|\.jsonl\b|\.ndjson\b/.test(text);
 }
 
 function main() {
@@ -59,7 +60,7 @@ function main() {
   const migration = [];
   const bounded = [];
   for (const absolute of walk(ROOT)) {
-    const path = relative(ROOT, absolute).replaceAll("\\\\", "/");
+    const path = relative(ROOT, absolute).replaceAll("\\", "/");
     const suffix = extname(path).toLowerCase();
     const entry = findEntry(path, entries);
     if (JSON_SUFFIXES.has(suffix)) {
