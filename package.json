@@ -42,6 +42,7 @@
     "lib",
     "extension",
     "contracts",
+    "extensions",
     ".skills",
     ".specs",
     ".ralph",

@@ -1,0 +1,33 @@
+{
+  "schema": "loop.marketing-lock/v1",
+  "extension_version": "1.0.0",
+  "adapter_version": "1.0.0",
+  "upstream_version": "3.38.1",
+  "upstream_commit": "b5ddbd6af76392198906e61d0911a236eca3bcf8",
+  "manifest_sha256": "4812b9045eb915ed3248ba63a171f7c121dee34b49333ece3f8152ad67f9653e",
+  "supported_schemas": [
+    "simplicio.loop-extension/v1",
+    "marketing-event/v1",
+    "marketing-loop-state/v1",
+    "simplicio.loop-receipt/v1"
+  ],
+  "capabilities": {
+    "required": [
+      "extension_manifest.validate",
+      "extension_receipts.read",
+      "extension_reconcile"
+    ],
+    "optional": [
+      "extension_mode.embedded",
+      "extension_mode.daemon",
+      "extension_mode.remote"
+    ],
+    "forbidden": [
+      "coordinator.write",
+      "scheduler.write",
+      "queue.write",
+      "completion.write",
+      "ledger.write"
+    ]
+  }
+}

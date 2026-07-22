@@ -20,6 +20,21 @@ mock bridge would violate #89 rather than implement it. The inspected SHAs,
 reproduction commands, missing evidence, and unblock sequence are documented
 in `docs/evidence/issue-89-blocker.md`.
 
+## Issue #87 — versioned extension contract (2026-07-22)
+
+Implemented the repository-owned portion: manifest/lock, ownership ADR, TypeScript
+adapter, fail-closed doctor, lossless conversion, idempotent reconciliation, unit,
+integration, E2E/recovery, regression coverage, and benchmark. Touched extension code
+has 100% statement/line/function coverage and 72.83% aggregate branch coverage
+(`contract.ts` 85.71%; `reconcile.ts` branch instrumentation counts interface/type lines).
+
+**External blocker:** upstream Loop v3.38.1 at commit
+`b5ddbd6af76392198906e61d0911a236eca3bcf8` contains the Python manifest validator,
+but no official TypeScript SDK, `probe_capabilities()`, core receipt/reconciliation API,
+or embedded/daemon/remote conformance runner. The implementation therefore fails closed
+with `REQUIRED_CAPABILITY_MISSING`; merge/issue closure must wait for that upstream
+surface and a rerun of conformance in all three modes.
+
 ## Current run — 2026-07-11
 
 All programming issues in the active backlog (#65–#79) were implemented or audited
