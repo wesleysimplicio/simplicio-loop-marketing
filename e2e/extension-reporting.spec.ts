@@ -1,0 +1,6 @@
+import { test, expect } from "@playwright/test";
+import { mkdtempSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { auditCompletion, collectFinding, reconcileOutbox, type Tracker } from "../lib/extension/reporting";
+test("repeated defect, tracker outage, recovery and late regression remain fail-closed",async()=>{const root=mkdtempSync(join(tmpdir(),"mr-e2e-"));let offline=true;const tracker:Tracker={async upsert(){if(offline)throw new Error("offline");return{confirmed:true,ref:"owner/repo#90"}},async requery(){return{confirmed:false}}};const finding={run_id:"run",campaign_id:"campaign",piece_id:"piece",stage_id:"publish",code:"REMOTE_MISSING",severity:"critical" as const,scope:"delivery",owner_repo:"owner/repo",summary:"remote asset missing",reproduction:["publish","query remote"],impact:"campaign incomplete",tests:["remote reconciliation"],acceptance_criteria:["one issue for all occurrences"]};for(let i=0;i<100;i++)await collectFinding(root,finding);expect((await reconcileOutbox(root,tracker)).pending).toBe(1);offline=false;expect((await reconcileOutbox(root,tracker)).confirmed).toBe(1);const terminal=await auditCompletion(root,"COMPLETE",tracker,{reporting_required:true,receipts:[]});expect(terminal).toMatchObject({requested_terminal:"REGRESSED",revoke_terminal:true})});

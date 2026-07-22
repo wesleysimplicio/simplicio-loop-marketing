@@ -1,0 +1,3 @@
+import { findingsReport, reportingDoctor } from "../extension/reporting";
+export async function cliEntry(argv:string[]){const root=process.env.MARKETING_ENGINE_HOST_ROOT??process.cwd(),cmd=argv[0]??"list";if(cmd==="list"||cmd==="report")process.stdout.write(`${JSON.stringify(findingsReport(root),null,2)}\n`);else if(cmd==="doctor"){const r=reportingDoctor(root);process.stdout.write(`${JSON.stringify(r,null,2)}\n`);if(!r.ok)process.exitCode=2}else if(cmd==="reconcile")throw new Error("reconcile requires a configured tracker adapter; no remote confirmation is inferred");else throw new Error("usage: findings list|report|reconcile|doctor")}
+cliEntry(process.argv.slice(2)).catch(e=>{process.stderr.write(`${String(e)}\n`);process.exitCode=1});

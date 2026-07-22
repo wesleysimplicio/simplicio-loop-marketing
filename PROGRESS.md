@@ -8,6 +8,13 @@ backup-preserving and idempotent legacy migrator; moved mapper metadata to TOML;
 and added corruption/truncation/oversize regression tests plus a measured hot
 path benchmark. Runtime readers have no JSON fallback for the migrated paths.
 
+## Checkpoint 10c (2026-07-22 — issue #90 reporting/findings extension)
+
+Status: implementation complete; upstream core receipt/requery evidence remains external.
+
+Added the reporting projection, finding sanitize/fingerprint path, completion audit,
+and focused test and benchmark evidence. Missing upstream capabilities remain fail-closed.
+
 ## Checkpoint 10b (2026-07-22 — issue #106 meta-audit)
 
 Status: blocked on authenticated, reviewed rewrites of remote issue bodies.
