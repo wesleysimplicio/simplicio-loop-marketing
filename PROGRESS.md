@@ -1,3 +1,15 @@
+### Checkpoint (2026-07-22, issue #94 — stage-overlay shadow contract)
+
+Status: blocked on upstream `simplicio-loop#557`
+
+Added the provider-neutral `loop.marketing` extension manifest, small core-context handlers,
+deterministic caption validation, fenced exactly-once effect boundary, contract/unit/integration
+tests, and a numeric sequential-vs-overlay benchmark. Focused coverage is 99.48% statements/lines
+and 89.09% branches. The existing standalone pipeline remains untouched because the authoritative
+Loop extension loader/composer/SDK and conformance suite are not yet published; replacing it now
+would create the parallel authority explicitly forbidden by #94. See
+`docs/evidence/issue-94-overlays.md`.
+
 # Progress Log
 
 ## Checkpoint 10 (2026-07-22 — issue #95 Loop core release train)
