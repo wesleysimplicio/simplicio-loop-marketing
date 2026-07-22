@@ -128,6 +128,7 @@ Routing rules and rationale live in [.specs/architecture/PROVIDERS.md](./.specs/
 | `generate` | Run generation loop (DRY_RUN-safe) |
 | `promote` | Run promotion loop |
 | `anchor` | Create/check/gate campaign anchors and run anchor selftest |
+| `operator doctor --json` | Probe the pinned Loop extension contract and fail closed on incompatibility |
 
 ## Architecture
 

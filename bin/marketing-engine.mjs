@@ -42,6 +42,7 @@ Commands:
   watcher     Run one fail-closed self-paced campaign wake
   retrospective Mine deduped durable lessons from campaign evidence
   autoresearch  Run a fixed-judge, compliance-gated copy optimization loop (DRY_RUN only)
+  operator    operator doctor --json (extension/core compatibility probe)
   help        Show this message
 
 Options:
@@ -787,6 +788,11 @@ function commandAutoresearch(args) {
   spawnTsx(script, args._.slice(1), hostRoot, { stdio: "inherit" });
 }
 
+function commandOperator(args) {
+  const script = join(PACKAGE_ROOT, "lib", "cli", "operator.ts");
+  spawnTsx(script, [...args._.slice(1), "--package-root", PACKAGE_ROOT], resolveHostRoot(args));
+}
+
 function main() {
   const argv = process.argv.slice(2);
   const args = parseArgs(argv);
@@ -863,6 +869,9 @@ function main() {
       return;
     case "autoresearch":
       commandAutoresearch(args);
+      return;
+    case "operator":
+      commandOperator(args);
       return;
     default:
       console.error(`Unknown command: ${cmd}`);
