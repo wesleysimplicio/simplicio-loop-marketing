@@ -1,0 +1,14 @@
+{
+  "schema": "simplicio.loop-extension/v1",
+  "extension_id": "loop.marketing",
+  "version": "1.0.0",
+  "domain": "marketing",
+  "requires_core": ">=1.0.0 <2.0.0",
+  "receipt_extensions": { "required_fields": ["extension_version", "composed_graph_hash"] },
+  "policies": {
+    "evolution": { "proposal_only": true, "independent_approval": true, "protected_gates": ["safety", "compliance"], "rollout": ["replay", "shadow", "canary"] },
+    "replication_admission": { "critical_paths": ["copy", "creative", "research", "compliance"], "max_agents": 4, "max_tokens": 50000, "max_media_usd": 25, "max_ads_usd": 0, "max_backlog": 100, "p95_trigger_ms": 1000, "min_confidence": 0.8 },
+    "completion": { "first_verified_candidate_wins": true, "single_promotion_owner": true, "redundant_verification": ["compliance"] }
+  },
+  "effects": { "replicable": [], "forbidden_replication": ["publish", "ads"], "transactional_adapter_required": ["publish", "ads"] }
+}

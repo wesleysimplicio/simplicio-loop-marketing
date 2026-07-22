@@ -1,5 +1,29 @@
 # Progress Log
 
+## Checkpoint 10 (2026-07-22 — issue #91 evolution and replication policy)
+
+Status: completed, ready for focused PR.
+
+Result:
+- Declared the `loop.marketing` evolution/replication policy on the
+  `simplicio.loop-extension/v1` manifest, including protected gates, rollout,
+  receipt metadata, critical paths and hard budgets.
+- Added deterministic proposal/finding classification and deduplication,
+  fail-closed graph-change validation, bounded replication admission,
+  independently verified first-candidate selection, stale/late receipt rejection,
+  loser cancellation declarations, and canary rollback evaluation. These are
+  domain policy evaluators only; scheduling, fences, effects and completion stay
+  owned by Loop core.
+- Added unit, integration sandbox, regression, Playwright system/E2E and numeric
+  hot-path benchmark coverage.
+
+Validation:
+- `npm run typecheck`, `npm run lint` — pass.
+- `npm run test:node` — 217 passed.
+- `npm run test:e2e` — 253 passed.
+- Touched-code coverage — 100% statements/functions/lines, 96.72% branches.
+- 10,000 candidate receipts evaluated in 8.06ms in the measured focused run.
+
 ## Checkpoint 9 (2026-07-14 — issue #78 closeout: deploy-ready assets + reproducible scripts)
 
 Status: completed, ready for PR against `main`.
