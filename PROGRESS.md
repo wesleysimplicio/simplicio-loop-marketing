@@ -306,6 +306,14 @@ coverage, provider regression checks, and Playwright system coverage. The merged
 package keeps conformance/benchmark scripts and now enforces 85% lines,
 statements, and functions plus 70% branches.
 
+## Checkpoint 18 (2026-07-22 — issue #99 property tests and real-content invariants)
+
+Added the production four-platform caption invariant boundary, Unicode-safe
+truncation, 1,000 generated fast-check cases per run, a near-real Portuguese
+fixture through parse/compliance/fan-out, regression coverage, and observable
+E2E assertions. The PR records 100% focused production coverage and a measured
+caption throughput benchmark above the configured threshold.
+
 ## Checkpoint 17 (2026-07-22 — issue #100 quality expansion)
 
 Added constraint-aware image/video selection with property tests, deterministic
