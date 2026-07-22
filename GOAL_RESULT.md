@@ -9,6 +9,21 @@ merged as complete. Evidence and rollback details: `docs/evidence/issue-94-overl
 
 # Goal Result
 
+## Issue #86 dependency audit — 2026-07-22
+
+Status: **BLOCKED — no implementation or completion claim**.
+
+Issue #86 is an integration epic whose ordered child issues #87–#96 were
+unresolved at audit time. The audit intentionally avoided duplicating their
+extension, conformance, release, and prototype-gate scopes. The upstream
+extension dependency was closed, but the audited checkout had no registered
+`loop.marketing` extension, so implementation, coverage, benchmark, and
+completion claims remain fail-closed.
+
+Recorded unblock conditions: land or explicitly re-scope the ordered children,
+pin the upstream contract and hashes, run embedded/daemon/remote conformance,
+then evaluate coverage, restart safety, and composition benchmarks.
+
 ## Issue #89 — 2026-07-22
 
 Status: **BLOCKED**. The current main branch lacks the #87 extension
