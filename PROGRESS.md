@@ -49,6 +49,13 @@ fenced fake-effect recovery/security tests, packed-install E2E parity, and
 upgrade/canary/rollback documentation. Central release detection remains the
 responsibility of issue #95.
 
+## Checkpoint 14 (2026-07-22 — issue #93 Loop core extension integration)
+
+Published the pinned upstream-compatible extension manifest, hashed context
+schemas, declarative overlays/roles/gates/resources, core-owned quota scopes,
+receipt-derived views, core-authorized exactly-once effects, campaign preflight,
+and doctor conformance reporting. Focused evidence is recorded in the PR.
+
 ## Checkpoint 9 (2026-07-14 — issue #78 closeout: deploy-ready assets + reproducible scripts)
 
 Status: completed, ready for PR against `main`.

@@ -1,0 +1,248 @@
+{
+  "schema": "simplicio.loop-extension/v1",
+  "extension_id": "loop_marketing",
+  "name": "Loop Marketing",
+  "version": "0.4.0",
+  "domain": "marketing",
+  "requires_core": {
+    "min_version": "3.38.1",
+    "max_version": "3.99.99"
+  },
+  "capabilities": {
+    "requires": [
+      "core.workflow",
+      "core.queue",
+      "core.leases",
+      "core.fencing",
+      "core.budgets",
+      "core.receipts"
+    ],
+    "provides": [
+      "marketing.campaign",
+      "marketing.piece",
+      "marketing.channel",
+      "marketing.brand-context",
+      "schema-sha256:extension/schemas/campaign.schema.json:bd4db8fe738d828900c9fbb25982b58a27b74a3d99df9d152017f91b70ae20c2",
+      "schema-sha256:extension/schemas/piece.schema.json:b489e902e500189f19b6bcdabdf1b42f76a6832f8bd00530cd28c69b1a1699e6",
+      "schema-sha256:extension/schemas/channel.schema.json:1dc9d8495462c51ca2aee0b7b919f0dc7395d09ec769b7bc338d79ffca2b408f",
+      "schema-sha256:extension/schemas/brand-context.schema.json:38826163a4294566052982a30a3aeddb72bac2f36dc071a1e8d93d6b39245494"
+    ]
+  },
+  "source_adapters": [
+    {
+      "adapter_id": "marketing.brief",
+      "kind": "brief"
+    },
+    {
+      "adapter_id": "marketing.campaign",
+      "kind": "campaign"
+    },
+    {
+      "adapter_id": "marketing.backlog",
+      "kind": "backlog"
+    }
+  ],
+  "context_schemas": [
+    {
+      "schema_id": "marketing.context.campaign/v1",
+      "version": "1.0.0"
+    },
+    {
+      "schema_id": "marketing.context.piece/v1",
+      "version": "1.0.0"
+    },
+    {
+      "schema_id": "marketing.context.channel/v1",
+      "version": "1.0.0"
+    },
+    {
+      "schema_id": "marketing.context.brand/v1",
+      "version": "1.0.0"
+    }
+  ],
+  "stage_overlays": [
+    {
+      "op": "insert_after",
+      "hook": "planning",
+      "stage": {
+        "stage_id": "marketing.copy",
+        "depends_on": [
+          "planning"
+        ]
+      }
+    },
+    {
+      "op": "insert_after",
+      "hook": "marketing.copy",
+      "stage": {
+        "stage_id": "marketing.creative",
+        "depends_on": [
+          "planning"
+        ]
+      }
+    },
+    {
+      "op": "refine",
+      "hook": "validating",
+      "gates": {
+        "marketing.compliance": "fail_closed"
+      }
+    },
+    {
+      "op": "refine",
+      "hook": "delivering",
+      "gates": {
+        "marketing.approval": "fail_closed"
+      }
+    }
+  ],
+  "role_bindings": [
+    {
+      "role_id": "marketing.copywriter",
+      "specializes": "implementer",
+      "required_capabilities": [
+        "marketing.copy"
+      ]
+    },
+    {
+      "role_id": "marketing.compliance-reviewer",
+      "specializes": "reviewer",
+      "required_capabilities": [
+        "marketing.compliance"
+      ]
+    }
+  ],
+  "gates": [
+    {
+      "gate_id": "marketing.brand",
+      "severity": "block"
+    },
+    {
+      "gate_id": "marketing.compliance",
+      "severity": "fail_closed"
+    },
+    {
+      "gate_id": "marketing.approval",
+      "severity": "fail_closed"
+    }
+  ],
+  "effect_handlers": [
+    {
+      "effect_id": "marketing.publish",
+      "idempotent": true,
+      "requires_fence_token": true,
+      "requires_receipt": true,
+      "compensation": "reconcile_remote"
+    },
+    {
+      "effect_id": "marketing.ads",
+      "idempotent": true,
+      "requires_fence_token": true,
+      "requires_receipt": true,
+      "compensation": "reconcile_remote"
+    },
+    {
+      "effect_id": "marketing.comments",
+      "idempotent": true,
+      "requires_fence_token": true,
+      "requires_receipt": true,
+      "compensation": "reconcile_remote"
+    }
+  ],
+  "resource_classes": [
+    {
+      "class_id": "llm",
+      "concurrency_cap": 4,
+      "budget": {
+        "authority": "core",
+        "scope": [
+          "provider",
+          "channel",
+          "campaign",
+          "tenant"
+        ]
+      }
+    },
+    {
+      "class_id": "image_video",
+      "concurrency_cap": 2,
+      "budget": {
+        "authority": "core",
+        "scope": [
+          "provider",
+          "channel",
+          "campaign",
+          "tenant"
+        ]
+      }
+    },
+    {
+      "class_id": "cpu",
+      "concurrency_cap": 4,
+      "budget": {
+        "authority": "core",
+        "scope": [
+          "provider",
+          "channel",
+          "campaign",
+          "tenant"
+        ]
+      }
+    },
+    {
+      "class_id": "gpu",
+      "concurrency_cap": 1,
+      "budget": {
+        "authority": "core",
+        "scope": [
+          "provider",
+          "channel",
+          "campaign",
+          "tenant"
+        ]
+      }
+    },
+    {
+      "class_id": "upload",
+      "concurrency_cap": 2,
+      "budget": {
+        "authority": "core",
+        "scope": [
+          "provider",
+          "channel",
+          "campaign",
+          "tenant"
+        ]
+      }
+    },
+    {
+      "class_id": "social_api",
+      "concurrency_cap": 2,
+      "budget": {
+        "authority": "core",
+        "scope": [
+          "provider",
+          "channel",
+          "campaign",
+          "tenant"
+        ]
+      }
+    }
+  ],
+  "receipt_schemas": [
+    {
+      "schema_id": "marketing-manifest/v1",
+      "version": "1.0.0"
+    },
+    {
+      "schema_id": "marketing-publish-receipt/v1",
+      "version": "1.0.0"
+    }
+  ],
+  "feature_flags": [
+    {
+      "flag_id": "marketing.effects",
+      "default": false
+    }
+  ]
+}

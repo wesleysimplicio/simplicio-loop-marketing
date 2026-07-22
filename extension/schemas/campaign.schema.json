@@ -1,0 +1,1 @@
+{"$schema":"https://json-schema.org/draft/2020-12/schema","$id":"marketing.context.campaign/v1","type":"object","required":["id","client_id","channels"],"properties":{"id":{"type":"string"},"client_id":{"type":"string"},"channels":{"type":"array","items":{"type":"string"}}}}

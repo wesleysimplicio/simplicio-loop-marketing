@@ -13,6 +13,8 @@ All notable changes to this project are documented here. Format based on
 
 ### Added
 
+- **Issue #93 Loop core extension binding:** publishes the pinned `simplicio.loop-extension/v1` marketing manifest, hashed context schemas, declarative stage/role/gate/resource bindings, core-owned budgets, receipt-derived views, and a fenced exactly-once effect adapter. Campaign startup rejects incompatible cores before creating work; doctor reports conformance.
+
 - **Issue #92 conformance certification:** canonical manifest/schema compatibility gate, deterministic manifest and graph hashes, fail-closed incompatible-core handling, exactly-once fenced fake-effect recovery/security coverage, clean-package E2E parity, and documented upgrade/canary/rollback evidence.
 
 - **Loop core release train** (issue #95): official `loop.marketing` extension manifest and immutable core lock; fail-closed component-release compatibility/diff evaluator; 15-minute event/poll reconciliation workflow with deduplicated bump PRs; canary/rollback pins; release identity in campaign manifests and doctor output; unit, integration, E2E, regression coverage and a numeric p95 budget.

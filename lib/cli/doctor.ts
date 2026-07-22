@@ -8,6 +8,7 @@ import { readJournal, itemVerdict, journalPath } from "../loop/journal";
 import { listPieces } from "../pieces/store";
 import { loadProviderMatrix } from "../providers/matrix";
 import { releaseIdentity, type ReleaseIdentity } from "../release-train/receipt";
+import { loadExtensionManifest } from "../extension/core";
 
 export const DOCTOR_SCHEMA = "marketing-doctor-report/v1";
 export type DoctorStatus = "ok" | "warn" | "blocked";
@@ -20,6 +21,7 @@ export interface DoctorReport {
   loop: { journal_present: boolean; items: number; stalled_items: string[] };
   operator: { hooks_present: boolean; action_gate_selftest: "pass" | "fail" | "not_run"; python_workers: "resolved" | "absent" };
   release_train: ReleaseIdentity & { latest: string | null; installed: string; compatible: boolean | null; blocked_reason: string | null };
+  extension: { id: string; version: string; core_version: string; compatible: boolean; capabilities: string[]; budget_authority: "core"; conformance: "pass" | "fail" };
 }
 const KEYS: Record<string,string> = { claude:"ANTHROPIC_API_KEY", codex:"OPENAI_API_KEY", deepseek:"DEEPSEEK_API_KEY", "gpt-image":"OPENAI_API_KEY", higgsfield:"HIGGSFIELD_MCP_ACTIVE", topview:"TOPVIEW_API_KEY", wavespeed:"WAVESPEED_API_KEY", hyperframes:"HYPERFRAMES_ACTIVE", adaptlypost:"ADAPTLYPOST_API_KEY", "meta-ads":"META_ADS_MCP_ACTIVE", notion:"NOTION_TOKEN" };
 const rootOf = (root:string) => existsSync(resolve(root,".marketing-engine")) ? resolve(root,".marketing-engine") : root;
