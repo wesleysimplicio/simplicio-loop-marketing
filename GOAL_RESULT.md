@@ -93,6 +93,15 @@ fenced/idempotent fake publish effect. Upgrade remains manual and requires
 conformance plus canary evidence; rollback restores the last compatible pin.
 Release detection and ecosystem publication remain owned by issue #95.
 
+## Issue #93 — Loop core/Hub extension integration (2026-07-22)
+
+Implemented `loop_marketing` as a declarative `simplicio.loop-extension/v1`
+consumer without adding a daemon, coordinator, queue, scheduler, lease manager,
+or completion engine. It fails before campaign work on incompatibility, delegates
+budgets and exactly-once authority to core, and rebuilds views from receipts.
+Focused unit, integration, regression, system, and benchmark evidence is
+recorded in the PR.
+
 All programming issues in the active backlog (#65–#79) were implemented or audited
 for executable scope using six parallel workers and integrated on branch
 `codex/finish-all-programming`. #78 has no executable acceptance criterion; #79 is

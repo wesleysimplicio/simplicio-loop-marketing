@@ -1,0 +1,1 @@
+{"$schema":"https://json-schema.org/draft/2020-12/schema","$id":"marketing.context.piece/v1","type":"object","required":["id","campaign_id","brief"],"properties":{"id":{"type":"string"},"campaign_id":{"type":"string"},"brief":{"type":"string"}}}

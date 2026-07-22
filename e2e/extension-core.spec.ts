@@ -1,0 +1,2 @@
+import {test,expect} from "@playwright/test";import {spawnSync} from "node:child_process";
+test("campaign startup validates extension before planning work",()=>{const bad=spawnSync(process.execPath,["bin/marketing-engine.mjs","campaign","--brief","missing.md"],{cwd:process.cwd(),env:{...process.env,SIMPLICIO_LOOP_CORE_VERSION:"4.0.0"},encoding:"utf8"});expect(bad.status).not.toBe(0);expect(bad.stderr).toContain("extension incompatible");expect(bad.stderr).not.toContain("pieces_queued");});
