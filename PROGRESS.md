@@ -1,5 +1,13 @@
 # Progress Log
 
+## Checkpoint 10 (2026-07-22 — issue #103 binary state slice)
+
+Implemented native, versioned HBP/HBI envelopes and migrated the run ledger,
+loop journal and piece manifest off JSON. Added a bounded, dry-run capable,
+backup-preserving and idempotent legacy migrator; moved mapper metadata to TOML;
+and added corruption/truncation/oversize regression tests plus a measured hot
+path benchmark. Runtime readers have no JSON fallback for the migrated paths.
+
 ## Checkpoint 9 (2026-07-14 — issue #78 closeout: deploy-ready assets + reproducible scripts)
 
 Status: completed, ready for PR against `main`.

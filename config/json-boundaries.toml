@@ -1,7 +1,7 @@
 # Simplicio internal-format inventory for simplicio-loop-marketing.
 version = 1
 policy = "simplicio-binary-internal-formats/v1"
-mode = "baseline"
+mode = "enforced"
 owner = "wesleysimplicio"
 
 [[paths]]
@@ -13,11 +13,11 @@ reason = "Required by Node/npm; never an application data or IPC format"
 review = "2026-10-01"
 
 [[paths]]
-pattern = ".starter-meta.json"
-category = "internal_persistence"
+pattern = ".starter-meta.toml"
+category = "human_edited_configuration"
 owner = "wesleysimplicio"
-target_format = "TOML configuration, then HBP receipt where auditable"
-reason = "Generated mapper bootstrap metadata; migration required"
+target_format = "TOML"
+reason = "Mapper bootstrap configuration migrated from .starter-meta.json"
 review = "2026-10-01"
 
 [[paths]]
@@ -46,34 +46,34 @@ review = "2026-10-01"
 
 [[paths]]
 pattern = "lib/data/manifest.ts"
-category = "internal_persistence"
+category = "internal_index"
 owner = "wesleysimplicio"
-target_format = "HBI snapshot plus external edge export when required"
-reason = "Manifest writer currently serializes internal campaign state"
+target_format = "HBI v1 envelope"
+reason = "Producer writeManifest and consumers evidence/publish use an atomic typed index"
 review = "2026-10-01"
 
 [[paths]]
 pattern = "lib/data/runs.ts"
 category = "internal_persistence"
 owner = "wesleysimplicio"
-target_format = "HBP append-only run ledger"
-reason = "Run log currently uses JSONL"
+target_format = "HBP v1 envelope stream"
+reason = "appendRunLog produces and status/evidence consume the append-only run ledger"
 review = "2026-10-01"
 
 [[paths]]
 pattern = "lib/loop/journal.ts"
 category = "internal_persistence"
 owner = "wesleysimplicio"
-target_format = "HBP append-only journal"
-reason = "Loop journal currently uses JSONL"
+target_format = "HBP v1 envelope stream"
+reason = "recordAttempt produces and loop verdict/retrospective consume durable attempt state"
 review = "2026-10-01"
 
 [[paths]]
 pattern = "lib/gate/evidence.ts"
-category = "internal_persistence"
+category = "internal_fixture_or_evidence"
 owner = "wesleysimplicio"
-target_format = "Typed Runtime evidence query"
-reason = "Evidence gate currently reads JSON artifacts"
+target_format = "HBI manifest plus typed evidence artifacts"
+reason = "Evidence gate consumes the HBI manifest without a JSON fallback"
 review = "2026-10-01"
 
 [[paths]]

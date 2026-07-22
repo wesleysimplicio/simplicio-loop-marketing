@@ -11,10 +11,23 @@ contracts. The policy is recorded in config/json-boundaries.toml.
 - Provider/toolchain JSON is isolated at an exact boundary and never becomes the
   domain source of truth.
 
-Baseline mode fails on unclassified paths and reports classified internal paths
-as migration work. Strict mode also fails until issues #103 and #104 are
-complete. The scanner emits Markdown so evidence can be persisted through HBP
-instead of creating a new internal JSON report.
+The first production slice uses a checksummed, versioned 16-byte envelope:
+`HBP\0` frames form append-only streams and `HBI\0` holds one atomic indexed
+snapshot. Payloads use Node's typed structured-clone serializer; bounds and a
+checksum are validated before deserialization. HBI writes use a same-directory
+temporary file, `fsync`, and atomic rename.
+
+Legacy JSON is accepted only by the explicit one-shot migrator in
+`lib/formats/migrate.ts`. It has a 64 MiB input bound, dry-run mode, immutable
+`.bak` preservation, staging-file verification, atomic publication and
+idempotent resume. Runtime readers never fall back to JSON.
+
+Implemented ownership:
+
+- run state: `data/runs.hbp`;
+- global and per-piece attempt journals: `journal.hbp`;
+- piece manifest/index: `manifest.hbi`;
+- mapper bootstrap configuration: `.starter-meta.toml`.
 
 Related work:
 

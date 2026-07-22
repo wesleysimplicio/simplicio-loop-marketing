@@ -545,14 +545,14 @@ export async function processPiece(
     outputs,
     fallback_used: copy.fallback_triggered || captionResult.fallback_triggered,
   };
-  writeManifest(join(pieceDir, "manifest.json"), manifest);
+  writeManifest(join(pieceDir, "manifest.hbi"), manifest);
   emitEvent(opts.root, {
     kind: "manifest_written",
     piece_id: fm.id,
     client: fm.client,
     phase: "generate",
     provider: copy.provider_used,
-    data: { manifest_path: join(pieceDir, "manifest.json") },
+    data: { manifest_path: join(pieceDir, "manifest.hbi") },
   });
 
   // Persist the evidence references while still in draft; the shared evidence
@@ -633,4 +633,3 @@ if (
     process.exit(1);
   });
 }
-

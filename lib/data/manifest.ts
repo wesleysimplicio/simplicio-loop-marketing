@@ -1,5 +1,5 @@
-import { existsSync, mkdirSync, writeFileSync } from "node:fs";
-import { dirname, join, normalize } from "node:path";
+import { join, normalize } from "node:path";
+import { writeHbiAtomic } from "../formats/binary";
 
 export interface ProviderDescriptor {
   name: string;
@@ -62,7 +62,7 @@ function normalizeProvider(
 }
 
 function manifestPath(target: string): string {
-  return target.endsWith(".json") ? target : join(target, "manifest.json");
+  return target.endsWith(".hbi") ? target : join(target, "manifest.hbi");
 }
 
 function normalizeStoredPath(path?: string): string | undefined {
@@ -74,12 +74,6 @@ export function writeManifest(
   payload: ManifestPayload,
 ): ManifestDocument {
   const path = manifestPath(target);
-  const dir = dirname(path);
-
-  if (!existsSync(dir)) {
-    mkdirSync(dir, { recursive: true });
-  }
-
   const document: ManifestDocument = {
     schema: MANIFEST_SCHEMA,
     generated_at: new Date().toISOString(),
@@ -103,6 +97,6 @@ export function writeManifest(
     fallback_used: payload.fallback_used ?? false,
   };
 
-  writeFileSync(path, JSON.stringify(document, null, 2));
+  writeHbiAtomic(path, document);
   return document;
 }

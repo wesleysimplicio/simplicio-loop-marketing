@@ -2,7 +2,7 @@
  * journal.ts — durable attempt memory + stall detector for the loop.
  *
  * Minimal TypeScript port of simplicio-loop's loop_journal.py: every
- * attempt is appended to `.simplicio/loop/journal.jsonl` (schema
+ * attempt is appended to `.simplicio/loop/journal.hbp` (schema
  * `marketing-loop-state/v1`) with a STABLE fingerprint of the failure —
  * volatile fragments (timestamps, tmp paths, hex ids, line numbers) are
  * normalized away so the SAME failure hashes the SAME across turns.
@@ -12,15 +12,11 @@
  * human) instead of burning tokens re-deriving a known failure.
  */
 
-import {
-  appendFileSync,
-  existsSync,
-  mkdirSync,
-  readFileSync,
-} from "node:fs";
-import { dirname, resolve } from "node:path";
+import { existsSync } from "node:fs";
+import { resolve } from "node:path";
 import { createHash } from "node:crypto";
 import { runId } from "../observability/events";
+import { appendHbp, readHbp } from "../formats/binary";
 
 export const JOURNAL_SCHEMA = "marketing-loop-state/v1";
 export const DEFAULT_STALL_K = 3;
@@ -56,7 +52,7 @@ export interface ItemVerdict {
 }
 
 export function journalPath(root: string): string {
-  return resolve(root, ".simplicio", "loop", "journal.jsonl");
+  return resolve(root, ".simplicio", "loop", "journal.hbp");
 }
 
 function engineRoot(root: string): string {
@@ -70,7 +66,7 @@ export function pieceJournalPath(
   date: string,
   itemId: string,
 ): string {
-  return resolve(engineRoot(root), "outputs", client, date.slice(0, 10), itemId, "journal.jsonl");
+  return resolve(engineRoot(root), "outputs", client, date.slice(0, 10), itemId, "journal.hbp");
 }
 
 /**
@@ -139,14 +135,10 @@ export function recordAttempt(
   };
   try {
     const globalPath = journalPath(root);
-    const globalDir = dirname(globalPath);
-    if (!existsSync(globalDir)) mkdirSync(globalDir, { recursive: true });
-    appendFileSync(globalPath, `${JSON.stringify(rec)}\n`, "utf8");
+    appendHbp(globalPath, rec);
     if (input.client && input.date) {
       const piecePath = pieceJournalPath(root, input.client, input.date, input.item_id);
-      const pieceDir = dirname(piecePath);
-      if (!existsSync(pieceDir)) mkdirSync(pieceDir, { recursive: true });
-      appendFileSync(piecePath, `${JSON.stringify(rec)}\n`, "utf8");
+      appendHbp(piecePath, rec);
     }
     return rec;
   } catch {
@@ -173,24 +165,8 @@ export function nextStrategy(root: string, itemId: string, k = DEFAULT_STALL_K):
 export function readJournal(root: string): JournalRecord[] {
   const path = journalPath(root);
   if (!existsSync(path)) return [];
-  const out: JournalRecord[] = [];
-  let text = "";
-  try {
-    text = readFileSync(path, "utf8");
-  } catch {
-    return out;
-  }
-  for (const line of text.split("\n")) {
-    if (!line.trim()) continue;
-    try {
-      const rec = JSON.parse(line) as JournalRecord;
-      if (rec.schema !== JOURNAL_SCHEMA) continue;
-      out.push(rec);
-    } catch {
-      continue;
-    }
-  }
-  return out;
+  try { return readHbp<JournalRecord>(path).filter((rec) => rec.schema === JOURNAL_SCHEMA); }
+  catch { return []; }
 }
 
 /**
