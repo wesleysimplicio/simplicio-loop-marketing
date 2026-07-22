@@ -297,3 +297,11 @@ unknown models and tokenizer failures remain explicit and fail-open. Provider
 usage stays authoritative, with source/encoding/fallback/stage/correlation
 metadata and prompt privacy. PR evidence reports typecheck/lint green, 214 Node
 tests, 252 Playwright tests, 85.96% focused coverage, and 5,684 ops/s.
+
+## Checkpoint 16 (2026-07-22 — issue #102 blocking CI gate)
+
+Added the read-only `quality-gate` workflow, bounded lint/typecheck/budget,
+enforced coverage thresholds, workflow-integrity verification, failure-mutation
+coverage, provider regression checks, and Playwright system coverage. The merged
+package keeps conformance/benchmark scripts and now enforces 85% lines,
+statements, and functions plus 70% branches.

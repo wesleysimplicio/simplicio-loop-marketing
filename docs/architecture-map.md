@@ -59,7 +59,7 @@ Maintainer or AI agent
 ## Deployment
 
 - Package publishing + CI live in `.github/workflows/`
-- `ci.yml` runs `npm ci`, `npm run typecheck`, and `npm run test:e2e`
+- `quality-gate.yml` runs the repository integrity, quality, coverage, and system/E2E checks on every pull request and push to `main`
 - `dod.yml` verifies structural Definition of Done surfaces
 - `release.yml` is the release automation entrypoint
 - Release notes source of truth: `CHANGELOG.md`

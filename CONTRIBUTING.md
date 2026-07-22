@@ -54,7 +54,7 @@ Breaking changes: append `!` after the type/scope and explain in the body, e.g. 
 - New external behavior covered by at least one Playwright spec.
 - Significant architectural decisions captured as a new ADR under `.specs/architecture/`.
 
-CI enforces these via [.github/workflows/dod.yml](./.github/workflows/dod.yml).
+CI enforces these via the blocking [quality gate](./.github/workflows/quality-gate.yml).
 
 On top of the checklist above, [`DOD.md`](./DOD.md) documents a 4th layer —
 property-based testing for resolution/fan-out logic (`fast-check`), real-content
