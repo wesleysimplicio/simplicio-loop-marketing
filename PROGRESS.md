@@ -8,6 +8,15 @@ backup-preserving and idempotent legacy migrator; moved mapper metadata to TOML;
 and added corruption/truncation/oversize regression tests plus a measured hot
 path benchmark. Runtime readers have no JSON fallback for the migrated paths.
 
+## Checkpoint 10b (2026-07-22 — issue #106 meta-audit)
+
+Status: blocked on authenticated, reviewed rewrites of remote issue bodies.
+
+Result:
+- Inventoried all accessible issues and added a fail-closed audit command with JSON/Markdown receipts.
+- Added unit, integration, regression, E2E, security and benchmark evidence; closure remains blocked
+  until a maintainer applies the required remote issue changes.
+
 ## Checkpoint 9 (2026-07-14 — issue #78 closeout: deploy-ready assets + reproducible scripts)
 
 Status: completed, ready for PR against `main`.
