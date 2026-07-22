@@ -21,8 +21,9 @@
  *    (`spend_usd` is always the literal 0).
  */
 
-import { appendFileSync, existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
+import { createHash } from "node:crypto";
 import { scoreBrandVoice, type BrandSpec } from "../skills/brand-voice";
 import { humanizeSync } from "../skills/humanizer";
 import { auditSync } from "../compliance/generic";
@@ -40,6 +41,7 @@ import {
 
 /** Keys that look like an attempt to override the DRY_RUN safety flag from candidate/brief content. */
 const TAMPER_KEY_RE = /dry[_-]?run|force[_-]?live|allow[_-]?spend|skip[_-]?gate/i;
+const SENSITIVE_RE = /(?:sk-[a-z0-9_-]{12,}|api[_-]?key\s*[:=]|bearer\s+[a-z0-9._-]{12,}|\b\d{3}-\d{2}-\d{4}\b|\b\d{3}\.\d{3}\.\d{3}-\d{2}\b)/i;
 
 export interface SanitizedBrief {
   brief: PrototypeBriefInput;
@@ -88,6 +90,18 @@ export function sanitizeBriefInput(raw: unknown): SanitizedBrief {
     variant_count: typeof input.variant_count === "number" ? input.variant_count : undefined,
     before_after_disclaimer:
       typeof input.before_after_disclaimer === "boolean" ? input.before_after_disclaimer : undefined,
+    campaign_id: typeof input.campaign_id === "string" ? input.campaign_id : undefined,
+    evidence: Array.isArray(input.evidence) ? input.evidence.filter((v): v is string => typeof v === "string") : undefined,
+    evidence_required: input.evidence_required === true,
+    brand_version: typeof input.brand_version === "string" ? input.brand_version : undefined,
+    offer_version: typeof input.offer_version === "string" ? input.offer_version : undefined,
+    policy_version: typeof input.policy_version === "string" ? input.policy_version : undefined,
+    source_version: typeof input.source_version === "string" ? input.source_version : undefined,
+    scheduled_at: typeof input.scheduled_at === "string" ? input.scheduled_at : undefined,
+    calendar_conflicts: Array.isArray(input.calendar_conflicts) ? input.calendar_conflicts.filter((v): v is string => typeof v === "string") : undefined,
+    audience: typeof input.audience === "string" ? input.audience : undefined,
+    daily_budget_usd: typeof input.daily_budget_usd === "number" ? input.daily_budget_usd : undefined,
+    spend_ceiling_usd: typeof input.spend_ceiling_usd === "number" ? input.spend_ceiling_usd : undefined,
   };
 
   return {
@@ -119,13 +133,31 @@ export function evaluateCandidate(
       `compliance blocked: ${compliance.violations.map((v) => v.rule_id).join(", ")}`,
     );
   }
+  const brand_pass = brand_voice.notes.length === 0;
+  if (!brand_pass) reasons.push(`brand blocked: ${brand_voice.notes.join(", ")}`);
+  const humanization_pass = humanized.ai_tells_remaining === 0;
+  if (!humanization_pass) reasons.push("humanization left AI-writing tells");
+  const technicalReasons: string[] = [];
+  const image = candidate.mock_creative?.image;
+  const video = candidate.mock_creative?.video;
+  if (image && (image.width < 1080 || image.height < 1080)) technicalReasons.push("mock image below 1080x1080");
+  if (video && (video.width !== 1080 || video.height !== 1920 || video.duration_s > 90)) technicalReasons.push("mock video violates vertical platform specs");
+  const evidence_pass = brief.evidence_required !== true || Boolean(brief.evidence?.length);
+  if (!evidence_pass) reasons.push("missing required evidence; no claim may be fabricated");
+  const security_pass = !SENSITIVE_RE.test(JSON.stringify(candidate)) && !SENSITIVE_RE.test(JSON.stringify(brief));
+  if (!security_pass) reasons.push("secret or PII pattern detected");
   return {
     candidate_id: candidate.candidate_id,
     brand_voice,
     humanized,
     compliance,
+    brand_pass,
+    humanization_pass,
+    technical_specs: { pass: technicalReasons.length === 0, reasons: technicalReasons },
+    evidence_pass,
+    security_pass,
     diversity_key: `${candidate.angle}::${candidate.hook}`,
-    eligible: compliance.pass,
+    eligible: compliance.pass && brand_pass && humanization_pass && technicalReasons.length === 0 && evidence_pass && security_pass,
     reasons,
   };
 }
@@ -140,6 +172,7 @@ export function simulateDryRunPublish(
   candidate: PrototypeCandidate,
   eligible: boolean,
   client: string,
+  brief?: PrototypeBriefInput,
 ): DryRunSimulation {
   if (!eligible) {
     return {
@@ -148,10 +181,24 @@ export function simulateDryRunPublish(
       reason: "blocked by compliance judge — publish/ads simulation not attempted",
     };
   }
+  const conflicts = brief?.calendar_conflicts ?? [];
+  const requested = Math.max(0, brief?.daily_budget_usd ?? 0);
+  const ceiling = Math.max(0, brief?.spend_ceiling_usd ?? 0);
+  const budgetPass = requested <= ceiling;
+  if (conflicts.length > 0 || !budgetPass) return {
+    candidate_id: candidate.candidate_id,
+    ok: false,
+    reason: conflicts.length > 0 ? "calendar conflict" : "budget exceeds prototype ceiling",
+    budget: { requested_usd: requested, ceiling_usd: ceiling, pass: budgetPass },
+    calendar: { pass: conflicts.length === 0, conflicts },
+  };
   return {
     candidate_id: candidate.candidate_id,
     ok: true,
     simulated_draft_url: `https://prototype-sim.test/${client}/${candidate.candidate_id}`,
+    publish_payload: { channel: brief?.channel ?? "unknown", scheduled_at: brief?.scheduled_at ?? null, caption: candidate.caption },
+    budget: { requested_usd: requested, ceiling_usd: ceiling, pass: true },
+    calendar: { pass: true, conflicts: [] },
   };
 }
 
@@ -189,11 +236,11 @@ export function runPrototypeGate(
     opts.diversityThreshold,
   );
   const simulations = candidates.map((c, i) =>
-    simulateDryRunPublish(c, evaluations[i].eligible, brief.client),
+    simulateDryRunPublish(c, evaluations[i].eligible, brief.client, brief),
   );
 
   const reasons: string[] = [...tamper_reasons];
-  const anyEligible = evaluations.some((e) => e.eligible);
+  const anyEligible = evaluations.some((e, i) => e.eligible && simulations[i].ok);
   let verdict: PrototypeVerdict;
   if (tamper_detected) {
     verdict = "REJECT";
@@ -234,6 +281,15 @@ export function runPrototypeGate(
     tamper_reasons,
     reasons,
     checked_at: new Date().toISOString(),
+    expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+    input_fingerprint: fingerprintBrief(brief),
+    metrics: {
+      prototype_quality_score: evaluations.length === 0 ? 0 : evaluations.filter((e) => e.eligible).length / evaluations.length,
+      real_performance: null,
+      real_performance_reason: "not observable before live publication",
+      creative_cost_avoided_usd: verdict === "ACCEPT" ? 0 : candidates.length * 5,
+      rejection_before_spend: verdict === "REJECT",
+    },
   };
 
   if (opts.root) {
@@ -241,6 +297,24 @@ export function runPrototypeGate(
   }
 
   return result;
+}
+
+export function fingerprintBrief(brief: PrototypeBriefInput): string {
+  const relevant = { piece_id: brief.piece_id, campaign_id: brief.campaign_id, client: brief.client, channel: brief.channel, brief: brief.brief, brand_version: brief.brand_version, offer_version: brief.offer_version, policy_version: brief.policy_version, source_version: brief.source_version };
+  return createHash("sha256").update(JSON.stringify(relevant)).digest("hex");
+}
+
+/** Fail-closed freshness/drift check used immediately before a live effect. */
+export function validateFreshAccept(root: string, brief: PrototypeBriefInput, now = new Date()): { ok: boolean; reasons: string[] } {
+  const reasons: string[] = [];
+  try {
+    const result = JSON.parse(readFileSync(prototypeGatePath(root, brief.piece_id), "utf8")) as PrototypeGateResult;
+    if (result.verdict !== "ACCEPT") reasons.push("prototype verdict is not ACCEPT");
+    if (!result.winner_candidate_id) reasons.push("prototype ACCEPT has no winner");
+    if (!Number.isFinite(Date.parse(result.expires_at)) || Date.parse(result.expires_at) <= now.getTime()) reasons.push("prototype ACCEPT expired");
+    if (result.input_fingerprint !== fingerprintBrief(brief)) reasons.push("prototype invalidated by brand/offer/channel/policy/source drift");
+  } catch { reasons.push("prototype ACCEPT receipt missing or unreadable"); }
+  return { ok: reasons.length === 0, reasons };
 }
 
 export function prototypeGatePath(root: string, pieceId: string): string {

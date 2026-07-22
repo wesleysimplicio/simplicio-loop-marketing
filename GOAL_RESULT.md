@@ -193,3 +193,14 @@ The external train remains blocked because `simplicio-loop` has not published th
 candidate can pass the official embedded/daemon/remote evidence lane or be promoted to
 stable; local fixtures prove both compatible and breaking paths without representing them
 as upstream evidence.
+
+## Issue #96 — Prototype-First completion (2026-07-22)
+
+Implemented production enforcement for live effects: fresh ACCEPT fingerprints
+bind to piece/campaign, brand, offer, channel, policy, and source; human approvals
+expire; successful publish receipts replay exactly once. Prototype artifacts cover
+deterministic storyboard/copy/caption/mock-image/mock-video/landing variants,
+independent judge outputs, dry-run calendar/budget/payload evidence, zero spend
+authority, rejection savings, and nullable real-performance metrics. PR evidence
+reports typecheck/lint green, 99.12% touched statements, 1,257 decisions/s, and
+252 Playwright tests; full check retains documented environment limitations.
