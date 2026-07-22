@@ -27,9 +27,19 @@ and focused test and benchmark evidence. Missing upstream capabilities remain fa
 Status: blocked on authenticated, reviewed rewrites of remote issue bodies.
 
 Result:
-- Inventoried all accessible issues and added a fail-closed audit command with JSON/Markdown receipts.
-- Added unit, integration, regression, E2E, security and benchmark evidence; closure remains blocked
-  until a maintainer applies the required remote issue changes.
+ - Inventoried all accessible issues and added a fail-closed audit command with JSON/Markdown receipts.
+ - Added unit, integration, regression, E2E, security and benchmark evidence; closure remains blocked
+   until a maintainer applies the required remote issue changes.
+
+## Checkpoint 12 (2026-07-22 — issue #91 evolution and replication policy)
+
+Implemented the repository-owned `loop.marketing` evolution/replication policy:
+protected gates, rollout and receipt metadata, deterministic proposal/finding
+classification, bounded replication admission, stale-receipt rejection, loser
+cancellation, and canary rollback evaluation. Loop core remains the owner of
+scheduling, fences, effects, and completion. PR evidence reports 217 Node tests,
+253 E2E tests, 100% touched statements/functions/lines, 96.72% branches, and a
+10,000-candidate benchmark at 8.06 ms.
 
 ## Checkpoint 9 (2026-07-14 — issue #78 closeout: deploy-ready assets + reproducible scripts)
 

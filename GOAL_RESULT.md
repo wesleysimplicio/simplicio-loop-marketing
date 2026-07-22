@@ -66,6 +66,23 @@ evidence is recorded in `docs/audits/EVIDENCE.md`; issue #106 must remain open.
 
 ## Current run — 2026-07-11
 
+## Issue #91 — 2026-07-22
+
+Implemented the marketing-domain declarations for Continuous Evolution,
+Adaptive Architecture and Elastic Replication without introducing a coordinator,
+scheduler, queue, ledger or completion engine. The extension manifest and policy
+evaluators keep defects as findings, create deterministic deduplicated RFCs for
+evolution, protect compliance/safety, bind replication to finite budgets, accept
+only independently verified isolated candidates, reject stale/late receipts and
+automatically request rollback for regressive canaries.
+
+Evidence: focused coverage is 100% statements/functions/lines and 96.72% branch;
+the receipt hot path processed 10,000 candidates in 8.06ms; all 217 Node tests and
+253 Playwright tests passed. The upstream conformance modes remain a responsibility
+of the Loop core and its bridge work tracked by dependencies #87–#90; this change
+declares the required `extension_version` and `composed_graph_hash` receipt fields
+but does not counterfeit core receipts.
+
 All programming issues in the active backlog (#65–#79) were implemented or audited
 for executable scope using six parallel workers and integrated on branch
 `codex/finish-all-programming`. #78 has no executable acceptance criterion; #79 is
