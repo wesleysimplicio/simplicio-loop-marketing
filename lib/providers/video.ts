@@ -1,6 +1,7 @@
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
-import type { GenerationResult, VideoTask } from "./types";
+import type { GenerationResult, ProviderConstraint, VideoTask } from "./types";
+import { selectConstrainedProvider, type ProviderCapabilities } from "./constraints";
 import { loadProviderMatrix, videoRow } from "./matrix";
 import { MOCK_VIDEO_REGISTRY } from "./__mocks__/video";
 import { withRetry } from "./policy";
@@ -294,8 +295,16 @@ const REAL_VIDEO_REGISTRY: Record<string, () => VideoProvider> = {
   hyperframes: () => new HyperframesVideoProvider(),
 };
 
+export const VIDEO_PROVIDER_CAPABILITIES: Readonly<Record<string, ProviderCapabilities>> = {
+  higgsfield: { brand_strict: true, estimated_cost_usd: 0.12, estimated_latency_ms: 60_000, quality: "high" },
+  topview: { brand_strict: false, estimated_cost_usd: 0.06, estimated_latency_ms: 45_000, quality: "medium" },
+  wavespeed: { brand_strict: false, estimated_cost_usd: 0.04, estimated_latency_ms: 25_000, quality: "medium" },
+  hyperframes: { brand_strict: true, estimated_cost_usd: 0, estimated_latency_ms: 10_000, quality: "high" },
+};
+
 export interface VideoFactoryOptions {
   override?: string;
+  constraints?: ProviderConstraint;
 }
 
 export function getVideoProvider(
@@ -304,8 +313,15 @@ export function getVideoProvider(
 ): VideoProvider {
   const override = opts?.override;
   const fromMatrix = videoRow(task, loadProviderMatrix()).default;
-  const candidate = override ?? fromMatrix ?? "higgsfield";
+  const preferred = override ?? fromMatrix ?? "higgsfield";
   const registry = isDryRun() ? MOCK_VIDEO_REGISTRY : REAL_VIDEO_REGISTRY;
+  const candidate = selectConstrainedProvider(
+    preferred,
+    Object.keys(registry),
+    VIDEO_PROVIDER_CAPABILITIES,
+    opts?.constraints,
+  );
+  if (!candidate) throw new Error("video provider: no adapter satisfies declared constraints");
   const factory = registry[candidate] ?? registry["higgsfield"];
   if (!factory) {
     return (isDryRun() ? MOCK_VIDEO_REGISTRY : REAL_VIDEO_REGISTRY)["higgsfield"]();

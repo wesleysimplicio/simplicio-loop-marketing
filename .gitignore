@@ -8,6 +8,10 @@ data/
 test-results/
 playwright-report/
 coverage/
+coverage-all/
+coverage-issue100/
+reports/mutation/
+.stryker-tmp/
 *.log
 .DS_Store
 dist/

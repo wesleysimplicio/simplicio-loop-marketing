@@ -305,3 +305,11 @@ enforced coverage thresholds, workflow-integrity verification, failure-mutation
 coverage, provider regression checks, and Playwright system coverage. The merged
 package keeps conformance/benchmark scripts and now enforces 85% lines,
 statements, and functions plus 70% branches.
+
+## Checkpoint 17 (2026-07-22 — issue #100 quality expansion)
+
+Added constraint-aware image/video selection with property tests, deterministic
+four-platform caption fan-out, anonymized Portuguese real-content fixtures across
+five templates, and incremental Stryker mutation configuration. The PR records
+81.82% mutation score, 90% focused branch coverage, and measured caption/provider
+hot-path benchmarks.

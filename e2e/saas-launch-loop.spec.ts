@@ -88,6 +88,7 @@ function sampleDataFor(templateId: string): Record<string, string> {
     what_was_hard_or_rejected: "Rejected a hardcoded per-platform client approach after the second vendor migration took a week.",
     link_and_cta: "github.com/example/repo",
     direct_answer_to_the_question: "You can route publish/schedule/metrics per channel through a capability broker instead of hardcoding each platform's SDK — see lib/integrations/broker.ts for the pattern.",
+    technical_answer: "Resolve channel capabilities first, persist the selected adapter in the receipt, and reject a transition when no adapter satisfies the contract.",
     caveats_or_alternatives: "This assumes you're comfortable maintaining a routing matrix; a single-platform tool may not need it.",
     optional_mention_of_own_product_with_disclosure: "(Disclosure: I work on this project.) We open-sourced our version if useful.",
     hook_line_video: "Watch us gate a marketing piece live.",

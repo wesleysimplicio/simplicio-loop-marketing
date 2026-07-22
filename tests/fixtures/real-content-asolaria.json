@@ -1,0 +1,35 @@
+{
+  "piece_id": "asolaria-build-log-ptbr",
+  "text": "☀️ Hoje abrimos o diário de construção da Asolaria.\n\nEm vez de prometer resultado mágico, mostramos o que já funciona: o pipeline processou seis peças em modo de simulação, registrou cada decisão e bloqueou a publicação quando faltou evidência.\n\nO principal limite ainda é humano: toda adaptação em português passa por revisão nativa antes de ir ao ar. Transparência primeiro, automação depois.\n\nQuer acompanhar os próximos testes? Veja o relatório técnico completo.",
+  "data": {
+    "title": "Como construímos um loop de conteúdo auditável ☀️",
+    "hook_paragraph": "Automação sem evidência só acelera o erro.",
+    "problem_description": "Precisávamos produzir conteúdo sem perder o histórico de decisões entre etapas.",
+    "failure_or_tradeoff": "A primeira versão era rápida, mas não guardava receipts suficientes para uma auditoria.",
+    "solution_description": "Ligamos geração, revisão e compliance a um manifesto reproduzível por peça.",
+    "screenshot_or_metric": "Log revisado: 6 peças processadas em DRY_RUN; 1 bloqueio esperado por falta de evidência.",
+    "next_steps": "Medir a revisão humana antes de habilitar qualquer publicação.",
+    "cta_line": "Leia o relatório técnico e revise os receipts.",
+    "hook_line": "Automação sem evidência só acelera o erro. ☀️",
+    "key_insight": "Cada decisão precisa sobreviver à troca de ferramenta.",
+    "one_screenshot_or_metric": "Log revisado: 6 peças em DRY_RUN.",
+    "problem_statement": "Como manter o contexto entre geração, revisão e publicação?",
+    "on_screen_demo_or_metric": "Mostrar o terminal com 6 peças processadas e o bloqueio de compliance.",
+    "failure_or_limitation": "A revisão nativa ainda é manual.",
+    "direct_answer_to_the_question": "Persista um manifesto por peça e valide-o antes de publicar.",
+    "technical_answer": "Use estados explícitos e um receipt com hash para cada transição.",
+    "caveats_or_alternatives": "Uma fila simples resolve no início; distribua somente quando houver medição.",
+    "optional_mention_of_own_product_with_disclosure": "Sou parte da equipe da Asolaria; usamos esse desenho no nosso próprio motor.",
+    "what_it_does_plainly": "Um loop que cria conteúdo e conserva evidência de cada decisão.",
+    "how_its_built": "Roteamento por contrato, estados explícitos e gates antes da publicação.",
+    "architecture_or_metric_summary": "Execução revisada: 6 peças em DRY_RUN, com 1 bloqueio esperado.",
+    "what_was_hard_or_rejected": "Rejeitamos publicar automaticamente sem receipts e revisão nativa.",
+    "link_and_cta": "Leia o relatório técnico completo."
+  },
+  "golden": {
+    "pass": true,
+    "violations": [],
+    "warnings": [],
+    "template_ids": ["dev-article", "social-derivative", "video-script", "reddit-forum-answer", "launch-thread"]
+  }
+}
