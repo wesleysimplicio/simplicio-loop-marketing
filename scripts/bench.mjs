@@ -18,6 +18,7 @@ import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
 import { encodeToon, decodeToon } from "../lib/format/toon.ts";
+import { estimateTokens } from "../lib/providers/cost.ts";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, "..");
@@ -54,6 +55,7 @@ const encoded = encodeToon(payload);
 const results = [];
 results.push(timeit("toon.encode (25-piece batch)", () => encodeToon(payload), 2000));
 results.push(timeit("toon.decode (25-piece batch)", () => decodeToon(encoded), 2000));
+results.push(timeit("tokenizer.bpe (PT-BR caption)", () => estimateTokens("Olá 👋🏽 — conteúdo final para Instagram com ação e transparência.", "gpt-4o"), 500));
 
 results.push(
   timeit(

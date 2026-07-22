@@ -227,3 +227,21 @@ No OpenAI API key was available locally, and the official OpenAI docs checked on
 | `npm run typecheck` | pass | TS compile clean after mapper overlay |
 | `npx playwright test e2e/cli.spec.ts e2e/cli-extras.spec.ts e2e/generate-loop.spec.ts e2e/notion-sync.spec.ts e2e/observability.spec.ts` | pass | Focused regression pass during integration |
 | `npm run test:e2e` | pass | Full Playwright suite green: 119 passed |
+
+## Checkpoint 10 (2026-07-22 — issue #97 token-cost reconciliation)
+
+Status: completed, ready for PR.
+
+Result:
+- Replaced provider-response `chars/4` fallback with cached `js-tiktoken` BPE encoding resolution; unknown models explicitly use `o200k_base`, while tokenizer failures remain fail-open and observable as unavailable.
+- Preserved provider usage as authoritative and added source, encoding, fallback reason, stage, and correlation metadata without persisting prompts.
+- Added creative/compliance stage measurements and run/campaign reconciliation for predicted, actual, cache reuse, unavailable calls, and USD cost.
+- Added unit, integration, E2E regression, coverage, and tokenizer hot-path benchmark evidence.
+
+Validation:
+- `npm run typecheck` — pass.
+- `npm run lint` — pass.
+- `npm run test:node` — 214 passed.
+- `npx playwright test` — 252 passed after the expected E2E assertion update.
+- Focused c8 — 85.96% statements/lines overall for the token-cost modules.
+- `npm run bench` — tokenizer BPE 5,684 ops/sec, mean 0.1759 ms/op.

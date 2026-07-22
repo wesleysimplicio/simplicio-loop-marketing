@@ -79,3 +79,7 @@ node bin/marketing-engine.mjs doctor
 - Operator workers: `loop_journal.py` / `task_anchor.py` / `task_backlog.py`
   selftests OK (source checkout), `hooks/action_gate.py selftest` 15/15,
   `token_budget.py --self-test` OK.
+
+## Issue #97 — token-cost result (2026-07-22)
+
+Implemented BPE token fallback and generation cost reconciliation. Provider usage remains primary; fallback provenance and unavailable measurements are explicit; analytics never persist prompt bodies. Unit/integration/E2E tests cover provider usage, missing usage, unknown models, PT-BR/emoji, tokenizer failure, stage correlation, and prompt privacy. Measured focused coverage was 85.96% statements/lines, and the cached tokenizer benchmark measured 5,684 ops/sec (0.1759 ms/op).
