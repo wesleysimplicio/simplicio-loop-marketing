@@ -230,3 +230,11 @@ audit for parent `simplicio-loop#582`, including bounded read-only workflow
 execution, lint/typecheck/budget, enforced coverage, and the Playwright system
 suite. PR evidence records baseline SHA, failure injection, and residual risk;
 the gate enforces 85% lines/statements/functions and 70% branches.
+
+## Issue #99 result (2026-07-22)
+
+Implemented the production caption invariant boundary and property tests.
+Canonical four-platform fan-out now preserves platform keys, per-platform
+bounds, Unicode-safe truncation, and pillar tags; a near-real Portuguese piece
+is exercised through parsing, compliance, fan-out, regression, and observable
+E2E assertions. PR evidence records full focused coverage and a throughput gate.

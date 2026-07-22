@@ -13,6 +13,8 @@ All notable changes to this project are documented here. Format based on
 
 ### Added
 
+- **Issue #99 completion:** extracted canonical caption fan-out with deterministic fast-check invariants for platform keys, bounds, Unicode-safe truncation, and pillar-tag preservation; added a near-real pt-BR fixture through parsing, compliance, fan-out, and observable E2E assertions.
+
 - **Issue #93 Loop core extension binding:** publishes the pinned `simplicio.loop-extension/v1` marketing manifest, hashed context schemas, declarative stage/role/gate/resource bindings, core-owned budgets, receipt-derived views, and a fenced exactly-once effect adapter. Campaign startup rejects incompatible cores before creating work; doctor reports conformance.
 
 - **Issue #92 conformance certification:** canonical manifest/schema compatibility gate, deterministic manifest and graph hashes, fail-closed incompatible-core handling, exactly-once fenced fake-effect recovery/security coverage, clean-package E2E parity, and documented upgrade/canary/rollback evidence.
