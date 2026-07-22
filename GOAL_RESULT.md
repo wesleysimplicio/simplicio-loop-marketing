@@ -1,5 +1,16 @@
 # Goal Result
 
+## Issue #89 — 2026-07-22
+
+Status: **BLOCKED**. The current main branch lacks the #87 extension
+manifest/TypeScript bridge and the #88 dedicated role bindings on which #89
+explicitly depends. The upstream contract slice also states that installed
+extension conformance, the Marketing TypeScript bridge, and graph-hash
+receipts remain out of scope. A local coordinator, claim manager, ledger, or
+mock bridge would violate #89 rather than implement it. The inspected SHAs,
+reproduction commands, missing evidence, and unblock sequence are documented
+in `docs/evidence/issue-89-blocker.md`.
+
 ## Current run — 2026-07-11
 
 All programming issues in the active backlog (#65–#79) were implemented or audited

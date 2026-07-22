@@ -218,6 +218,17 @@ Commit on branch `claude/hyperframe-skills-S69hE`, push, open draft PR.
 
 ## Blockers
 
+### Issue #89 (2026-07-22) — BLOCKED on #87, #88, and upstream conformance
+
+Issue #89 was audited against Marketing `origin/main` at
+`61cf9e6a2f90d6c5743a7607d4460002c9295c46` and Loop at
+`b5ddbd6af76392198906e61d0911a236eca3bcf8`. The required Marketing manifest,
+TypeScript bridge, dedicated role registrations, and extension conformance
+entry point do not yet exist. Implementing local substitutes would violate
+the issue's explicit core-authority boundary and the instruction to implement
+only #89. Reproduction and unblock criteria are recorded in
+`docs/evidence/issue-89-blocker.md`; no success evidence was fabricated.
+
 No OpenAI API key was available locally, and the official OpenAI docs checked on 2026-05-18 did not list a `gpt-image-2` model name. The README visuals were therefore committed as repository-native SVG assets instead of generated API outputs.
 
 ## Validation History
