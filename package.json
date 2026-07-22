@@ -64,6 +64,8 @@
     "test:e2e": "playwright test",
     "test:e2e:headed": "playwright test --headed",
     "bench": "node --import tsx/esm scripts/bench.mjs",
+    "conformance": "node --import tsx/esm lib/cli/conformance.ts",
+    "bench:conformance": "node --import tsx/esm scripts/bench-conformance.mjs",
     "coverage": "c8 --reporter=text --reporter=html --reporter=json-summary --exclude \"tests/**\" --exclude \"e2e/**\" --exclude \"scripts/**\" --exclude \"lib/providers/__mocks__/**\" npm run test:node",
     "typecheck": "tsc --noEmit",
     "lint": "node scripts/lint-conventions.mjs",
