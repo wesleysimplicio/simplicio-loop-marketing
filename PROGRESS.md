@@ -1,5 +1,12 @@
 # Progress Log
 
+## Checkpoint 11 (2026-07-22 — issue #86 dependency audit)
+
+Status: blocked at audit time; no duplicate production implementation attempted.
+The audit recorded the missing registered extension and preserved the fail-closed
+unblock conditions. Later mainline integrations supersede the audited checkout
+state without changing the substantive conclusion.
+
 ## Checkpoint 10 (2026-07-22 — issue #103 binary state slice)
 
 Implemented native, versioned HBP/HBI envelopes and migrated the run ledger,
