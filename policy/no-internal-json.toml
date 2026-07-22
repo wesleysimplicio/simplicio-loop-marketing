@@ -1,0 +1,21 @@
+schema = "simplicio.no-internal-json/v1"
+version = 1
+scanner_version = "0.1.0"
+
+[[exceptions]]
+path = "tools/policy_scan.py"
+category = "scanner-self"
+owner = "runtime-governance"
+external_dependency = "scanner detection literals"
+justification = "The scanner contains the literals it must detect; this exact exception does not authorize other paths."
+review_date = "2026-07-22"
+removal_date = "2099-01-01"
+
+[[exceptions]]
+path = "tools/policy_scan.mjs"
+category = "scanner-self"
+owner = "runtime-governance"
+external_dependency = "scanner detection literals"
+justification = "The scanner contains the literals it must detect; this exact exception does not authorize other paths."
+review_date = "2026-07-22"
+removal_date = "2099-01-01"
