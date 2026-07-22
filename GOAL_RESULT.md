@@ -35,6 +35,13 @@ or embedded/daemon/remote conformance runner. The implementation therefore fails
 with `REQUIRED_CAPABILITY_MISSING`; merge/issue closure must wait for that upstream
 surface and a rerun of conformance in all three modes.
 
+## Issue #106 (2026-07-22)
+
+Implemented the reproducible issue inventory/audit and published receipts under `docs/audits/`.
+The fail-closed result is **BLOCKED**: 0 of 84 accessible issues currently meet the ten-section
+contract, and this worker has no authenticated remote-mutation capability. Test and benchmark
+evidence is recorded in `docs/audits/EVIDENCE.md`; issue #106 must remain open.
+
 ## Current run — 2026-07-11
 
 All programming issues in the active backlog (#65–#79) were implemented or audited
