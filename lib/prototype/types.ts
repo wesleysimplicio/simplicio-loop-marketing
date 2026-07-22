@@ -25,6 +25,19 @@ export interface PrototypeBriefInput {
   /** How many storyboard/copy candidates to generate. Clamped to [2, 5]. */
   variant_count?: number;
   before_after_disclaimer?: boolean;
+  campaign_id?: string;
+  /** Evidence supporting factual claims. Empty evidence fails closed when required. */
+  evidence?: string[];
+  evidence_required?: boolean;
+  brand_version?: string;
+  offer_version?: string;
+  policy_version?: string;
+  source_version?: string;
+  scheduled_at?: string;
+  calendar_conflicts?: string[];
+  audience?: string;
+  daily_budget_usd?: number;
+  spend_ceiling_usd?: number;
 }
 
 export interface StoryboardBeat {
@@ -40,6 +53,12 @@ export interface PrototypeCandidate {
   storyboard: StoryboardBeat[];
   copy: string;
   caption: string;
+  caption_set: Record<"instagram" | "tiktok" | "linkedin" | "x", string>;
+  mock_creative?: {
+    image: { kind: "mock-image"; width: number; height: number; alt: string };
+    video: { kind: "mock-video"; width: number; height: number; duration_s: number; shot_list: string[] };
+  };
+  landing_skeleton?: { headline: string; cta: string; sections: string[] };
 }
 
 export interface CandidateEvaluation {
@@ -47,6 +66,11 @@ export interface CandidateEvaluation {
   brand_voice: BrandVoiceScore;
   humanized: HumanizeResult;
   compliance: ComplianceReport;
+  brand_pass: boolean;
+  humanization_pass: boolean;
+  technical_specs: { pass: boolean; reasons: string[] };
+  evidence_pass: boolean;
+  security_pass: boolean;
   /** Normalized text signature used by the diversity check. */
   diversity_key: string;
   /** true only when the compliance judge passed (no blocking violations). */
@@ -61,6 +85,9 @@ export interface DryRunSimulation {
   ok: boolean;
   simulated_draft_url?: string;
   reason?: string;
+  publish_payload?: { channel: string; scheduled_at: string | null; caption: string };
+  budget?: { requested_usd: number; ceiling_usd: number; pass: boolean };
+  calendar?: { pass: boolean; conflicts: string[] };
 }
 
 export interface DiversityResult {
@@ -91,4 +118,13 @@ export interface PrototypeGateResult {
   tamper_reasons: string[];
   reasons: string[];
   checked_at: string;
+  expires_at: string;
+  input_fingerprint: string;
+  metrics: {
+    prototype_quality_score: number;
+    real_performance: null;
+    real_performance_reason: string;
+    creative_cost_avoided_usd: number;
+    rejection_before_spend: boolean;
+  };
 }

@@ -283,3 +283,9 @@ No OpenAI API key was available locally, and the official OpenAI docs checked on
 | `npm run typecheck` | pass | TS compile clean after mapper overlay |
 | `npx playwright test e2e/cli.spec.ts e2e/cli-extras.spec.ts e2e/generate-loop.spec.ts e2e/notion-sync.spec.ts e2e/observability.spec.ts` | pass | Focused regression pass during integration |
 | `npm run test:e2e` | pass | Full Playwright suite green: 119 passed |
+
+### Checkpoint — issue #96 completion (2026-07-22)
+
+Completed the previously deferred Prototype-First production boundary: mock image/video and landing/caption variants, independent brand/humanization/compliance/technical/evidence/security evaluation, calendar/budget publish simulation, expiring drift-bound ACCEPT receipts, prototype-vs-real metrics, publish enforcement, approval expiry, and exactly-once receipt replay. Added unit/integration/regression/security/E2E-compatible coverage and a 1,000-decision benchmark.
+
+Validation: focused coverage 99.12% statements / 82.31% branches (minimum 85% touched-code statement coverage met); benchmark 795.8ms for 1,000 decisions (1,257 decisions/s); 252 Playwright tests passed. `npm run check` reached all checks but reports pre-existing environment/tooling blocks (doctor cannot find browser/ffmpeg; claims audit names five unrelated watcher env declarations).

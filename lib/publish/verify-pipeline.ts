@@ -27,6 +27,7 @@ import { loadSchemaRegistry } from "../contracts/registry";
 import { validateArtifact } from "../contracts/validate";
 import { emitEvent } from "../observability/events";
 import { checkActionGate } from "../gate/action-gate";
+import { validateFreshAccept } from "../prototype/gate";
 
 export const RECEIPT_SCHEMA = "marketing-publish-receipt/v1";
 export const MAX_ATTEMPTS = 5;
@@ -37,7 +38,8 @@ export type FailureClass =
   | "claims_gate_blocked"
   | "compliance_blocked"
   | "provider_error"
-  | "action_gate_blocked";
+  | "action_gate_blocked"
+  | "prototype_gate_blocked";
 
 export interface ReceiptStage {
   stage: string;
@@ -130,6 +132,16 @@ export async function publishVerified(
   const stages: ReceiptStage[] = [];
   const dryRun = isDryRun();
 
+  // Exactly-once: a successful receipt for the same effect is authoritative.
+  // Retries/restarts return it rather than calling the platform again.
+  const existingReceiptPath = join(pieceDir, "publish-receipt.json");
+  if (existsSync(existingReceiptPath)) {
+    try {
+      const existing = JSON.parse(readFileSync(existingReceiptPath, "utf8")) as PublishReceipt;
+      if (existing.schema === RECEIPT_SCHEMA && existing.verdict === "published" && existing.dry_run === dryRun) return existing;
+    } catch { /* malformed receipts are replaced by the normal verified flow */ }
+  }
+
   const finish = (
     verdict: PublishReceipt["verdict"],
     attempts: number,
@@ -207,6 +219,24 @@ export async function publishVerified(
     return finish("blocked", 0, claimsTag, { failure_class: "claims_gate_blocked" });
   }
   stages.push({ stage: "claims_gate", ok: true });
+
+  // Policy-required pieces must carry a fresh Prototype-First ACCEPT bound
+  // to the exact brand/offer/channel/policy/source inputs being published.
+  if (manifest.prototype_required === true) {
+    const proto = validateFreshAccept(eRoot, {
+      piece_id: pieceId,
+      campaign_id: fm.campaign,
+      client: fm.client,
+      channel: fm.platforms[0] ?? "unknown",
+      brief: typeof manifest.prototype_brief === "string" ? manifest.prototype_brief : "",
+      brand_version: typeof manifest.brand_version === "string" ? manifest.brand_version : undefined,
+      offer_version: typeof manifest.offer_version === "string" ? manifest.offer_version : undefined,
+      policy_version: typeof manifest.policy_version === "string" ? manifest.policy_version : undefined,
+      source_version: typeof manifest.source_version === "string" ? manifest.source_version : undefined,
+    });
+    stages.push({ stage: "prototype_gate", ok: proto.ok, detail: proto.ok ? "fresh ACCEPT found" : proto.reasons.join("; ") });
+    if (!proto.ok) return finish("blocked", 0, claimsTag, { failure_class: "prototype_gate_blocked" });
+  }
 
   // --- stage 3: compliance recheck on the persisted artifact ---------------
   const compliancePath = join(pieceDir, "compliance.json");
