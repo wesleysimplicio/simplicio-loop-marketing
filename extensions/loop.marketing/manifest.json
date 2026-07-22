@@ -1,0 +1,28 @@
+{
+  "schema": "simplicio.loop-extension/v1",
+  "extension_id": "loop_marketing",
+  "name": "Loop Marketing",
+  "version": "1.0.0",
+  "domain": "marketing",
+  "requires_core": { "min_version": "3.38.0", "max_version": "3.38.99" },
+  "capabilities": {
+    "requires": ["extension_manifest.validate", "extension_receipts.read", "extension_reconcile"],
+    "provides": ["marketing.events.v1", "marketing.yool_projection.v1", "marketing.compliance.fail_closed"]
+  },
+  "source_adapters": [{ "adapter_id": "marketing_piece", "kind": "piece/v1" }],
+  "context_schemas": [
+    { "schema_id": "marketing-event", "version": "1.0.0", "migrations": [] },
+    { "schema_id": "marketing-loop-state", "version": "1.0.0", "migrations": [] }
+  ],
+  "gates": [
+    { "gate_id": "marketing_compliance", "severity": "fail_closed" },
+    { "gate_id": "human_publish_approval", "severity": "block" }
+  ],
+  "effect_handlers": [
+    { "effect_id": "marketing_publish", "idempotent": true, "requires_fence_token": true, "requires_receipt": true },
+    { "effect_id": "marketing_ads", "idempotent": true, "requires_fence_token": true, "requires_receipt": true },
+    { "effect_id": "marketing_comments", "idempotent": true, "requires_fence_token": true, "requires_receipt": true }
+  ],
+  "receipt_schemas": [{ "schema_id": "simplicio.loop-receipt/v1", "version": "1.0.0" }],
+  "feature_flags": [{ "flag_id": "dry_run", "default": true }]
+}

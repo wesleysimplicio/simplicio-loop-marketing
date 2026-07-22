@@ -23,6 +23,25 @@ Result:
 
 External blocker: Loop issue #558 does not yet publish a `simplicio.component-release/v1` asset, so a real upstream bump, three-mode official conformance, CI observation, and stable auto-promotion cannot honestly be demonstrated yet.
 
+## Checkpoint 10 (2026-07-22 — issue #87 extension contract)
+
+Status: implementation complete; upstream conformance remains blocked.
+
+Result:
+- Added the versioned `loop.marketing` manifest and lock, public-contract Python
+  capability probe, actionable version/hash/schema gating, deterministic core-receipt
+  reconciliation into disposable Yool projections, operator doctor JSON, ADR/ownership
+  matrix, recovery tests, and a numeric manifest-hash benchmark.
+- Critical missing core capabilities remain `BLOCKED`; optional execution modes alone
+  produce `DEGRADED`. No local coordinator, scheduler, queue, ledger, or completion
+  authority was introduced.
+- Upstream commit `b5ddbd6af76392198906e61d0911a236eca3bcf8` (v3.38.1) still does not publish
+  the requested TypeScript SDK, `probe_capabilities()`, receipt/reconciliation API, or
+  embedded/daemon/remote conformance runner. The doctor reports this as
+  `REQUIRED_CAPABILITY_MISSING`; those issue criteria cannot honestly be marked green.
+
+Validation: see `GOAL_RESULT.md` and the focused PR for issue #87.
+
 ## Checkpoint 9 (2026-07-14 — issue #78 closeout: deploy-ready assets + reproducible scripts)
 
 Status: completed, ready for PR against `main`.
