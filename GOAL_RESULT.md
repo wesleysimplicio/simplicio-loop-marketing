@@ -35,6 +35,13 @@ or embedded/daemon/remote conformance runner. The implementation therefore fails
 with `REQUIRED_CAPABILITY_MISSING`; merge/issue closure must wait for that upstream
 surface and a rerun of conformance in all three modes.
 
+## Issue #90 — Marketing reporting/findings extension (2026-07-22)
+
+Implemented the repository-owned reporting projection, deterministic finding
+fingerprints, completion audit, and focused unit/integration/regression/benchmark
+coverage. Upstream core receipt and remote-requery capabilities remain external;
+the extension fails closed when they are unavailable.
+
 ## Issue #106 (2026-07-22)
 
 Implemented the reproducible issue inventory/audit and published receipts under `docs/audits/`.
