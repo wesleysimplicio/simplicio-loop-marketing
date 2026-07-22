@@ -11,7 +11,8 @@ import {
   transitionStatus,
 } from "../pieces/store";
 import { parsePiece, serializePiece, type PieceFrontmatter } from "../pieces/frontmatter";
-import { runWithFallback } from "../router";
+import { logUsage, runWithFallback } from "../router";
+import { estimateTokenDetails } from "../providers/cost";
 import { getLLMProviderByName } from "../providers/llm";
 import { getImageProviderByName } from "../providers/image";
 import { getVideoProviderByName } from "../providers/video";
@@ -361,6 +362,7 @@ export async function processPiece(
       }
     }
     totalCost += r.cost_usd ?? 0;
+    logUsage({ task: tasks.image, stage: "creative", correlation_id: fm.id, piece_id: fm.id, provider, tokens: r.tokens ?? 0, source: "provider", cost_usd: r.cost_usd ?? 0, ok: r.ok }, usageLogPath);
   }
   if (tasks.video) {
     const row = videoRow(tasks.video, matrix);
@@ -384,6 +386,7 @@ export async function processPiece(
       }
     }
     totalCost += r.cost_usd ?? 0;
+    logUsage({ task: tasks.video, stage: "creative", correlation_id: fm.id, piece_id: fm.id, provider, tokens: r.tokens ?? 0, source: "provider", cost_usd: r.cost_usd ?? 0, ok: r.ok }, usageLogPath);
   }
 
   let qaReportPath: string | undefined;
@@ -432,6 +435,8 @@ export async function processPiece(
     client: fm.client,
   });
   const compliance = complianceResult.report;
+  const complianceMeasurement = estimateTokenDetails(`${captionText}\n${copy.result.output ?? ""}\n${piece.body}`);
+  logUsage({ task: "compliance", stage: "compliance", correlation_id: fm.id, piece_id: fm.id, provider: "local", tokens: complianceMeasurement.tokens, source: complianceMeasurement.fallback_reason?.startsWith("tokenizer_failed") ? "unavailable" : "tokenizer", encoding: complianceMeasurement.encoding, fallback_reason: complianceMeasurement.fallback_reason, cost_usd: 0, ok: true }, usageLogPath);
   const compliancePath = join(pieceDir, "compliance.json");
   writeFileSync(
     compliancePath,

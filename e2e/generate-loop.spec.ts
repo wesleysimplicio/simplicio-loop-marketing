@@ -77,11 +77,13 @@ test("generate loop processes a draft piece end-to-end with mocks under DRY_RUN"
       .split("\n")
       .map((line) => JSON.parse(line));
     expect(usage.length).toBeGreaterThanOrEqual(2);
-    expect(usage.map((line) => line.task)).toEqual(["script", "caption"]);
+    expect(usage.map((line) => line.stage)).toEqual(["script", "caption", "creative", "compliance"]);
     expect(usage.every((line) => typeof line.provider === "string")).toBe(true);
-    expect(usage.every((line) => typeof line.tokens_in === "number" && typeof line.tokens_out === "number")).toBe(true);
-    expect(usage.map((line) => line.prompt_format)).toEqual(["toon", "json"]);
+    expect(usage.slice(0, 2).every((line) => typeof line.tokens_in === "number" && typeof line.tokens_out === "number")).toBe(true);
+    expect(usage.slice(0, 2).map((line) => line.prompt_format)).toEqual(["toon", "json"]);
     expect(usage.every((line) => line.piece_id === "PIECE-test-001")).toBe(true);
+    expect(usage.every((line) => line.correlation_id === "PIECE-test-001")).toBe(true);
+    expect(usage.every((line) => !Object.hasOwn(line, "prompt"))).toBe(true);
     const updated = readFileSync(
       join(piecesDir, "PIECE-test-001.md"),
       "utf8",

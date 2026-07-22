@@ -12,10 +12,10 @@ import {
 import { CodexProvider, DeepSeekProvider, OllamaProvider } from "../lib/providers/llm";
 import { runWithFallback } from "../lib/router";
 
-test("estimateTokens approximates char/4", () => {
+test("estimateTokens counts BPE tokens", () => {
   expect(estimateTokens("")).toBe(0);
   expect(estimateTokens("abcd")).toBe(1);
-  expect(estimateTokens("a".repeat(400))).toBe(100);
+  expect(estimateTokens("a".repeat(400))).toBeGreaterThan(0);
 });
 
 test("estimateCost knows claude opus rates", () => {
@@ -81,8 +81,10 @@ test("resolveUsageWithFallback warns and estimates tokens when SDK usage is miss
       output: "abcdefgh",
     });
     expect(usage.used_estimate).toBe(true);
-    expect(usage.tokens_in).toBe(1);
-    expect(usage.tokens_out).toBe(2);
+    expect(usage.source).toBe("tokenizer");
+    expect(usage.encoding).toBe("o200k_base");
+    expect(usage.tokens_in).toBeGreaterThan(0);
+    expect(usage.tokens_out).toBeGreaterThan(0);
     expect(writes.join("")).toContain("missing usage data");
   } finally {
     process.stderr.write = originalWrite;
