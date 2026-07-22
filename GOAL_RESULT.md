@@ -83,6 +83,16 @@ of the Loop core and its bridge work tracked by dependencies #87–#90; this cha
 declares the required `extension_version` and `composed_graph_hash` receipt fields
 but does not counterfeit core receipts.
 
+## Issue #92 — extension conformance certification (2026-07-22)
+
+Implemented the repository-owned conformance matrix/oracle for `loop.marketing`.
+Compatible candidates produce stable manifest and composed-graph hashes;
+incompatible candidates are blocked before work. The packed-install path
+exercises declared modes, fail-closed gates, independent role bindings, and a
+fenced/idempotent fake publish effect. Upgrade remains manual and requires
+conformance plus canary evidence; rollback restores the last compatible pin.
+Release detection and ecosystem publication remain owned by issue #95.
+
 All programming issues in the active backlog (#65–#79) were implemented or audited
 for executable scope using six parallel workers and integrated on branch
 `codex/finish-all-programming`. #78 has no executable acceptance criterion; #79 is

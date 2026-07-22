@@ -41,6 +41,14 @@ scheduling, fences, effects, and completion. PR evidence reports 217 Node tests,
 253 E2E tests, 100% touched statements/functions/lines, 96.72% branches, and a
 10,000-candidate benchmark at 8.06 ms.
 
+## Checkpoint 13 (2026-07-22 — issue #92 extension conformance)
+
+Added the canonical extension conformance manifest/oracle, compatible-core
+gating, deterministic manifest/graph receipts, fail-closed modes and gates,
+fenced fake-effect recovery/security tests, packed-install E2E parity, and
+upgrade/canary/rollback documentation. Central release detection remains the
+responsibility of issue #95.
+
 ## Checkpoint 9 (2026-07-14 — issue #78 closeout: deploy-ready assets + reproducible scripts)
 
 Status: completed, ready for PR against `main`.
