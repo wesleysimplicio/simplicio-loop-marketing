@@ -79,3 +79,21 @@ node bin/marketing-engine.mjs doctor
 - Operator workers: `loop_journal.py` / `task_anchor.py` / `task_backlog.py`
   selftests OK (source checkout), `hooks/action_gate.py selftest` 15/15,
   `token_budget.py --self-test` OK.
+
+## Issue #90 — Marketing reporting/findings extension (2026-07-22)
+
+Implemented the marketing-domain projection required by Loop #557 without a
+parallel coordinator, ledger, scheduler, queue or completion engine. The
+extension validates and projects canonical receipts, maintains rebuildable
+timeline/finding/outbox views, sanitizes report content, deduplicates findings
+across runs, routes them to the owning repository through an injected tracker,
+and independently re-queries remote effects before asking the core to retain or
+revoke its terminal. Missing confirmation remains blocked; a late failure after
+`COMPLETE` requests `REGRESSED` from the core.
+
+Evidence: 219 Node tests and 253 Playwright tests passed. Focused touched-code
+coverage was 100% statements/lines, 93.33% functions and 84.61% branches. The
+5,000-operation sanitize+fingerprint benchmark measured p95 0.0433 ms. The
+repository aggregate `check` remains environmentally blocked by absent ffmpeg /
+the doctor's browser-cache probe and by five pre-existing watcher env claims
+missing from `.env.example`; typecheck, E2E and action-gate portions passed.

@@ -1,0 +1,27 @@
+{
+  "schema": "simplicio.loop-extension/v1",
+  "extension_id": "loop-marketing",
+  "name": "Loop Marketing",
+  "version": "1.0.0",
+  "domain": "marketing",
+  "requires_core": { "min_version": "1.0.0", "max_version": "1.99.99" },
+  "capabilities": {
+    "requires": ["core.receipts", "core.findings", "core.completion", "core.outbox"],
+    "provides": ["marketing.reporting", "marketing.finding-routing", "marketing.completion-audit"]
+  },
+  "role_bindings": [{
+    "role_id": "marketing.completion-auditor",
+    "specializes": "completion_auditor",
+    "required_capabilities": ["receipt.read", "remote.requery"]
+  }],
+  "gates": [{ "gate_id": "marketing.findings-tracked", "severity": "fail_closed" }],
+  "effect_handlers": [{
+    "effect_id": "marketing.tracker-report",
+    "idempotent": true,
+    "requires_fence_token": true,
+    "requires_receipt": true,
+    "compensation": "reconcile remote issue by finding fingerprint"
+  }],
+  "receipt_schemas": [{ "schema_id": "loop.marketing/receipt-extension", "version": "1.0.0" }],
+  "feature_flags": [{ "flag_id": "marketing.reporting.required", "default": true }]
+}

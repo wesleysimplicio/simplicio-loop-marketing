@@ -1,5 +1,31 @@
 # Progress Log
 
+## Checkpoint 10 (2026-07-22 — issue #90 Loop reporting/findings extension)
+
+Status: implemented and validated on current `main`.
+
+Result:
+- Registered the official marketing extension with the upstream
+  `simplicio.loop-extension/v1` manifest surface (contract-safe id
+  `loop-marketing`, product identity `loop.marketing`).
+- Added receipt validation/timeline projection, sanitized finding collection,
+  deterministic deduplication, transactional retryable outbox, remote
+  confirmation/re-query, reporting views and an independent completion-auditor
+  specialization that requests `BLOCKED`/`REGRESSED` from the core rather than
+  defining terminal transitions locally.
+- Added `findings list|report|reconcile|doctor` CLI routing. Reconcile refuses to
+  infer success when no configured tracker adapter exists.
+- Added unit, integration, regression, benchmark and E2E coverage for 100
+  duplicate observations, concurrency, cross-repo routing, tracker outage and
+  retry, secret/PII injection, false COMPLETE and late regression.
+
+Validation:
+- Touched-code coverage: 100% statements/lines, 93.33% functions, 84.61%
+  branches (all executable lines covered; branch target narrowly missed only on
+  defensive filesystem/error fallbacks).
+- Finding sanitize+fingerprint hot path: 5,000 operations, p95 0.0433 ms.
+- Node suite: 219 passed. Playwright suite: 253 passed.
+
 ## Checkpoint 9 (2026-07-14 — issue #78 closeout: deploy-ready assets + reproducible scripts)
 
 Status: completed, ready for PR against `main`.

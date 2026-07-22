@@ -29,6 +29,7 @@ Commands:
               journal, operator hooks (human on stderr, JSON on stdout)
   evidence    evidence gate <piece-id> (JSON, fail-closed)
   report      report build <piece-id> [--require-evidence] (mechanical markdown)
+  findings    findings list|report|reconcile|doctor (Loop receipt projections)
   campaign    Plan a piece queue from a CAMPAIGN.md brief, or review one
   anchor      Freeze/check/gate a campaign anchor with durable AC receipts
   new-piece   Create a new piece markdown from the template
@@ -697,6 +698,11 @@ function commandReport(args) {
   spawnTsx(script, args._.slice(2), hostRoot);
 }
 
+function commandFindings(args) {
+  const script = join(PACKAGE_ROOT, "lib", "cli", "findings.ts");
+  spawnTsx(script, args._.slice(1), resolveHostRoot(args));
+}
+
 function commandLoop(args) {
   const hostRoot = resolveHostRoot(args);
   const script = join(PACKAGE_ROOT, "lib", "cli", "loop.ts");
@@ -824,6 +830,9 @@ function main() {
       return;
     case "report":
       commandReport(args);
+      return;
+    case "findings":
+      commandFindings(args);
       return;
     case "campaign":
       commandCampaign(args);
