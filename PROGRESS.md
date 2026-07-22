@@ -1,5 +1,16 @@
 # Progress Log
 
+## Checkpoint 10 (2026-07-22 — issue #86 dependency audit)
+
+Status: blocked at audit time; no duplicate production implementation attempted.
+
+Result:
+- Audited issue #86, its ordered child issues #87–#96, and upstream dependencies #557/#568.
+- Recorded that the audited `61cf9e6` checkout lacked the registered extension contract and
+  therefore could not truthfully claim conformance, benchmarks, coverage, or completion.
+- Preserved fail-closed unblock conditions; later mainline integrations supersede the
+  checkout-state observation without changing the audit's substantive conclusion.
+
 ## Checkpoint 10 (2026-07-22 — issue #103 binary state slice)
 
 Implemented native, versioned HBP/HBI envelopes and migrated the run ledger,
