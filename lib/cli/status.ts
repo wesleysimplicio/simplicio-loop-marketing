@@ -47,7 +47,7 @@ export async function cliEntry(_argv: string[]): Promise<void> {
   for (const k of ["draft", "scheduled", "published", "measured", "review"]) {
     process.stdout.write(`  ${k.padEnd(10)} ${counts[k] ?? 0}\n`);
   }
-  const runs = readRuns(resolve(dataDir, "runs.jsonl"));
+  const runs = readRuns(resolve(dataDir, "runs.hbp"));
   const last24h = Date.now() - 24 * 3600 * 1000;
   const recentRuns = runs.filter((r) => Date.parse(r.timestamp) > last24h);
   const cost = recentRuns.reduce((acc, r) => acc + (r.cost_estimate_usd ?? 0), 0);

@@ -18,6 +18,7 @@ import {
 } from "../lib/loop/journal";
 import { savingsSummary } from "../lib/observability/savings";
 import { eventsSummary } from "../lib/observability/events";
+import { readHbp } from "../lib/formats/binary";
 import { readBoard } from "../lib/yool/board";
 
 function makeHost(): { host: string; ws: string; piecesDir: string } {
@@ -122,7 +123,7 @@ test("drain mode: advances good pieces, stalls the persistent failure, books sav
   for (const id of ["PIECE-loop-001", "PIECE-loop-002"]) {
     expect(readFileSync(join(piecesDir, `${id}.md`), "utf8")).toMatch(/status: scheduled/);
     expect(
-      existsSync(join(ws, "outputs", "acme", "2026-05-08", id, "manifest.json")),
+      existsSync(join(ws, "outputs", "acme", "2026-05-08", id, "manifest.hbi")),
     ).toBe(true);
   }
   // Failing piece stayed draft — never silently advanced.
@@ -160,7 +161,7 @@ test("drain mode: advances good pieces, stalls the persistent failure, books sav
     "badclient",
     "2026-05-08",
     "PIECE-loop-fail",
-    "journal.jsonl",
+    "journal.hbp",
   );
   expect(existsSync(pieceJournalPath)).toBe(false);
 
@@ -195,10 +196,10 @@ test("journal rows are mirrored into the piece output directory when it exists",
     "acme",
     "2026-05-08",
     "PIECE-loop-journal",
-    "journal.jsonl",
+    "journal.hbp",
   );
   expect(existsSync(pieceJournal)).toBe(true);
-  const rows = readFileSync(pieceJournal, "utf8").trim().split("\n").map((line) => JSON.parse(line));
+  const rows = readHbp<Record<string, unknown>>(pieceJournal);
   expect(rows).toHaveLength(1);
   expect(rows[0]).toMatchObject({
     item_id: "PIECE-loop-journal",

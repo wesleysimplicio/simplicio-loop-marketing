@@ -1,0 +1,14 @@
+product_name = "marketing-engine"
+stack = "node-ts"
+project_mode = "root"
+projects = []
+bootstrapped_at = "2026-05-18T21:17:10.654Z"
+starter_version = "0.3.2"
+cli = "@wesleysimplicio/llm-project-mapper"
+default_persona = "developer"
+existing_instruction_files = ["AGENTS.md", "CLAUDE.md", ".github/copilot-instructions.md"]
+preserved_user_files = ["README.md", "README.pt-BR.md"]
+init_must_ask = []
+init_must_infer = ["team", "domain", "vision_oneliner", "personas_beyond_dev"]
+init_must_merge = ["AGENTS.md", "CLAUDE.md", ".github/copilot-instructions.md"]
+read_only_globs = ["**/*.razor", "**/*.cs", "**/*.csproj", "**/*.sln", "package.json", "pnpm-lock.yaml", "yarn.lock", "package-lock.json", "**/*.py", "**/*.go", "**/*.rs", "**/*.java", "**/*.kt", "**/*.dart", "**/*.php", "**/*.rb"]

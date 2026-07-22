@@ -11,20 +11,23 @@ contracts. The policy is recorded in config/json-boundaries.toml.
 - Provider/toolchain JSON is isolated at an exact boundary and never becomes the
   domain source of truth.
 
-Baseline mode fails on unclassified paths, invalid/expired exceptions, and
-reports classified internal paths as migration work. Registry entries are exact
-paths: globs, duplicate paths, missing ownership/reason/target/review fields, and
-expired review dates fail closed. Strict mode also fails while any classified
-migration remains. Release publication runs strict mode, so the current issue
-#103 migration backlog cannot be mistaken for a passing quality gate.
+The first production slice uses a checksummed, versioned 16-byte envelope:
+`HBP\0` frames form append-only streams and `HBI\0` holds one atomic indexed
+snapshot. Payloads use Node's typed structured-clone serializer; bounds and a
+checksum are validated before deserialization. HBI writes use a same-directory
+temporary file, `fsync`, and atomic rename.
 
-The scanner emits Markdown rather than creating internal JSON evidence. It can
-also scan staged/generated roots through its library API; tests use that path to
-prove an unclassified generated JSON file blocks the gate. HBP/HBI conformance,
-legacy upgrade/rollback, installed-package compatibility, and cross-repository
-tests remain blocked on the production migration tracked by #103 and released
-Runtime contracts. This quality change deliberately does not invent a custom
-binary layout or silently treat those unavailable checks as passing.
+Legacy JSON is accepted only by the explicit one-shot migrator in
+`lib/formats/migrate.ts`. It has a 64 MiB input bound, dry-run mode, immutable
+`.bak` preservation, staging-file verification, atomic publication and
+idempotent resume. Runtime readers never fall back to JSON.
+
+Implemented ownership:
+
+- run state: `data/runs.hbp`;
+- global and per-piece attempt journals: `journal.hbp`;
+- piece manifest/index: `manifest.hbi`;
+- mapper bootstrap configuration: `.starter-meta.toml`.
 
 Related work:
 

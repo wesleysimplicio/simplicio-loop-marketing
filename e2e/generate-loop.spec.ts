@@ -11,6 +11,8 @@ import { join, resolve } from "node:path";
 import { cliEntry, runGenerateLoop } from "../lib/cli/generate";
 import { serializePiece, type PieceFrontmatter } from "../lib/pieces/frontmatter";
 import { resetMatrixCache } from "../lib/providers/matrix";
+import { readHbp } from "../lib/formats/binary";
+import { readHbi } from "../lib/formats/binary";
 
 test("generate loop processes a draft piece end-to-end with mocks under DRY_RUN", async () => {
   process.env.DRY_RUN = "true";
@@ -45,13 +47,11 @@ test("generate loop processes a draft piece end-to-end with mocks under DRY_RUN"
     expect(summary.inspected).toBe(1);
     expect(summary.advanced).toBe(1);
     const pieceDir = resolve(outputsDir, "acme", "2026-05-08", "PIECE-test-001");
-    expect(existsSync(join(pieceDir, "manifest.json"))).toBe(true);
+    expect(existsSync(join(pieceDir, "manifest.hbi"))).toBe(true);
     expect(existsSync(join(pieceDir, "script.md"))).toBe(true);
     expect(existsSync(join(pieceDir, "captions.json"))).toBe(true);
     expect(existsSync(join(pieceDir, "compliance.json"))).toBe(true);
-    const manifest = JSON.parse(
-      readFileSync(join(pieceDir, "manifest.json"), "utf8"),
-    );
+    const manifest = readHbi<Record<string, any>>(join(pieceDir, "manifest.hbi"));
     expect(manifest.piece_id).toBe("PIECE-test-001");
     expect(manifest.providers.llm).toBeDefined();
     expect(manifest.prompts.script).toContain("Launch our new product.");
@@ -63,10 +63,7 @@ test("generate loop processes a draft piece end-to-end with mocks under DRY_RUN"
     expect(typeof manifest.cost_estimate_usd).toBe("number");
     expect(existsSync(manifest.compliance_report_path)).toBe(true);
     expect(existsSync(manifest.qa_report_path)).toBe(true);
-    const runsLog = readFileSync(join(workspaceRoot, "data", "runs.jsonl"), "utf8")
-      .trim()
-      .split("\n")
-      .map((line) => JSON.parse(line));
+    const runsLog = readHbp<Record<string, any>>(join(workspaceRoot, "data", "runs.hbp"));
     expect(runsLog).toHaveLength(1);
     expect(runsLog[0]).toMatchObject({
       piece_id: "PIECE-test-001",
@@ -219,9 +216,7 @@ test("cliEntry honors MAX_ITER when reading host .marketing-engine pieces", asyn
     const draftCount = [first, second].filter((text) => /status: draft/.test(text)).length;
     expect(scheduledCount).toBe(1);
     expect(draftCount).toBe(1);
-    const runsLog = readFileSync(join(workspaceRoot, "data", "runs.jsonl"), "utf8")
-      .trim()
-      .split("\n");
+    const runsLog = readHbp(join(workspaceRoot, "data", "runs.hbp"));
     expect(runsLog).toHaveLength(1);
   } finally {
     delete process.env.MAX_ITER;
