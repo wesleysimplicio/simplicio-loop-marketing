@@ -79,3 +79,9 @@ node bin/marketing-engine.mjs doctor
 - Operator workers: `loop_journal.py` / `task_anchor.py` / `task_backlog.py`
   selftests OK (source checkout), `hooks/action_gate.py selftest` 15/15,
   `token_budget.py --self-test` OK.
+
+## Issue #96 — Prototype-First completion (2026-07-22)
+
+Implemented the production enforcement omitted by the initial #96 commit. Policy-required live effects now require a fresh ACCEPT fingerprinted to piece/campaign, brand, offer, channel, policy, and source; human approvals expire; successful publish receipts are replayed exactly once. Prototype artifacts include three-or-more deterministic storyboard/copy/caption/mock-image/mock-video/landing variants, independent judge outputs, dry-run calendar/budget/payload evidence, zero spend authority, rejection savings, and separate nullable real-performance metrics.
+
+Evidence: `npm run typecheck` and `npm run lint` pass; focused c8 reports 99.12% statements; benchmark reports 1,257 decisions/s; Playwright reports 252 passed. Full `npm run check` is limited by missing browser/ffmpeg detection and unrelated pre-existing watcher env claims.

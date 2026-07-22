@@ -127,6 +127,21 @@ export function generateCandidates(
       storyboard: storyboardFor(angle, brief),
       copy: copyFor(angle, hook, brief),
       caption: captionFor(angle, brief),
+      caption_set: {
+        instagram: `${captionFor(angle, brief)}\nLearn more in bio.`,
+        tiktok: `${captionFor(angle, brief)}\nSee how it works.`,
+        linkedin: `${captionFor(angle, brief)}\nWhat would you change?`,
+        x: `${captionFor(angle, brief)}\nRead more.`,
+      },
+      mock_creative: {
+        image: { kind: "mock-image", width: 1080, height: 1080, alt: `${angle} preview for ${brief.client}` },
+        video: { kind: "mock-video", width: 1080, height: 1920, duration_s: 30, shot_list: storyboardFor(angle, brief).map((beat) => beat.visual) },
+      },
+      landing_skeleton: {
+        headline: hook,
+        cta: `Learn more about ${brief.client}`,
+        sections: ["problem", "evidence", "solution", "call-to-action"],
+      },
     });
   }
   return candidates;
