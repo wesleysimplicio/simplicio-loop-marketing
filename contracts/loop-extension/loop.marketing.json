@@ -1,0 +1,13 @@
+{
+  "schema": "simplicio.loop-extension/v1",
+  "extension_id": "loop.marketing",
+  "name": "Marketing Engine",
+  "version": "1.0.0",
+  "domain": "marketing",
+  "requires_core": ">=1.0.0 <2.0.0",
+  "capabilities": {
+    "requires": ["core.stage-graph/v1", "core.receipts/v1", "core.effects/fenced-v1"],
+    "provides": ["marketing.piece/v1", "marketing.pipeline/v1"]
+  },
+  "note": "The executable manifest is exported by lib/extension/marketing-extension.ts. This installation descriptor is consumed and composed by Loop core; Marketing does not materialize a graph itself."
+}

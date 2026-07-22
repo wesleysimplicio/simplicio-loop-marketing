@@ -1,3 +1,12 @@
+## Issue #94 result (2026-07-22)
+
+**BLOCKED / NEEDS-IMPLEMENTATION.** The shadow `loop.marketing` manifest, core-context handler
+boundary, deterministic worker, fenced effect helper, tests, coverage and benchmark are green. The
+mandatory upstream `simplicio.loop-extension/v1` loader/composer/SDK and conformance artifacts are
+still unavailable while `simplicio-loop#557` is open. Therefore the legacy compatibility runner was
+not removed, no parallel Marketing scheduler was invented, and issue #94 must not be closed or
+merged as complete. Evidence and rollback details: `docs/evidence/issue-94-overlays.md`.
+
 # Goal Result
 
 ## Current run — 2026-07-11
