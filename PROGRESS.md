@@ -321,3 +321,10 @@ four-platform caption fan-out, anonymized Portuguese real-content fixtures acros
 five templates, and incremental Stryker mutation configuration. The PR records
 81.82% mutation score, 90% focused branch coverage, and measured caption/provider
 hot-path benchmarks.
+
+## Checkpoint 18 (2026-07-22 — doctor contract regression)
+
+Restored the issue #93 extension conformance payload in `buildDoctorReport`
+without replacing the existing release-train payload. The merged, typed doctor
+contract is covered by the focused doctor and extension Playwright specs;
+typecheck and lint are clean.

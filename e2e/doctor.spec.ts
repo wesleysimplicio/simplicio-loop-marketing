@@ -17,6 +17,15 @@ test("doctor report on an empty host is healthy and contract-valid", () => {
   expect(report.loop.journal_present).toBe(false);
   expect(report.savings.chain_ok).toBe(true); // empty chain is intact
   expect(report.operator.python_workers).toBe("absent");
+  expect(report.release_train.installed).toBe(report.release_train.core_version);
+  expect(report.extension).toMatchObject({
+    id: "loop_marketing",
+    core_version: "3.38.1",
+    compatible: true,
+    budget_authority: "core",
+    conformance: "pass",
+  });
+  expect(report.extension.capabilities).toContain("marketing.campaign");
   expect(validateArtifact(report, loadSchemaRegistry()).errors).toEqual([]);
 });
 
