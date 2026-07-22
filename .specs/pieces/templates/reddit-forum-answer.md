@@ -10,6 +10,7 @@ requires_evidence:
 ```
 
 {{direct_answer_to_the_question}}
+\n{{technical_answer}}
 <!-- EVIDENCE REQUIRED: the technical_answer field must contain a real,
      specific answer (config, snippet, reasoning). If generation could not
      produce a specific answer, render

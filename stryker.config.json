@@ -1,0 +1,31 @@
+{
+  "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
+  "mutate": [
+    "lib/router.ts:6-29",
+    "lib/providers/matrix.ts:213-232"
+  ],
+  "testRunner": "command",
+  "commandRunner": {
+    "command": "MKT_MUTATION=true node --import tsx/esm --test tests/unit/router-properties.test.ts tests/unit/providers-matrix.test.ts"
+  },
+  "checkers": [
+    "typescript"
+  ],
+  "tsconfigFile": "tsconfig.json",
+  "coverageAnalysis": "off",
+  "reporters": [
+    "clear-text",
+    "progress",
+    "json"
+  ],
+  "jsonReporter": {
+    "fileName": "reports/mutation/mutation.json"
+  },
+  "thresholds": {
+    "high": 80,
+    "low": 70,
+    "break": 70
+  },
+  "tempDirName": ".stryker-tmp",
+  "concurrency": 1
+}

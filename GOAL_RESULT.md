@@ -214,6 +214,15 @@ tests cover provider usage, missing usage, unknown models, PT-BR/emoji,
 tokenizer failure, stage correlation, and prompt privacy. PR evidence reports
 85.96% focused statement/line coverage and 5,684 cached-tokenizer ops/s.
 
+## Issue #100 — 2026-07-22
+
+Implemented the correctness expansion without runtime dependencies: fail-closed
+creative adapter constraints, property-tested caption fan-out, anonymized
+Portuguese golden compliance fixtures across authentic templates, and an
+incremental Stryker mutation gate. PR evidence records unit, integration,
+regression, benchmark, system/E2E, focused coverage, and mutation results; no
+provider calls or live publication occurred.
+
 ## Issue #102 result (2026-07-22)
 
 Implemented the blocking CI quality/coverage gate and reproducible integrity
