@@ -18,6 +18,9 @@ import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
 import { encodeToon, decodeToon } from "../lib/format/toon.ts";
+import { fanOutCaptions } from "../lib/content/captions.ts";
+import { selectConstrainedProvider } from "../lib/providers/constraints.ts";
+import { IMAGE_PROVIDER_CAPABILITIES } from "../lib/providers/image.ts";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, "..");
@@ -54,6 +57,8 @@ const encoded = encodeToon(payload);
 const results = [];
 results.push(timeit("toon.encode (25-piece batch)", () => encodeToon(payload), 2000));
 results.push(timeit("toon.decode (25-piece batch)", () => decodeToon(encoded), 2000));
+results.push(timeit("caption.fan-out (4 platforms)", () => fanOutCaptions("Uma atualização técnica com evidência. ".repeat(20), ["instagram", "tiktok", "linkedin", "x", "ig"]), 10_000));
+results.push(timeit("provider.constraint-selection", () => selectConstrainedProvider("wavespeed", Object.keys(IMAGE_PROVIDER_CAPABILITIES), IMAGE_PROVIDER_CAPABILITIES, { brand_strict: true, quality_min: "high" }), 25_000));
 
 results.push(
   timeit(

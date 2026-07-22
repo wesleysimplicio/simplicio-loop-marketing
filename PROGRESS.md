@@ -227,3 +227,12 @@ No OpenAI API key was available locally, and the official OpenAI docs checked on
 | `npm run typecheck` | pass | TS compile clean after mapper overlay |
 | `npx playwright test e2e/cli.spec.ts e2e/cli-extras.spec.ts e2e/generate-loop.spec.ts e2e/notion-sync.spec.ts e2e/observability.spec.ts` | pass | Focused regression pass during integration |
 | `npm run test:e2e` | pass | Full Playwright suite green: 119 passed |
+
+## 2026-07-22 — Issue #100 quality expansion
+
+- Added constraint capability profiles and fail-closed selection for image/video factories, plus fast-check properties over arbitrary constraint combinations.
+- Added deterministic, alias-normalizing Instagram/TikTok/LinkedIn/X caption fan-out with property coverage for duplicates, empty sets, length caps, and platform CTAs.
+- Added an anonymized realistic Portuguese Asolaria fixture and golden integration coverage through generic compliance and all five authentic-content templates; corrected the Reddit template so its declared technical evidence is actually rendered.
+- Added Stryker TypeScript mutation configuration scoped incrementally to router/matrix resolution. Measured score: **81.82%** (18 killed, 4 survived, 21 compile errors), above the 70% gate.
+- Measured new-module coverage: 100% statements/lines/functions and 90% branches combined. Full merged lib coverage: 86.63% statements/lines, 85.58% functions, 71.96% branches.
+- Hot-path benchmark: caption fan-out 485,728 ops/sec (0.0021 ms/op); constraint selection 1,127,292 ops/sec (0.0009 ms/op).

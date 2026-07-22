@@ -37,6 +37,11 @@ import {
 } from "../../lib/providers/matrix.ts";
 import type { ImageTask, LLMTask, VideoTask } from "../../lib/providers/types";
 
+// Mutation runs execute this file once per mutant. Ten generated cases per
+// property retain seed diversity while keeping the incremental gate practical;
+// normal CI continues to use fast-check's full default run count.
+if (process.env.MKT_MUTATION === "true") fc.configureGlobal({ numRuns: 10 });
+
 const LLM_TASKS: LLMTask[] = [
   "orchestration",
   "code",

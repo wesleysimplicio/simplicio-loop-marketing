@@ -1,6 +1,7 @@
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
-import type { GenerationResult, ImageTask } from "./types";
+import type { GenerationResult, ImageTask, ProviderConstraint } from "./types";
+import { selectConstrainedProvider, type ProviderCapabilities } from "./constraints";
 import { imageRow, loadProviderMatrix } from "./matrix";
 import { MOCK_IMAGE_REGISTRY } from "./__mocks__/image";
 import { withRetry } from "./policy";
@@ -326,8 +327,16 @@ const REAL_IMAGE_REGISTRY: Record<string, () => ImageProvider> = {
   wavespeed: () => new WavespeedProvider(),
 };
 
+export const IMAGE_PROVIDER_CAPABILITIES: Readonly<Record<string, ProviderCapabilities>> = {
+  "gpt-image": { brand_strict: true, estimated_cost_usd: 0.04, estimated_latency_ms: 15_000, quality: "high" },
+  higgsfield: { brand_strict: true, estimated_cost_usd: 0.08, estimated_latency_ms: 30_000, quality: "high" },
+  topview: { brand_strict: false, estimated_cost_usd: 0.03, estimated_latency_ms: 20_000, quality: "medium" },
+  wavespeed: { brand_strict: false, estimated_cost_usd: 0.003, estimated_latency_ms: 8_000, quality: "medium" },
+};
+
 export interface ImageFactoryOptions {
   override?: string;
+  constraints?: ProviderConstraint;
 }
 
 export function getImageProvider(
@@ -336,8 +345,15 @@ export function getImageProvider(
 ): ImageProvider {
   const override = opts?.override;
   const fromMatrix = imageRow(task, loadProviderMatrix()).default;
-  const candidate = override ?? fromMatrix ?? "gpt-image";
+  const preferred = override ?? fromMatrix ?? "gpt-image";
   const registry = isDryRun() ? MOCK_IMAGE_REGISTRY : REAL_IMAGE_REGISTRY;
+  const candidate = selectConstrainedProvider(
+    preferred,
+    Object.keys(registry),
+    IMAGE_PROVIDER_CAPABILITIES,
+    opts?.constraints,
+  );
+  if (!candidate) throw new Error("image provider: no adapter satisfies declared constraints");
   const factory = registry[candidate] ?? registry["gpt-image"];
   if (!factory) {
     return (isDryRun() ? MOCK_IMAGE_REGISTRY : REAL_IMAGE_REGISTRY)["gpt-image"]();

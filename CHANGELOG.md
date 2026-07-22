@@ -13,6 +13,7 @@ All notable changes to this project are documented here. Format based on
 
 ### Added
 
+- **Quality expansion** (issue #100): constraint-aware image/video adapter selection with property-based invariants, deterministic four-platform caption fan-out, an anonymized Portuguese golden compliance fixture exercised through all five authentic-content templates, and an incremental Stryker mutation gate for router/matrix logic.
 - **4-layer DoD gate** (issues #99, hub simplicio-loop#579): [`DOD.md`](./DOD.md) documents a correctness-beyond-coverage layer on top of the existing 7 pillars — property-based testing (`fast-check`) for resolution/fan-out logic, real-content fixtures, a PR invariant-review question, and asserting on observable results instead of a reported status. `tests/unit/router-properties.test.ts` is the reference implementation, generating provider/override/env combinations against `lib/router.ts` and asserting determinism, override precedence, and no env-noise leakage. `.github/PULL_REQUEST_TEMPLATE.md` gained the invariant-check and observable-result-evidence sections.
 - **Asolaria narrative package** (issue #78, repo-local scope only): canonical [SIMPLICIO-MAP-OF-MAPS.md](./SIMPLICIO-MAP-OF-MAPS.md), [REDUCTIONS.md](./REDUCTIONS.md), and the bounded campaign artifact set under `.specs/strategy/campaigns/2026-Q3-asolaria-on-metal/` (`CAMPAIGN.md`, `HYPOTHESIS.md`, `ROUTING.md`, `LANDING.md`, `DEMO.md`, `CASE-STUDY.md`) plus a fixture-backed unit test verifying required docs, links, and explicit external dependencies.
 - **Asolaria package, deploy-ready follow-up** (issue #78 closeout): two self-contained static pages (`site/simplicio-on-metal/index.html`, `site/asolaria-integration/index.html`); a reproducible 5-iteration orientation-cost demo (`scripts/demo-asolaria-loop.mjs`, `npm run demo:asolaria`) writing `.specs/strategy/campaigns/2026-Q3-asolaria-on-metal/DEMO-RUN.md`; and a fail-closed reduction proof-trail benchmark (`scripts/reductions-benchmark.mjs`, `npm run benchmark:reductions`) writing `docs/evidence/reductions-benchmark.json`. All narrative docs cross-linked to the new artifacts; new unit tests spawn both scripts in `--check` mode.
@@ -343,4 +344,3 @@ Autonomous SaaS marketing loop across social networks and dev communities (epic 
 - Remotion video explainer (PT-BR + EN) under `video/`.
 - Bilingual README + SETUP + CONTRIBUTING + AGENTS.md (charter) + Apache-2.0
   LICENSE.
-
