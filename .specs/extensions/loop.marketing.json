@@ -1,0 +1,46 @@
+{
+  "schema": "simplicio.loop-extension/v1",
+  "extension_id": "loop.marketing",
+  "name": "Marketing",
+  "version": "0.4.0",
+  "domain": "marketing",
+  "requires_core": ">=1.0.0 <2.0.0",
+  "protocols": { "extension": "simplicio.loop-extension/v1" },
+  "conformance_profile": "marketing-full/v1",
+  "modes": ["embedded", "daemon", "remote"],
+  "source_adapters": ["campaign", "piece", "brief"],
+  "context_schemas": ["Campaign", "Piece", "Channel", "BrandContext"],
+  "stage_overlays": [
+    { "id": "marketing.intake", "operation": "insert_after", "hook": "intake", "handler": "campaign-intake" },
+    { "id": "marketing.copy", "operation": "insert_after", "hook": "executing", "handler": "copy" },
+    { "id": "marketing.creative", "operation": "insert_after", "hook": "executing", "handler": "creative" },
+    { "id": "marketing.brand", "operation": "refine", "hook": "validating", "handler": "brand-review" },
+    { "id": "marketing.compliance", "operation": "refine", "hook": "validating", "handler": "compliance" },
+    { "id": "marketing.delivery", "operation": "insert_before", "hook": "delivering", "handler": "publish" },
+    { "id": "marketing.metrics", "operation": "insert_after", "hook": "reporting", "handler": "metrics" }
+  ],
+  "role_bindings": [
+    { "role": "planner", "capabilities": ["campaign:read", "plan:write"] },
+    { "role": "copy", "capabilities": ["brief:read", "copy:write"] },
+    { "role": "creative", "capabilities": ["brief:read", "creative:write"] },
+    { "role": "brand-reviewer", "capabilities": ["copy:read", "brand:approve"] },
+    { "role": "compliance-reviewer", "capabilities": ["artifact:read", "compliance:approve"] },
+    { "role": "delivery", "capabilities": ["approval:read", "effect:request"] },
+    { "role": "metrics", "capabilities": ["receipt:read", "metrics:write"] },
+    { "role": "completion-auditor", "capabilities": ["evidence:read", "completion:audit"] }
+  ],
+  "gates": [
+    { "id": "brand", "severity": "blocking", "fail_closed": true },
+    { "id": "compliance", "severity": "blocking", "fail_closed": true },
+    { "id": "approval", "severity": "blocking", "fail_closed": true }
+  ],
+  "effect_handlers": [
+    { "id": "publish", "requires": ["authorization", "idempotency_key", "fence_token", "receipt"], "requery": true },
+    { "id": "ads", "requires": ["authorization", "idempotency_key", "fence_token", "receipt"], "requery": true },
+    { "id": "comments", "requires": ["authorization", "idempotency_key", "fence_token", "receipt"], "requery": true }
+  ],
+  "resource_classes": ["llm", "media", "cpu", "upload", "social-api"],
+  "budgets": { "cpu_quota_pct": 60, "disk_quota_mb": 100, "timeout_s": 300 },
+  "defaults": { "dry_run": true },
+  "forbidden_authorities": ["coordinator", "scheduler", "queue", "ledger", "completion-engine"]
+}

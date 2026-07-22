@@ -1,5 +1,20 @@
 # Progress Log
 
+## Checkpoint 10 (2026-07-22 — issue #92 extension conformance)
+
+Status: implemented, pending central CI evidence.
+
+Result:
+- Added the canonical `simplicio.loop-extension/v1` manifest for `loop.marketing`,
+  including core ownership boundaries, modes, independent roles, fail-closed gates,
+  governed effects, resource budgets, and DRY_RUN default.
+- Added a deterministic conformance oracle with version rejection, manifest/graph
+  hashes, filesystem and data-leak guards, and an exactly-once fake effect server.
+- Added clean-package E2E parity, unit/integration/security/recovery coverage, a numeric
+  p50/p95/p99 benchmark, and Linux/Windows × Node 18/20/22 CI.
+- Documented the compatibility matrix, diagnosis, upgrade gate, canary, and rollback.
+
+
 ## Checkpoint 9 (2026-07-14 — issue #78 closeout: deploy-ready assets + reproducible scripts)
 
 Status: completed, ready for PR against `main`.

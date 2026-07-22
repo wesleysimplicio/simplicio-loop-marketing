@@ -1,5 +1,17 @@
 # Goal Result
 
+## Issue #92 — extension conformance certification (2026-07-22)
+
+Implemented the repository-owned conformance matrix/oracle for `loop.marketing`.
+Compatible core candidates produce stable manifest and composed-graph hashes; incompatible
+candidates are `BLOCKED` before work. A packed clean install exercises the same manifest,
+all declared modes, fail-closed gates, independent role bindings, and a fenced/idempotent
+fake publish effect. Upgrade remains manual and requires conformance plus canary evidence;
+rollback restores the last version-controlled compatible pin and hashes.
+
+Residual boundary: release detection/promotion and ecosystem manifest publication remain
+owned by issue #95, as explicitly assigned by issue #92.
+
 ## Current run — 2026-07-11
 
 All programming issues in the active backlog (#65–#79) were implemented or audited
