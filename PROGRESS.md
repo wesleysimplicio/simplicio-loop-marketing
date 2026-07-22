@@ -227,3 +227,18 @@ No OpenAI API key was available locally, and the official OpenAI docs checked on
 | `npm run typecheck` | pass | TS compile clean after mapper overlay |
 | `npx playwright test e2e/cli.spec.ts e2e/cli-extras.spec.ts e2e/generate-loop.spec.ts e2e/notion-sync.spec.ts e2e/observability.spec.ts` | pass | Focused regression pass during integration |
 | `npm run test:e2e` | pass | Full Playwright suite green: 119 passed |
+
+## Checkpoint 10 (2026-07-22 — issue #102 blocking CI gate)
+
+Status: completed on `codex/issue-102-blocking-ci-gate`, ready for PR.
+
+Result:
+- Added a PR/push `quality-gate` workflow with read-only permissions, bounded execution,
+  lint/typecheck/budget, enforced coverage, and the full Playwright system suite.
+- Added a fail-closed local workflow integrity verifier plus unit, failure-mutation, provider
+  regression, and E2E coverage.
+- Enforced 85% lines/statements/functions and 70% branches; measured 87.64%, 87.64%,
+  86.98%, and 74.34%, respectively. Touched verifier coverage is 100% on all metrics.
+
+Validation: `npm run lint`, `npm run typecheck`, `npm run budget`, `npm run ci:verify`,
+`npm run coverage`, and `npm run test:e2e` (253 passed).

@@ -61,7 +61,7 @@
     "test:e2e": "playwright test",
     "test:e2e:headed": "playwright test --headed",
     "bench": "node --import tsx/esm scripts/bench.mjs",
-    "coverage": "c8 --reporter=text --reporter=html --reporter=json-summary --exclude \"tests/**\" --exclude \"e2e/**\" --exclude \"scripts/**\" --exclude \"lib/providers/__mocks__/**\" npm run test:node",
+    "coverage": "c8 --check-coverage --lines 85 --statements 85 --functions 85 --branches 70 --reporter=text --reporter=html --reporter=json-summary --exclude \"tests/**\" --exclude \"e2e/**\" --exclude \"scripts/**\" --exclude \"lib/providers/__mocks__/**\" npm run test:node",
     "typecheck": "tsc --noEmit",
     "lint": "node scripts/lint-conventions.mjs",
     "check": "node scripts/check.mjs",
@@ -77,7 +77,8 @@
     "cli:promote": "node bin/marketing-engine.mjs promote",
     "smoke": "node bin/marketing-engine.mjs help && node bin/marketing-engine.mjs generate",
     "format:policy": "node scripts/check-internal-formats.mjs",
-    "format:policy:strict": "node scripts/check-internal-formats.mjs --strict"
+    "format:policy:strict": "node scripts/check-internal-formats.mjs --strict",
+    "ci:verify": "node --import tsx/esm scripts/verify-quality-gate.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.48.0",
