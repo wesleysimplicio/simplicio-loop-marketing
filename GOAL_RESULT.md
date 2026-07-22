@@ -204,3 +204,12 @@ independent judge outputs, dry-run calendar/budget/payload evidence, zero spend
 authority, rejection savings, and nullable real-performance metrics. PR evidence
 reports typecheck/lint green, 99.12% touched statements, 1,257 decisions/s, and
 252 Playwright tests; full check retains documented environment limitations.
+
+## Issue #97 — token-cost result (2026-07-22)
+
+Implemented cached `js-tiktoken` BPE fallback and generation-cost reconciliation.
+Provider usage remains authoritative; fallback provenance and unavailable
+measurements are explicit, and analytics never persist prompt bodies. Focused
+tests cover provider usage, missing usage, unknown models, PT-BR/emoji,
+tokenizer failure, stage correlation, and prompt privacy. PR evidence reports
+85.96% focused statement/line coverage and 5,684 cached-tokenizer ops/s.

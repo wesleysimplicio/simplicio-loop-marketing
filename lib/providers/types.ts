@@ -38,6 +38,8 @@ export interface GenerationResult<T = string> {
   tokens_in?: number;
   tokens_out?: number;
   used_estimate?: boolean;
+  source?: "provider" | "tokenizer" | "unavailable";
+  encoding?: string;
   prompt_format?: "toon" | "json";
   savings_tokens_est?: number;
   cache_status?: "hit" | "enabled" | "not_requested" | "unsupported";

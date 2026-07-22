@@ -95,6 +95,7 @@
     "typescript": "^5.6.0"
   },
   "dependencies": {
+    "js-tiktoken": "^1.0.21",
     "tsx": "^4.22.1"
   }
 }

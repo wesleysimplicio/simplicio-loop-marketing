@@ -289,3 +289,11 @@ No OpenAI API key was available locally, and the official OpenAI docs checked on
 Completed the previously deferred Prototype-First production boundary: mock image/video and landing/caption variants, independent brand/humanization/compliance/technical/evidence/security evaluation, calendar/budget publish simulation, expiring drift-bound ACCEPT receipts, prototype-vs-real metrics, publish enforcement, approval expiry, and exactly-once receipt replay. Added unit/integration/regression/security/E2E-compatible coverage and a 1,000-decision benchmark.
 
 Validation: focused coverage 99.12% statements / 82.31% branches (minimum 85% touched-code statement coverage met); benchmark 795.8ms for 1,000 decisions (1,257 decisions/s); 252 Playwright tests passed. `npm run check` reached all checks but reports pre-existing environment/tooling blocks (doctor cannot find browser/ffmpeg; claims audit names five unrelated watcher env declarations).
+
+## Checkpoint 15 (2026-07-22 — issue #97 token-cost reconciliation)
+
+Replaced the provider-response `chars/4` fallback with cached BPE resolution;
+unknown models and tokenizer failures remain explicit and fail-open. Provider
+usage stays authoritative, with source/encoding/fallback/stage/correlation
+metadata and prompt privacy. PR evidence reports typecheck/lint green, 214 Node
+tests, 252 Playwright tests, 85.96% focused coverage, and 5,684 ops/s.

@@ -1,3 +1,5 @@
+import { encodingForModel, getEncoding, getEncodingNameForModel, type Tiktoken } from "js-tiktoken";
+
 export interface CostInput {
   provider: string;
   model?: string;
@@ -90,9 +92,68 @@ export function estimateCost(input: CostInput): number {
   return (input.tokens_in / 1000) * row.in + (input.tokens_out / 1000) * row.out;
 }
 
-export function estimateTokens(text: string): number {
-  if (!text) return 0;
-  return Math.ceil(text.length / 4);
+export interface TokenEstimate {
+  tokens: number;
+  encoding: string;
+  fallback_reason?: string;
+}
+
+const tokenizerCache = new Map<string, Tiktoken>();
+
+/** Count BPE tokens without retaining or returning the input text. */
+export function estimateTokens(
+  text: string,
+  model?: string,
+  tokenizer: (encoding: string, model?: string) => Tiktoken = loadTokenizer,
+): number {
+  return estimateTokenDetails(text, model, tokenizer).tokens;
+}
+
+function loadTokenizer(encoding: string, model?: string): Tiktoken {
+  const key = model ? `model:${model}` : `encoding:${encoding}`;
+  const cached = tokenizerCache.get(key);
+  if (cached) return cached;
+  const loaded = model && encoding !== "o200k_base"
+    ? encodingForModel(model as Parameters<typeof encodingForModel>[0])
+    : getEncoding(encoding as Parameters<typeof getEncoding>[0]);
+  tokenizerCache.set(key, loaded);
+  return loaded;
+}
+
+export function estimateTokenDetails(
+  text: string,
+  model?: string,
+  tokenizer: (encoding: string, model?: string) => Tiktoken = loadTokenizer,
+): TokenEstimate {
+  if (!text) return { tokens: 0, encoding: resolveEncoding(model).encoding };
+  const resolved = resolveEncoding(model);
+  try {
+    const encoder = tokenizer(resolved.encoding, resolved.exact ? model : undefined);
+    return {
+      tokens: encoder.encode(text).length,
+      encoding: resolved.encoding,
+      ...(!resolved.exact && { fallback_reason: "model_encoding_unknown" }),
+    };
+  } catch (error) {
+    const reason = error instanceof Error ? error.name : "unknown";
+    return {
+      tokens: 0,
+      encoding: resolved.encoding,
+      fallback_reason: `tokenizer_failed:${reason}`,
+    };
+  }
+}
+
+function resolveEncoding(model?: string): { encoding: string; exact: boolean } {
+  if (!model) return { encoding: "o200k_base", exact: false };
+  try {
+    return {
+      encoding: getEncodingNameForModel(model as Parameters<typeof getEncodingNameForModel>[0]),
+      exact: true,
+    };
+  } catch {
+    return { encoding: "o200k_base", exact: false };
+  }
 }
 
 export function resolveUsageWithFallback(input: {
@@ -102,7 +163,8 @@ export function resolveUsageWithFallback(input: {
   output: string;
   tokens_in?: number;
   tokens_out?: number;
-}): { tokens_in: number; tokens_out: number; used_estimate: boolean; fallback_reason?: string } {
+  tokenizer?: (encoding: string, model?: string) => Tiktoken;
+}): { tokens_in: number; tokens_out: number; used_estimate: boolean; source: "provider" | "tokenizer" | "unavailable"; encoding?: string; fallback_reason?: string } {
   const hasRealUsage =
     input.tokens_in !== undefined && input.tokens_out !== undefined;
 
@@ -111,6 +173,7 @@ export function resolveUsageWithFallback(input: {
       tokens_in: input.tokens_in ?? 0,
       tokens_out: input.tokens_out ?? 0,
       used_estimate: false,
+      source: "provider",
     };
   }
 
@@ -118,14 +181,21 @@ export function resolveUsageWithFallback(input: {
   if (!warnedUsageFallbacks.has(warningKey)) {
     warnedUsageFallbacks.add(warningKey);
     process.stderr.write(
-      `[providers/cost] WARN: ${warningKey} response missing usage data; falling back to char/4 token estimate\n`,
+      `[providers/cost] WARN: ${warningKey} response missing usage data; falling back to BPE tokenization\n`,
     );
   }
 
+  const prompt = estimateTokenDetails(input.prompt, input.model, input.tokenizer);
+  const output = estimateTokenDetails(input.output, input.model, input.tokenizer);
+  const tokenizerFailure = prompt.fallback_reason?.startsWith("tokenizer_failed") || output.fallback_reason?.startsWith("tokenizer_failed");
   return {
-    tokens_in: estimateTokens(input.prompt),
-    tokens_out: estimateTokens(input.output),
+    tokens_in: prompt.tokens,
+    tokens_out: output.tokens,
     used_estimate: true,
-    fallback_reason: `usage_missing:${warningKey}`,
+    source: tokenizerFailure ? "unavailable" : "tokenizer",
+    encoding: prompt.encoding,
+    fallback_reason: tokenizerFailure
+      ? prompt.fallback_reason ?? output.fallback_reason
+      : `usage_missing:${warningKey}${prompt.fallback_reason ? `:${prompt.fallback_reason}` : ""}`,
   };
 }

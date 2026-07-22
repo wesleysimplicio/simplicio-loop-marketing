@@ -1,7 +1,7 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 
-interface UsageRow {
+export interface UsageRow {
   timestamp?: string;
   task?: string;
   provider?: string;
@@ -9,6 +9,46 @@ interface UsageRow {
   cost_usd?: number;
   ok?: boolean;
   latency_ms?: number;
+  source?: "provider" | "tokenizer" | "unavailable";
+  correlation_id?: string;
+  campaign_id?: string;
+  cache_read_input_tokens?: number;
+}
+
+export interface GenerationCostSummary {
+  correlation_id: string;
+  campaign_id?: string;
+  currency: "USD";
+  predicted_tokens: number;
+  actual_tokens: number;
+  unavailable_calls: number;
+  cache_reuse_tokens: number;
+  cost_usd: number;
+}
+
+/** Reconcile estimates and provider usage without reading or returning prompts. */
+export function reconcileGenerationCosts(rows: UsageRow[]): GenerationCostSummary[] {
+  const groups = new Map<string, GenerationCostSummary>();
+  for (const row of rows) {
+    const id = row.correlation_id ?? row.campaign_id ?? "unattributed";
+    const summary = groups.get(id) ?? {
+      correlation_id: id,
+      ...(row.campaign_id && { campaign_id: row.campaign_id }),
+      currency: "USD" as const,
+      predicted_tokens: 0,
+      actual_tokens: 0,
+      unavailable_calls: 0,
+      cache_reuse_tokens: 0,
+      cost_usd: 0,
+    };
+    if (row.source === "provider") summary.actual_tokens += row.tokens ?? 0;
+    else if (row.source === "tokenizer") summary.predicted_tokens += row.tokens ?? 0;
+    else if (row.source === "unavailable") summary.unavailable_calls += 1;
+    summary.cache_reuse_tokens += row.cache_read_input_tokens ?? 0;
+    summary.cost_usd += row.cost_usd ?? 0;
+    groups.set(id, summary);
+  }
+  return [...groups.values()];
 }
 
 export interface CostSummary {

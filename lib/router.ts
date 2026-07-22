@@ -35,6 +35,10 @@ export interface UsageEntry {
   tokens_in?: number;
   tokens_out?: number;
   used_estimate?: boolean;
+  source?: "provider" | "tokenizer" | "unavailable";
+  encoding?: string;
+  stage?: string;
+  correlation_id?: string;
   prompt_format?: "toon" | "json";
   savings_tokens_est?: number;
   cache_status?: "hit" | "enabled" | "not_requested" | "unsupported";
@@ -59,6 +63,12 @@ interface UsageLikeResult {
   tokens_in?: number;
   tokens_out?: number;
   used_estimate?: boolean;
+  source?: "provider" | "tokenizer" | "unavailable";
+  encoding?: string;
+  fallback_reason?: string;
+  cache_status?: "hit" | "enabled" | "not_requested" | "unsupported";
+  cache_read_input_tokens?: number;
+  cache_creation_input_tokens?: number;
   prompt_format?: "toon" | "json";
   savings_tokens_est?: number;
   cost_usd?: number;
@@ -77,6 +87,8 @@ export function logUsage(entry: UsageEntry, override_path?: string): void {
   const line: UsageLogLine = {
     timestamp: new Date().toISOString(),
     ...entry,
+    stage: entry.stage ?? entry.task,
+    correlation_id: entry.correlation_id ?? entry.piece_id,
   };
   appendFileSync(log_path, `${JSON.stringify(line)}\n`, { encoding: "utf8" });
 }
@@ -96,6 +108,8 @@ export interface FallbackOptions<T> {
   fallbackName?: string;
   log_path?: string;
   piece_id?: string;
+  stage?: string;
+  correlation_id?: string;
   prompt_format?: "toon" | "json";
   savings_tokens_est?: number;
   retryBackoffMs?: number;
@@ -148,6 +162,8 @@ export async function runWithFallback<T>(
           attempt: usage.attempt,
           latency_ms: usage.latency_ms ?? (Date.now() - t0),
           piece_id: opts.piece_id,
+          stage: opts.stage,
+          correlation_id: opts.correlation_id,
           prompt_format: opts.prompt_format ?? usage.prompt_format,
           savings_tokens_est: usage.savings_tokens_est ?? opts.savings_tokens_est,
         },
@@ -172,6 +188,8 @@ export async function runWithFallback<T>(
           latency_ms: Date.now() - t0,
           fallback_reason: `primary_failed:${primaryMessage.split(":")[0]}`,
           piece_id: opts.piece_id,
+          stage: opts.stage,
+          correlation_id: opts.correlation_id,
           prompt_format: opts.prompt_format,
         },
         opts.log_path,
@@ -205,6 +223,8 @@ export async function runWithFallback<T>(
         attempt: usage.attempt,
         latency_ms: usage.latency_ms ?? (Date.now() - t1),
         piece_id: opts.piece_id,
+        stage: opts.stage,
+        correlation_id: opts.correlation_id,
         prompt_format: opts.prompt_format ?? usage.prompt_format,
         savings_tokens_est: usage.savings_tokens_est ?? opts.savings_tokens_est,
         fallback_reason: `primary_failed:${primaryMessage.split(":")[0]}`,
@@ -230,6 +250,8 @@ export async function runWithFallback<T>(
         latency_ms: Date.now() - t1,
         fallback_reason: `primary_failed:${primaryMessage.split(":")[0]}`,
         piece_id: opts.piece_id,
+        stage: opts.stage,
+        correlation_id: opts.correlation_id,
         prompt_format: opts.prompt_format,
       },
       opts.log_path,
