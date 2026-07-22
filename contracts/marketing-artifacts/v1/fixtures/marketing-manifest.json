@@ -18,17 +18,24 @@
     "video": "# Brief\n\nLaunch our new product.\n"
   },
   "cost_estimate_usd": 1.501842,
-  "tokens_in": 100,
-  "tokens_out": 100,
+  "tokens_in": 200,
+  "tokens_out": 200,
   "compliance_report_path": "<fixture-root>/.marketing-engine/data/compliance/PIECE-fixture-001.json",
   "qa_report_path": "<fixture-root>/.marketing-engine/outputs/fixture-client/2026-01-01/PIECE-fixture-001/qa-tech-specs.json",
   "watcher_report_path": "<fixture-root>/.marketing-engine/data/gate/PIECE-fixture-001.json",
   "outputs": [
     "<fixture-root>/.marketing-engine/outputs/fixture-client/2026-01-01/PIECE-fixture-001/script.md",
     "<fixture-root>/.marketing-engine/outputs/fixture-client/2026-01-01/PIECE-fixture-001/captions.json",
-    "<fixture-root>/.marketing-engine/outputs/fixture-client/2026-01-01/PIECE-fixture-001/mock-higgsfield-1080x1920-1783636558223.mp4",
+    "<fixture-root>/.marketing-engine/outputs/fixture-client/2026-01-01/PIECE-fixture-001/mock-higgsfield-1080x1920-1784745079725.mp4",
     "<fixture-root>/.marketing-engine/outputs/fixture-client/2026-01-01/PIECE-fixture-001/qa-tech-specs.json",
     "<fixture-root>/.marketing-engine/outputs/fixture-client/2026-01-01/PIECE-fixture-001/compliance.json"
   ],
-  "fallback_used": false
+  "fallback_used": false,
+  "release_identity": {
+    "ecosystem_release_id": null,
+    "core_version": "3.38.0",
+    "core_commit": "b081a677c3c4696f27dfaf37a558a8b3ff768dc2",
+    "extension_version": "0.4.0",
+    "composed_graph_hash": "9352cdea8665c3cf8eef3e34f3ff1c1a8c26656cdc83136cde83a501375d69b7"
+  }
 }

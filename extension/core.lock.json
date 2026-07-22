@@ -1,0 +1,14 @@
+{
+  "schema": "loop.marketing-core-lock/v1",
+  "channel": "stable",
+  "core": {
+    "version": "3.38.0",
+    "commit": "f4364a46143134010d316f7a63e614a31a04c8d1",
+    "tag": "v3.38.0",
+    "artifact_digest": "sha256:1445920181528df67b84919d4354b3ffc61b79778879feefa082b4950cde9047"
+  },
+  "protocols": {
+    "simplicio.loop-extension/v1": "1.0.0"
+  },
+  "previous": null
+}

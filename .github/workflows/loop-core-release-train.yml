@@ -1,0 +1,58 @@
+name: loop-core-release-train
+on:
+  repository_dispatch:
+    types: [simplicio-loop-release]
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+    inputs:
+      component_release_url:
+        description: HTTPS URL of signed simplicio.component-release/v1
+        required: true
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+concurrency:
+  group: loop-core-release-train
+  cancel-in-progress: false
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: npm }
+      - run: npm ci
+      - name: Resolve candidate manifest
+        id: candidate
+        env:
+          EVENT_URL: ${{ github.event.client_payload.component_release_url }}
+          INPUT_URL: ${{ inputs.component_release_url }}
+        run: |
+          url=${EVENT_URL:-$INPUT_URL}
+          if [ -z "$url" ]; then
+            url=$(curl --fail --silent --show-error \
+              https://api.github.com/repos/wesleysimplicio/simplicio-loop/releases/latest \
+              | jq -r '.assets[] | select(.name == "component-release.json") | .browser_download_url' \
+              | head -1)
+          fi
+          test -n "$url" || { echo "Loop latest release has no component-release.json (upstream #558)" >&2; exit 2; }
+          case "$url" in https://github.com/wesleysimplicio/simplicio-loop/*) ;; *) echo "untrusted manifest URL" >&2; exit 2;; esac
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+      - name: Reconcile and stage canary
+        run: node --import tsx/esm scripts/reconcile-core-release.mjs --candidate '${{ steps.candidate.outputs.url }}' --apply-canary
+      - run: npm run typecheck && npm run test:node && npx playwright test e2e/release-train.spec.ts
+      - name: Create deduplicated bump PR
+        env: { GH_TOKEN: "${{ github.token }}" }
+        run: |
+          version=$(node -p "require('./extension/core.lock.json').core.version")
+          branch="bot/loop-core-${version}"
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git checkout -B "$branch"
+          git add extension/core.lock.json artifacts/release-train/reconciliation.json
+          git commit -m "chore: bump Loop core to ${version} (#95)" || exit 0
+          git push --force-with-lease origin "$branch"
+          gh pr view "$branch" >/dev/null 2>&1 || gh pr create --base main --head "$branch" --title "chore: bump Loop core to ${version}" --body "Closes #95. Automated compatible canary bump; promotion remains gated by required checks."

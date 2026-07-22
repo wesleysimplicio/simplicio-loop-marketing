@@ -1,5 +1,16 @@
 # Progress Log
 
+## Checkpoint 10 (2026-07-22 — issue #95 Loop core release train)
+
+Status: implementation complete; upstream publication/remote CI promotion blocked externally.
+
+Result:
+- Added the official `loop.marketing` `simplicio.loop-extension/v1` instance and an immutable stable core lock without vendoring the upstream contract schema.
+- Added fail-closed compatibility, protocol/capability/graph diffs, deterministic canary promotion with rollback, migration-issue evidence, 15-minute reconciliation automation, doctor diagnostics, and campaign receipt identities.
+- Added unit/integration/E2E coverage plus a compatibility hot-path p95 benchmark.
+
+External blocker: Loop issue #558 does not yet publish a `simplicio.component-release/v1` asset, so a real upstream bump, three-mode official conformance, CI observation, and stable auto-promotion cannot honestly be demonstrated yet.
+
 ## Checkpoint 9 (2026-07-14 — issue #78 closeout: deploy-ready assets + reproducible scripts)
 
 Status: completed, ready for PR against `main`.

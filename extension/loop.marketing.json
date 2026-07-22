@@ -1,0 +1,21 @@
+{
+  "schema": "simplicio.loop-extension/v1",
+  "extension_id": "loop_marketing",
+  "name": "Loop Marketing",
+  "version": "0.4.0",
+  "domain": "marketing",
+  "requires_core": { "min_version": "3.38.0", "max_version": "3.99.99" },
+  "capabilities": {
+    "requires": ["extension_manifest_v1", "receipts_v1", "fencing_v1"],
+    "provides": ["marketing_pipeline_v1", "marketing_compliance_v1"]
+  },
+  "gates": [
+    { "gate_id": "marketing.compliance", "severity": "fail_closed" },
+    { "gate_id": "marketing.dry_run", "severity": "fail_closed" }
+  ],
+  "effect_handlers": [
+    { "effect_id": "marketing.publish", "idempotent": true, "requires_fence_token": true, "requires_receipt": true },
+    { "effect_id": "marketing.ads", "idempotent": true, "requires_fence_token": true, "requires_receipt": true },
+    { "effect_id": "marketing.comments", "idempotent": true, "requires_fence_token": true, "requires_receipt": true }
+  ]
+}
