@@ -1,5 +1,21 @@
 # Progress Log
 
+## Checkpoint 10 (2026-07-22 — issue #93 Loop core extension integration)
+
+Status: completed locally; PR publication/CI pending.
+
+Result:
+- Published the upstream-compatible extension manifest, pinned compatibility,
+  hashed context schemas, adapters, overlays, roles, gates, resources and
+  core-owned quota scopes.
+- Added a thin core binding, receipt-derived views, core-authorized exactly-once
+  effects, campaign preflight and doctor conformance reporting.
+- Added unit, integration, regression, benchmark and Playwright system tests.
+
+Validation: 218 Node tests and the focused Playwright test pass. Focused c8 is
+100% for statements/lines/functions. The 1,000-load benchmark measured p50
+0.0940 ms and p95 0.3177 ms, with zero tokens and zero model cost.
+
 ## Checkpoint 9 (2026-07-14 — issue #78 closeout: deploy-ready assets + reproducible scripts)
 
 Status: completed, ready for PR against `main`.

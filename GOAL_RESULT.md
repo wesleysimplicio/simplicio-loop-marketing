@@ -1,5 +1,13 @@
 # Goal Result
 
+## Issue #93 — Loop core/Hub extension integration (2026-07-22)
+
+Implemented `loop_marketing` as a declarative `simplicio.loop-extension/v1`
+consumer without adding a daemon, coordinator, queue, scheduler, lease manager
+or completion engine. It fails before campaign work on incompatibility,
+delegates budgets and exactly-once authority to core, and rebuilds views from
+receipts. Unit, integration, regression, system and benchmark evidence is green.
+
 ## Current run — 2026-07-11
 
 All programming issues in the active backlog (#65–#79) were implemented or audited

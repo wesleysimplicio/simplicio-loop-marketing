@@ -7,10 +7,14 @@ import {
   reviewCampaign,
 } from "../campaigns/campaign";
 import { emitEvent } from "../observability/events";
+import { loadExtensionManifest } from "../extension/core";
 
 export async function cliEntry(argv: string[]): Promise<void> {
   const root = process.cwd();
   const sub = argv[0];
+
+  // Fail before creating work: Loop core owns workflow, queue, leases and budgets.
+  loadExtensionManifest();
 
   if (sub === "review") {
     const campaignId = argv[1];

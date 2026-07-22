@@ -1,0 +1,5 @@
+/** Non-authoritative marketing read models, rebuilt solely from core receipts. */
+export interface MarketingReceipt {sequence:number;task_id:string;stage_id:string;status:"pending"|"running"|"blocked"|"completed";payload?:Record<string,unknown>}
+export interface MarketingView {last_sequence:number;pieces:Record<string,{stage_id:string;status:MarketingReceipt["status"];payload?:Record<string,unknown>}>}
+export function rebuildMarketingView(receipts:readonly MarketingReceipt[]):MarketingView {const view:MarketingView={last_sequence:0,pieces:{}};for(const r of [...receipts].sort((a,b)=>a.sequence-b.sequence)){if(r.sequence<=view.last_sequence)continue;view.last_sequence=r.sequence;view.pieces[r.task_id]={stage_id:r.stage_id,status:r.status,...(r.payload?{payload:r.payload}:{})};}return view;}
+export function reconcileMarketingView(current:MarketingView,receipts:readonly MarketingReceipt[]):{view:MarketingView;drift:boolean}{const view=rebuildMarketingView(receipts);return {view,drift:JSON.stringify(current)!==JSON.stringify(view)};}
