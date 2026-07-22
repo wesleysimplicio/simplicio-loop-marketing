@@ -3,8 +3,6 @@
 - Completed programming backlog #65-#79 with autonomous-loop gates, observability, doctor, watcher, retrospective, and DRY_RUN autoresearch.
 - Added Windows-safe convention lint and 236-test release gate.
 
-# Changelog
-
 All notable changes to this project are documented here. Format based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versioning follows
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -12,6 +10,9 @@ All notable changes to this project are documented here. Format based on
 ## [Unreleased]
 
 ### Added
+
+- **Issue meta-audit** (#106): fail-closed, reproducible inventory with machine/human receipts
+  and unit, integration, regression, E2E, security, and measured performance coverage.
 
 - **4-layer DoD gate** (issues #99, hub simplicio-loop#579): [`DOD.md`](./DOD.md) documents a correctness-beyond-coverage layer on top of the existing 7 pillars — property-based testing (`fast-check`) for resolution/fan-out logic, real-content fixtures, a PR invariant-review question, and asserting on observable results instead of a reported status. `tests/unit/router-properties.test.ts` is the reference implementation, generating provider/override/env combinations against `lib/router.ts` and asserting determinism, override precedence, and no env-noise leakage. `.github/PULL_REQUEST_TEMPLATE.md` gained the invariant-check and observable-result-evidence sections.
 - **Asolaria narrative package** (issue #78, repo-local scope only): canonical [SIMPLICIO-MAP-OF-MAPS.md](./SIMPLICIO-MAP-OF-MAPS.md), [REDUCTIONS.md](./REDUCTIONS.md), and the bounded campaign artifact set under `.specs/strategy/campaigns/2026-Q3-asolaria-on-metal/` (`CAMPAIGN.md`, `HYPOTHESIS.md`, `ROUTING.md`, `LANDING.md`, `DEMO.md`, `CASE-STUDY.md`) plus a fixture-backed unit test verifying required docs, links, and explicit external dependencies.
@@ -343,4 +344,3 @@ Autonomous SaaS marketing loop across social networks and dev communities (epic 
 - Remotion video explainer (PT-BR + EN) under `video/`.
 - Bilingual README + SETUP + CONTRIBUTING + AGENTS.md (charter) + Apache-2.0
   LICENSE.
-

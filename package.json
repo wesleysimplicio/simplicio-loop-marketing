@@ -69,6 +69,7 @@
     "budget": "node scripts/token-budget.mjs",
     "demo:asolaria": "node scripts/demo-asolaria-loop.mjs",
     "benchmark:reductions": "node scripts/reductions-benchmark.mjs",
+    "audit:issues": "node --import tsx/esm scripts/audit-issues.mjs",
     "router:check": "bash .ralph/provider-check.sh",
     "cli": "node bin/marketing-engine.mjs",
     "cli:init": "node bin/marketing-engine.mjs init",

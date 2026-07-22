@@ -1,0 +1,2628 @@
+{
+  "schema": "marketing-issue-audit/v1",
+  "generatedAt": "2026-07-22T18:27:41.617Z",
+  "total": 84,
+  "byState": {
+    "closed": 66,
+    "open": 18
+  },
+  "compliant": 0,
+  "compliancePercent": 0,
+  "findings": [
+    {
+      "number": 5,
+      "state": "closed",
+      "createdAt": "2026-05-18T00:57:44Z",
+      "title": "feat(cli): implement real `generate` command end-to-end",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/5",
+      "labels": [
+        "area:cli",
+        "sprint:0",
+        "type:feat"
+      ],
+      "references": [],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 6,
+      "state": "closed",
+      "createdAt": "2026-05-18T00:57:52Z",
+      "title": "feat(cli): implement real `promote` command end-to-end",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/6",
+      "labels": [
+        "area:cli",
+        "sprint:0",
+        "type:feat"
+      ],
+      "references": [],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 7,
+      "state": "closed",
+      "createdAt": "2026-05-18T00:58:03Z",
+      "title": "feat(router): implement provider fallback chain + structured logging",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/7",
+      "labels": [
+        "area:router",
+        "sprint:0",
+        "type:feat"
+      ],
+      "references": [],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 8,
+      "state": "closed",
+      "createdAt": "2026-05-18T00:58:13Z",
+      "title": "refactor(router): parse PROVIDERS.md as the routing source of truth",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/8",
+      "labels": [
+        "area:router",
+        "sprint:0",
+        "type:fix"
+      ],
+      "references": [],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 9,
+      "state": "closed",
+      "createdAt": "2026-05-18T00:58:29Z",
+      "title": "refactor(providers): move mock implementations out of production files",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/9",
+      "labels": [
+        "area:providers",
+        "sprint:0",
+        "type:fix"
+      ],
+      "references": [],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 10,
+      "state": "closed",
+      "createdAt": "2026-05-18T00:58:40Z",
+      "title": "feat(data): write `data/runs.jsonl` and per-piece `manifest.json`",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/10",
+      "labels": [
+        "area:cli",
+        "sprint:0",
+        "type:feat"
+      ],
+      "references": [],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 11,
+      "state": "closed",
+      "createdAt": "2026-05-18T00:58:52Z",
+      "title": "test(e2e): cover init/scan output, generate happy path, fallback chain",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/11",
+      "labels": [
+        "area:cli",
+        "sprint:0",
+        "type:test"
+      ],
+      "references": [],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 12,
+      "state": "closed",
+      "createdAt": "2026-05-18T00:59:00Z",
+      "title": "docs: create CHANGELOG.md baseline + release note workflow",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/12",
+      "labels": [
+        "area:devx",
+        "sprint:0",
+        "type:docs"
+      ],
+      "references": [],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 13,
+      "state": "closed",
+      "createdAt": "2026-05-18T00:59:16Z",
+      "title": "feat(providers/llm): real Anthropic Claude adapter with prompt caching",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/13",
+      "labels": [
+        "area:providers",
+        "sprint:1",
+        "type:feat"
+      ],
+      "references": [],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 14,
+      "state": "closed",
+      "createdAt": "2026-05-18T00:59:24Z",
+      "title": "feat(providers/llm): real DeepSeek adapter (cheap default for caption/translation)",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/14",
+      "labels": [
+        "area:providers",
+        "sprint:1",
+        "type:feat"
+      ],
+      "references": [],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 15,
+      "state": "closed",
+      "createdAt": "2026-05-18T00:59:29Z",
+      "title": "feat(providers/llm): real OpenAI/Codex adapter (LLM_FALLBACK default)",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/15",
+      "labels": [
+        "area:providers",
+        "sprint:1",
+        "type:feat"
+      ],
+      "references": [],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 16,
+      "state": "closed",
+      "createdAt": "2026-05-18T00:59:36Z",
+      "title": "feat(providers/llm): real Ollama adapter (offline / local fallback)",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/16",
+      "labels": [
+        "area:providers",
+        "sprint:1",
+        "type:feat"
+      ],
+      "references": [],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 17,
+      "state": "closed",
+      "createdAt": "2026-05-18T00:59:44Z",
+      "title": "feat(providers): unified retry/timeout/cost policy + accurate token estimation",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/17",
+      "labels": [
+        "area:providers",
+        "sprint:1",
+        "type:feat"
+      ],
+      "references": [],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 18,
+      "state": "closed",
+      "createdAt": "2026-05-18T00:59:57Z",
+      "title": "feat(providers/image): real gpt-image adapter (OpenAI Images API)",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/18",
+      "labels": [
+        "area:providers",
+        "sprint:2",
+        "type:feat"
+      ],
+      "references": [],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 19,
+      "state": "closed",
+      "createdAt": "2026-05-18T01:00:07Z",
+      "title": "feat(providers/{image,video}): real Higgsfield adapter via MCP (Soul / DoP / Seedance)",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/19",
+      "labels": [
+        "area:providers",
+        "sprint:2",
+        "type:feat"
+      ],
+      "references": [],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 20,
+      "state": "closed",
+      "createdAt": "2026-05-18T01:00:14Z",
+      "title": "feat(providers/{image,video}): real Topview adapter via MCP (UGC / talking-head / URL-to-video)",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/20",
+      "labels": [
+        "area:providers",
+        "sprint:2",
+        "type:feat"
+      ],
+      "references": [],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 21,
+      "state": "closed",
+      "createdAt": "2026-05-18T01:00:25Z",
+      "title": "feat(providers/{image,video}): real Wavespeed adapter + qa-tech-specs executor",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/21",
+      "labels": [
+        "area:providers",
+        "sprint:2",
+        "type:feat"
+      ],
+      "references": [],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 22,
+      "state": "closed",
+      "createdAt": "2026-05-18T01:00:42Z",
+      "title": "feat(publish): real AdaptlyPost MCP wiring (9 platforms, DRY_RUN-aware)",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/22",
+      "labels": [
+        "area:publish",
+        "sprint:3",
+        "type:feat"
+      ],
+      "references": [],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 23,
+      "state": "closed",
+      "createdAt": "2026-05-18T01:00:51Z",
+      "title": "feat(calendar): real Notion calendar sync (read + write)",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/23",
+      "labels": [
+        "area:cli",
+        "sprint:3",
+        "type:feat"
+      ],
+      "references": [],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 24,
+      "state": "closed",
+      "createdAt": "2026-05-18T01:01:00Z",
+      "title": "feat(pieces): piece engine — ID generation, frontmatter parser, status transitions",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/24",
+      "labels": [
+        "area:cli",
+        "sprint:3",
+        "type:feat"
+      ],
+      "references": [],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 25,
+      "state": "closed",
+      "createdAt": "2026-05-18T01:01:09Z",
+      "title": "feat(analytics): real Meta + TikTok + YouTube fetchers",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/25",
+      "labels": [
+        "area:analytics",
+        "sprint:4",
+        "type:feat"
+      ],
+      "references": [],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 26,
+      "state": "closed",
+      "createdAt": "2026-05-18T01:01:18Z",
+      "title": "feat(promotion): performance classifier + learnings.md writer",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/26",
+      "labels": [
+        "area:analytics",
+        "sprint:4",
+        "type:feat"
+      ],
+      "references": [],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 27,
+      "state": "closed",
+      "createdAt": "2026-05-18T01:01:28Z",
+      "title": "feat(ads): real Meta Ads draft creator via MCP",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/27",
+      "labels": [
+        "area:analytics",
+        "sprint:4",
+        "type:feat"
+      ],
+      "references": [],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 28,
+      "state": "closed",
+      "createdAt": "2026-05-18T01:01:43Z",
+      "title": "feat(compliance): executable compliance-generic + per-piece report writer",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/28",
+      "labels": [
+        "area:compliance",
+        "sprint:5",
+        "type:feat"
+      ],
+      "references": [],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 29,
+      "state": "closed",
+      "createdAt": "2026-05-18T01:01:53Z",
+      "title": "feat(compliance): per-client override loader + escalation workflow",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/29",
+      "labels": [
+        "area:compliance",
+        "sprint:5",
+        "type:feat"
+      ],
+      "references": [],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 30,
+      "state": "closed",
+      "createdAt": "2026-05-18T01:02:03Z",
+      "title": "feat(skills): executable humanizer + brand-voice critic",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/30",
+      "labels": [
+        "area:skills",
+        "sprint:5",
+        "type:feat"
+      ],
+      "references": [],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 31,
+      "state": "closed",
+      "createdAt": "2026-05-18T01:02:11Z",
+      "title": "feat(cli): `new-piece`, `status`, `logs` commands",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/31",
+      "labels": [
+        "area:cli",
+        "sprint:6",
+        "type:feat"
+      ],
+      "references": [],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 32,
+      "state": "closed",
+      "createdAt": "2026-05-18T01:02:21Z",
+      "title": "chore(release): npm publish prep + version bump to 1.0.0 GA",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/32",
+      "labels": [
+        "area:devx",
+        "sprint:6",
+        "type:chore"
+      ],
+      "references": [],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 33,
+      "state": "closed",
+      "createdAt": "2026-05-18T01:02:30Z",
+      "title": "feat(ops): cron / launchd installer + scheduling docs",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/33",
+      "labels": [
+        "area:devx",
+        "sprint:6",
+        "type:feat"
+      ],
+      "references": [],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 34,
+      "state": "closed",
+      "createdAt": "2026-05-18T01:02:45Z",
+      "title": "feat(observability): cost dashboard + daily summary CLI",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/34",
+      "labels": [
+        "area:observability",
+        "sprint:7",
+        "type:feat"
+      ],
+      "references": [],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 35,
+      "state": "closed",
+      "createdAt": "2026-05-18T01:02:52Z",
+      "title": "feat(observability): A/B reporting per provider + task",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/35",
+      "labels": [
+        "area:observability",
+        "sprint:7",
+        "type:feat"
+      ],
+      "references": [],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "unmeasured-claim",
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 36,
+      "state": "closed",
+      "createdAt": "2026-05-18T01:03:02Z",
+      "title": "feat(observability): failure-rate tracking + webhook alerts on compliance block",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/36",
+      "labels": [
+        "area:observability",
+        "sprint:7",
+        "type:feat"
+      ],
+      "references": [],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 37,
+      "state": "closed",
+      "createdAt": "2026-05-18T01:03:39Z",
+      "title": "Roadmap: marketing-engine v0.1 → v1.0 (Sprints 0-7)",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/37",
+      "labels": [
+        "area:devx",
+        "type:docs"
+      ],
+      "references": [
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36
+      ],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 38,
+      "state": "closed",
+      "createdAt": "2026-05-18T02:55:10Z",
+      "title": "Adopt the universal long-running AI coding agent playbook",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/38",
+      "labels": [],
+      "references": [],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 41,
+      "state": "closed",
+      "createdAt": "2026-05-19T18:38:46Z",
+      "title": "Adopt yool/tuple/HAMT capability addressing",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/41",
+      "labels": [
+        "enhancement"
+      ],
+      "references": [],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 42,
+      "state": "closed",
+      "createdAt": "2026-05-19T18:38:46Z",
+      "title": "Integrate RTK CLI for token-smart shell",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/42",
+      "labels": [
+        "enhancement"
+      ],
+      "references": [],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 46,
+      "state": "closed",
+      "createdAt": "2026-06-30T04:38:25Z",
+      "title": "Epic: autonomous SaaS marketing loop across social networks and dev communities",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/46",
+      "labels": [
+        "area:observability",
+        "area:skills",
+        "enhancement"
+      ],
+      "references": [
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60
+      ],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 47,
+      "state": "closed",
+      "createdAt": "2026-06-30T04:38:38Z",
+      "title": "Stack: runtime-first architecture without required sprint/prompt duplication",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/47",
+      "labels": [
+        "area:devx",
+        "enhancement",
+        "type:chore"
+      ],
+      "references": [
+        46
+      ],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 48,
+      "state": "closed",
+      "createdAt": "2026-06-30T04:38:47Z",
+      "title": "Skill: create root simplicio-loop-marketing super-skill orchestrator",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/48",
+      "labels": [
+        "area:skills",
+        "enhancement",
+        "type:feat"
+      ],
+      "references": [
+        46
+      ],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 49,
+      "state": "closed",
+      "createdAt": "2026-06-30T04:39:10Z",
+      "title": "Channels: build social + developer community registry for autonomous publishing",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/49",
+      "labels": [
+        "area:publish",
+        "enhancement",
+        "type:feat"
+      ],
+      "references": [
+        46
+      ],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 50,
+      "state": "closed",
+      "createdAt": "2026-06-30T04:39:30Z",
+      "title": "Strategy: English-first international dev portal launch playbooks",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/50",
+      "labels": [
+        "area:publish",
+        "enhancement",
+        "type:docs"
+      ],
+      "references": [
+        46
+      ],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 51,
+      "state": "closed",
+      "createdAt": "2026-06-30T04:39:56Z",
+      "title": "Automation: browser and computer-use lane for publishing, screenshots, and proof",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/51",
+      "labels": [
+        "area:observability",
+        "area:publish",
+        "enhancement",
+        "type:feat"
+      ],
+      "references": [
+        46
+      ],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 52,
+      "state": "closed",
+      "createdAt": "2026-06-30T04:40:10Z",
+      "title": "Integrations: REST/MCP broker for platform publishing, analytics, and ads",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/52",
+      "labels": [
+        "area:providers",
+        "area:router",
+        "enhancement",
+        "type:feat"
+      ],
+      "references": [
+        46
+      ],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 53,
+      "state": "closed",
+      "createdAt": "2026-06-30T04:40:49Z",
+      "title": "Campaigns: SaaS growth loop from ICP hypothesis to organic and paid promotion",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/53",
+      "labels": [
+        "area:cli",
+        "enhancement",
+        "type:feat"
+      ],
+      "references": [
+        46
+      ],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 54,
+      "state": "closed",
+      "createdAt": "2026-06-30T04:41:22Z",
+      "title": "Analytics: score organic performance across social, Reddit, forums, and dev portals",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/54",
+      "labels": [
+        "area:analytics",
+        "enhancement",
+        "type:feat"
+      ],
+      "references": [
+        46
+      ],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 55,
+      "state": "closed",
+      "createdAt": "2026-06-30T04:41:48Z",
+      "title": "Paid growth: promote organic winners into paused ad drafts with budget guardrails",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/55",
+      "labels": [
+        "area:analytics",
+        "area:publish",
+        "enhancement",
+        "type:feat"
+      ],
+      "references": [
+        46
+      ],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 56,
+      "state": "closed",
+      "createdAt": "2026-06-30T04:42:19Z",
+      "title": "Compliance: community etiquette and anti-spam gates for Reddit, forums, and dev portals",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/56",
+      "labels": [
+        "area:compliance",
+        "enhancement",
+        "type:feat"
+      ],
+      "references": [
+        46
+      ],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 57,
+      "state": "closed",
+      "createdAt": "2026-06-30T04:42:49Z",
+      "title": "Content system: engineering-authentic SaaS posts with screenshots, metrics, and failures",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/57",
+      "labels": [
+        "area:skills",
+        "enhancement",
+        "type:feat"
+      ],
+      "references": [
+        46
+      ],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "unmeasured-claim",
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 58,
+      "state": "closed",
+      "createdAt": "2026-06-30T04:43:08Z",
+      "title": "Validation: E2E mock SaaS launch loop across social and dev community channels",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/58",
+      "labels": [
+        "area:observability",
+        "enhancement",
+        "type:test"
+      ],
+      "references": [
+        46
+      ],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 59,
+      "state": "closed",
+      "createdAt": "2026-06-30T04:43:38Z",
+      "title": "Agents: Yool tuple-space board for marketing workers, pieces, channels, and metrics",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/59",
+      "labels": [
+        "area:observability",
+        "area:skills",
+        "enhancement",
+        "type:feat"
+      ],
+      "references": [
+        46
+      ],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 60,
+      "state": "closed",
+      "createdAt": "2026-06-30T04:44:10Z",
+      "title": "Community loop: monitor comments and draft respectful technical replies",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/60",
+      "labels": [
+        "area:compliance",
+        "area:publish",
+        "enhancement",
+        "type:feat"
+      ],
+      "references": [
+        46
+      ],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 61,
+      "state": "closed",
+      "createdAt": "2026-06-30T23:18:59Z",
+      "title": "Absorção Asolaria: gate verification + claims-gate",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/61",
+      "labels": [
+        "enhancement"
+      ],
+      "references": [],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "unmeasured-claim",
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 64,
+      "state": "closed",
+      "createdAt": "2026-07-02T05:23:40Z",
+      "title": "Epic: harden the marketing loop with simplicio-loop mechanisms (anchor, journal, evidence gates, fail-closed checks)",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/64",
+      "labels": [
+        "area:devx",
+        "area:observability",
+        "enhancement"
+      ],
+      "references": [
+        46,
+        58,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73
+      ],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 65,
+      "state": "closed",
+      "createdAt": "2026-07-02T05:23:55Z",
+      "title": "Anchor: freeze campaign/piece acceptance criteria at intake and gate \"done\" on verified AC",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/65",
+      "labels": [
+        "area:cli",
+        "area:observability",
+        "enhancement",
+        "type:feat"
+      ],
+      "references": [
+        64
+      ],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 66,
+      "state": "closed",
+      "createdAt": "2026-07-02T05:24:09Z",
+      "title": "Journal: durable run-journal + stall detector so the loop switches strategy instead of oscillating",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/66",
+      "labels": [
+        "area:observability",
+        "enhancement",
+        "type:feat"
+      ],
+      "references": [
+        54,
+        64
+      ],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 67,
+      "state": "closed",
+      "createdAt": "2026-07-02T05:24:30Z",
+      "title": "Evidence gate: piece completion only on typed promise backed by artifacts, never a bare claim",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/67",
+      "labels": [
+        "area:compliance",
+        "area:observability",
+        "enhancement",
+        "type:feat"
+      ],
+      "references": [
+        64,
+        65,
+        66
+      ],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 68,
+      "state": "closed",
+      "createdAt": "2026-07-02T05:24:43Z",
+      "title": "Reports: assemble publish/promote reports and PR bodies mechanically with AC checklist + evidence embeds (fail-closed)",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/68",
+      "labels": [
+        "area:devx",
+        "area:observability",
+        "enhancement",
+        "type:feat"
+      ],
+      "references": [
+        64,
+        65,
+        66,
+        67
+      ],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 69,
+      "state": "closed",
+      "createdAt": "2026-07-02T05:24:58Z",
+      "title": "Action gate: fail-closed hook blocking live publish, ad activation, and spend without a logged promotion record",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/69",
+      "labels": [
+        "area:compliance",
+        "area:publish",
+        "enhancement",
+        "type:feat"
+      ],
+      "references": [
+        55,
+        64
+      ],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 70,
+      "state": "closed",
+      "createdAt": "2026-07-02T05:25:16Z",
+      "title": "Check: one-command local gate (typecheck + e2e + claims audit) wired as pre-push hook",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/70",
+      "labels": [
+        "area:devx",
+        "enhancement",
+        "type:chore"
+      ],
+      "references": [
+        64,
+        65,
+        66,
+        67,
+        68,
+        69
+      ],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 71,
+      "state": "closed",
+      "createdAt": "2026-07-02T05:25:30Z",
+      "title": "Doctor: preflight that verifies env, toolchains, and adapter reachability — BLOCKS, never fake-passes",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/71",
+      "labels": [
+        "area:cli",
+        "area:devx",
+        "enhancement",
+        "type:feat"
+      ],
+      "references": [
+        64
+      ],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 72,
+      "state": "closed",
+      "createdAt": "2026-07-02T05:25:45Z",
+      "title": "Watcher: 24/7 self-paced campaign loop that re-feeds goals, pulls metrics, and reacts to events",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/72",
+      "labels": [
+        "area:cli",
+        "area:observability",
+        "enhancement",
+        "type:feat"
+      ],
+      "references": [
+        54,
+        55,
+        60,
+        64,
+        65,
+        66,
+        67,
+        69,
+        71
+      ],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 73,
+      "state": "closed",
+      "createdAt": "2026-07-02T05:26:02Z",
+      "title": "Learn: post-campaign retrospective that writes deduped, durable lessons back into briefs and strategy",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/73",
+      "labels": [
+        "area:analytics",
+        "area:skills",
+        "enhancement",
+        "type:feat"
+      ],
+      "references": [
+        49,
+        54,
+        60,
+        64,
+        66
+      ],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 75,
+      "state": "closed",
+      "createdAt": "2026-07-02T12:08:15Z",
+      "title": "feat: converter dados estruturados para TOON no conteúdo dos prompts LLM (lib/providers/llm.ts)",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/75",
+      "labels": [
+        "enhancement"
+      ],
+      "references": [],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 77,
+      "state": "closed",
+      "createdAt": "2026-07-02T15:49:59Z",
+      "title": "feat: ativar o prompt caching dormente (ganho maior que TOON) + telemetria de usage completa + fix de quoting lossy no toon.ts (follow-up #75)",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/77",
+      "labels": [
+        "bug",
+        "enhancement"
+      ],
+      "references": [
+        75,
+        76
+      ],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 78,
+      "state": "closed",
+      "createdAt": "2026-07-02T15:58:24Z",
+      "title": "🌌 Integração Asolaria: what-is-asolaria (Narrativa) + Asolaria-ASI-On-Metal para Marketing Técnico",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/78",
+      "labels": [
+        "enhancement"
+      ],
+      "references": [],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 79,
+      "state": "closed",
+      "createdAt": "2026-07-02T17:35:16Z",
+      "title": "feat: fase 2 do autoresearch — otimizar copy/captions por loop evolutivo compliance-gated (judge fixo, critérios binários, DRY_RUN)",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/79",
+      "labels": [
+        "enhancement"
+      ],
+      "references": [
+        75,
+        77
+      ],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Evidências obrigatórias",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [
+        "timeout-unspecified",
+        "rollback-unspecified"
+      ],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 86,
+      "state": "open",
+      "createdAt": "2026-07-17T18:12:13Z",
+      "title": "[EPIC][P0] Herdar integralmente a arquitetura do simplicio-loop com agentes dedicados e zero conflito",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/86",
+      "labels": [],
+      "references": [
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        95,
+        96
+      ],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 87,
+      "state": "open",
+      "createdAt": "2026-07-17T18:14:36Z",
+      "title": "[P0][#86][Extension] Implementar manifesto versionado, capability probe e reconciliação sem drift",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/87",
+      "labels": [],
+      "references": [
+        86
+      ],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 88,
+      "state": "open",
+      "createdAt": "2026-07-17T18:14:37Z",
+      "title": "[P0][#86][Extension] Registrar agentes de marketing dedicados no lifecycle do Loop",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/88",
+      "labels": [],
+      "references": [
+        86
+      ],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 89,
+      "state": "open",
+      "createdAt": "2026-07-17T18:14:38Z",
+      "title": "[P0][#86][Extension] Vincular claims, fan-out e efeitos de marketing ao coordinator do Loop",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/89",
+      "labels": [],
+      "references": [
+        86
+      ],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 90,
+      "state": "open",
+      "createdAt": "2026-07-17T18:14:38Z",
+      "title": "[P0][#86][Extension] Projetar reporting/findings de marketing sobre receipts e completion do Loop",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/90",
+      "labels": [],
+      "references": [
+        86
+      ],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 91,
+      "state": "open",
+      "createdAt": "2026-07-17T18:14:39Z",
+      "title": "[P1][#86][Extension] Adaptar evolução e replicação do Loop ao domínio de marketing",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/91",
+      "labels": [],
+      "references": [
+        86,
+        87,
+        90
+      ],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 92,
+      "state": "open",
+      "createdAt": "2026-07-17T18:14:40Z",
+      "title": "[P0][#86][Extension] Certificar conformance, E2E e upgrade seguro da extensão Marketing",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/92",
+      "labels": [],
+      "references": [
+        86,
+        95
+      ],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 93,
+      "state": "open",
+      "createdAt": "2026-07-17T19:29:17Z",
+      "title": "[P0][Extension Integration] Conectar loop-marketing ao Loop core/Hub sem duplicar arquitetura",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/93",
+      "labels": [],
+      "references": [
+        86,
+        94,
+        556
+      ],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 94,
+      "state": "open",
+      "createdAt": "2026-07-18T02:47:57Z",
+      "title": "[P0][Marketing Extension][Performance] Materializar o pipeline como overlays do stage graph do Loop",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/94",
+      "labels": [],
+      "references": [
+        86,
+        93,
+        556
+      ],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 95,
+      "state": "open",
+      "createdAt": "2026-07-18T03:05:49Z",
+      "title": "[P0][Extension Release Train] Acompanhar automaticamente a última versão compatível do Loop core",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/95",
+      "labels": [],
+      "references": [
+        86,
+        87,
+        92,
+        93,
+        94
+      ],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 96,
+      "state": "open",
+      "createdAt": "2026-07-18T13:18:58Z",
+      "title": "[P0][Prototype-First][Loop #568] Validar storyboard, copy, criativo e campanha dry-run antes de publicar ou gastar",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/96",
+      "labels": [],
+      "references": [
+        86,
+        568
+      ],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 97,
+      "state": "open",
+      "createdAt": "2026-07-18T14:17:45Z",
+      "title": "feat(token-cost): substituir fallback chars/4 por js-tiktoken e reconciliar custo por geração",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/97",
+      "labels": [],
+      "references": [],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 99,
+      "state": "open",
+      "createdAt": "2026-07-19T00:23:18Z",
+      "title": "proposta: teste por propriedade (fast-check) + fixtures com conteúdo real + revisão por invariante",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/99",
+      "labels": [],
+      "references": [],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 100,
+      "state": "open",
+      "createdAt": "2026-07-19T00:47:18Z",
+      "title": "plano: expandir fast-check pra image/video, fixtures de compliance com conteúdo real, mutation testing (stryker-mutator)",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/100",
+      "labels": [],
+      "references": [
+        99,
+        579
+      ],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 102,
+      "state": "open",
+      "createdAt": "2026-07-19T03:35:10Z",
+      "title": "[Audit #582] Add blocking CI quality and coverage gate",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/102",
+      "labels": [],
+      "references": [],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 103,
+      "state": "open",
+      "createdAt": "2026-07-21T04:45:01Z",
+      "title": "[Binary formats] Migrate internal JSON state to HBP, HBI and TOML",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/103",
+      "labels": [],
+      "references": [],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 104,
+      "state": "open",
+      "createdAt": "2026-07-21T04:45:49Z",
+      "title": "[Quality] Enforce no-internal-JSON and prove binary-format migration E2E",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/104",
+      "labels": [],
+      "references": [],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [],
+      "decision": "NEEDS-SPEC"
+    },
+    {
+      "number": 106,
+      "state": "open",
+      "createdAt": "2026-07-21T20:43:18Z",
+      "title": "[META-AUDIT] Revisar todas as issues — objetivos, fluxo de testes e critérios de aceite",
+      "url": "https://github.com/wesleysimplicio/simplicio-loop-marketing/issues/106",
+      "labels": [],
+      "references": [],
+      "dependencies": [],
+      "missingSections": [
+        "Contexto e problema",
+        "Objetivo",
+        "Fora de escopo",
+        "Entradas, saídas e contratos",
+        "Dependências e ordem",
+        "Passo a passo implementável",
+        "Fluxo de testes",
+        "Critérios de aceite verificáveis",
+        "Riscos, rollback e decisão de encerramento"
+      ],
+      "risks": [],
+      "decision": "NEEDS-SPEC"
+    }
+  ]
+}
