@@ -227,3 +227,14 @@ No OpenAI API key was available locally, and the official OpenAI docs checked on
 | `npm run typecheck` | pass | TS compile clean after mapper overlay |
 | `npx playwright test e2e/cli.spec.ts e2e/cli-extras.spec.ts e2e/generate-loop.spec.ts e2e/notion-sync.spec.ts e2e/observability.spec.ts` | pass | Focused regression pass during integration |
 | `npm run test:e2e` | pass | Full Playwright suite green: 119 passed |
+
+## Checkpoint 10 (2026-07-22 — issue #99 property tests and real-content invariants)
+
+Status: completed on `codex/issue-99-property-fixtures-invariants`.
+
+Result:
+- Extracted the production four-platform caption fan-out and fixed suffix-over-limit and Unicode surrogate truncation risks.
+- Added 1,000 generated fast-check cases per run across two caption invariants, a near-real pt-BR fixture through parse/compliance/fan-out, a regression test, and observable E2E assertions.
+- Measured touched production code at 100% statements/branches/functions/lines and caption fan-out at 7,309 ops/s in the recorded full node run (threshold: 2,000 ops/s).
+
+Validation: see the issue #99 PR for exact commands and CI-equivalent logs.

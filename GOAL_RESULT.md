@@ -79,3 +79,12 @@ node bin/marketing-engine.mjs doctor
 - Operator workers: `loop_journal.py` / `task_anchor.py` / `task_backlog.py`
   selftests OK (source checkout), `hooks/action_gate.py selftest` 15/15,
   `token_budget.py --self-test` OK.
+
+## Issue #99 result (2026-07-22)
+
+The remaining issue #99 acceptance gaps are implemented on
+`codex/issue-99-property-fixtures-invariants`: caption fan-out now has a
+production invariant boundary and property tests, and a near-real pt-BR piece
+is exercised through parsing, generic compliance, and fan-out. The focused c8
+run measured 100% statement and branch coverage on touched production code;
+the benchmark gate requires at least 2,000 caption fan-outs/second.

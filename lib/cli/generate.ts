@@ -27,6 +27,7 @@ import { emitEvent } from "../observability/events";
 import { readLearningsForBrief } from "../learning/retrospective";
 import { assertDoctorHealthy } from "./doctor";
 import { gateEvidence } from "../gate/evidence";
+import { buildPlatformCaptions, type CaptionPlatform } from "../content/captions";
 
 export interface GenerateOptions {
   root: string;
@@ -316,15 +317,10 @@ export async function processPiece(
 
   const captionText = captionResult.result.output ?? "";
   const captionPrompt = `Caption for: ${brief.slice(0, 200)}`;
-  const platformCaptions: Record<string, string> = {};
   // The evidence contract is intentionally stable across campaigns: every
   // piece carries the four canonical review variants, even when publishing
   // is currently limited to a subset of channels.
-  for (const platform of ["instagram", "tiktok", "linkedin", "x"]) {
-    const max = platform === "x" ? 240 : platform === "tiktok" ? 150 : 1500;
-    const trimmed = captionText.length > max ? captionText.slice(0, max) : captionText;
-    platformCaptions[platform] = `${trimmed} #${fm.pillar}`;
-  }
+  const platformCaptions = buildPlatformCaptions(captionText, fm.pillar);
   writeFileSync(
     join(pieceDir, "captions.json"),
     JSON.stringify(platformCaptions, null, 2),
@@ -468,10 +464,13 @@ export async function processPiece(
   // The gate checks the caption that will actually ship (the per-platform
   // variant, which carries the pillar hashtag), not the raw LLM output.
   const primaryPlatform = fm.platforms[0] ?? "instagram";
+  const primaryCaption = Object.hasOwn(platformCaptions, primaryPlatform)
+    ? platformCaptions[primaryPlatform as CaptionPlatform]
+    : captionText;
   const watcherInput = {
     piece_id: fm.id,
     script: copy.result.output ?? "",
-    caption: platformCaptions[primaryPlatform] ?? captionText,
+    caption: primaryCaption,
     brief,
     platform: primaryPlatform,
     pillar: fm.pillar,

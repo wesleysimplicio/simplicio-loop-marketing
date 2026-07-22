@@ -99,10 +99,12 @@ line breaks, emoji, multi-paragraph structure, or locale quirks a real
 client piece has, and those are exactly where formatting-sensitive bugs in
 `content-engineering-authentic` / `compliance-generic` hide.
 
-- Tracked as step (b) of the follow-up issue (see "Next steps" below):
-  at least one `content-engineering-authentic`/`compliance-generic` test
-  running against a real (or near-real) client piece, not only the existing
-  synthetic fixtures under `tests/fixtures/`.
+- Reference fixture and integration test:
+  [`tests/fixtures/real-content/asolaria-on-metal-piece.md`](./tests/fixtures/real-content/asolaria-on-metal-piece.md)
+  and [`tests/integration/real-content-pipeline.test.ts`](./tests/integration/real-content-pipeline.test.ts)
+  exercise a near-real pt-BR piece with paragraphs, lists, punctuation, emoji,
+  evidence caveats, and compliance language through parsing, compliance, and
+  the canonical caption fan-out.
 
 ### Gate 3 — Invariant review checklist in the PR template
 
@@ -143,12 +145,10 @@ explicit, permanent rule rather than an implicit habit.
 `npm test` (`test:node` + `test:e2e`) must stay 100% green with these gates
 applied — this file is additive, not a relaxation of the existing DoD.
 
-## Next steps (tracked in a follow-up issue)
+## Implemented references
 
-A follow-up issue in this repo lists the concrete next steps: expanding
-`fast-check` coverage to the image/video provider layers, testing
-`compliance-generic`/`content-engineering-authentic` against real (not
-synthetic) client content, and evaluating `stryker-mutator` for TypeScript
-mutation testing to measure whether the existing test suite would actually
-catch a mutated line, not just whether it executes it. See the issue for
-the full plan; it references this file, #99, and the hub issue #579.
+Issue #99 is covered across both risk surfaces: provider routing properties in
+`tests/unit/router-properties.test.ts`, caption fan-out properties in
+`tests/unit/caption-properties.test.ts`, and near-real content in
+`tests/integration/real-content-pipeline.test.ts`. Mutation testing remains a
+possible future hardening measure, not an acceptance criterion of #99.

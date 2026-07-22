@@ -49,6 +49,10 @@ test("generate loop processes a draft piece end-to-end with mocks under DRY_RUN"
     expect(existsSync(join(pieceDir, "script.md"))).toBe(true);
     expect(existsSync(join(pieceDir, "captions.json"))).toBe(true);
     expect(existsSync(join(pieceDir, "compliance.json"))).toBe(true);
+    const captions = JSON.parse(readFileSync(join(pieceDir, "captions.json"), "utf8"));
+    expect(Object.keys(captions)).toEqual(["instagram", "tiktok", "linkedin", "x"]);
+    expect(Array.from(captions.tiktok).length).toBeLessThanOrEqual(150);
+    expect(captions.tiktok).toMatch(/#education$/);
     const manifest = JSON.parse(
       readFileSync(join(pieceDir, "manifest.json"), "utf8"),
     );
