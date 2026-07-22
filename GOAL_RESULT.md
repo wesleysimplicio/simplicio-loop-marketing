@@ -79,3 +79,17 @@ node bin/marketing-engine.mjs doctor
 - Operator workers: `loop_journal.py` / `task_anchor.py` / `task_backlog.py`
   selftests OK (source checkout), `hooks/action_gate.py selftest` 15/15,
   `token_budget.py --self-test` OK.
+
+## Issue #95 — Loop core release train (2026-07-22)
+
+Implemented the marketing-side consumer: versioned extension manifest, immutable core lock,
+fail-closed release compatibility and diffs, canary/rollback, migration plan generation,
+15-minute reconciliation automation, doctor visibility, and release identities in campaign
+manifests. The consumer does not copy the upstream contract schema and introduces no
+coordinator, scheduler, queue, or completion authority.
+
+The external train remains blocked because `simplicio-loop` has not published the required
+`simplicio.component-release/v1` artifact from issue #558. Consequently no real latest
+candidate can pass the official embedded/daemon/remote evidence lane or be promoted to
+stable; local fixtures prove both compatible and breaking paths without representing them
+as upstream evidence.

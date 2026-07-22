@@ -1,5 +1,6 @@
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join, normalize } from "node:path";
+import { releaseIdentity, type ReleaseIdentity } from "../release-train/receipt";
 
 export interface ProviderDescriptor {
   name: string;
@@ -45,6 +46,7 @@ export interface ManifestDocument extends Omit<ManifestPayload, "providers"> {
     image?: ProviderDescriptor;
     video?: ProviderDescriptor;
   };
+  release_identity: ReleaseIdentity;
 }
 
 function normalizeProvider(
@@ -101,6 +103,7 @@ export function writeManifest(
     watcher_report_path: normalizeStoredPath(payload.watcher_report_path),
     outputs: (payload.outputs ?? []).map((output) => normalize(output)),
     fallback_used: payload.fallback_used ?? false,
+    release_identity: releaseIdentity(),
   };
 
   writeFileSync(path, JSON.stringify(document, null, 2));

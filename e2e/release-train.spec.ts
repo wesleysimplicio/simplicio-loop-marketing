@@ -1,0 +1,2 @@
+import {test,expect} from "@playwright/test"; import {spawnSync} from "node:child_process";
+test("compatible upstream receipt is reconciled without external effects",()=>{const r=spawnSync(process.execPath,["--import","tsx/esm","scripts/reconcile-core-release.mjs","--candidate","tests/fixtures/core-component-release.json"],{encoding:"utf8"});expect(r.status).toBe(0);expect(r.stdout).toContain("compatible: 3.38.1");});

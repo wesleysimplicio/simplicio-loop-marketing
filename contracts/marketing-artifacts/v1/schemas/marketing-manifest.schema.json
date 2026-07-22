@@ -11,7 +11,8 @@
     "prompts",
     "cost_estimate_usd",
     "compliance_report_path",
-    "outputs"
+    "outputs",
+    "release_identity"
   ],
   "properties": {
     "schema": { "const": "marketing-manifest/v1" },
@@ -35,6 +36,17 @@
     "qa_report_path": { "type": "string" },
     "watcher_report_path": { "type": "string" },
     "outputs": { "type": "array", "items": { "type": "string" } },
-    "fallback_used": { "type": "boolean" }
+    "fallback_used": { "type": "boolean" },
+    "release_identity": {
+      "type": "object",
+      "required": ["ecosystem_release_id", "core_version", "core_commit", "extension_version", "composed_graph_hash"],
+      "properties": {
+        "ecosystem_release_id": {},
+        "core_version": { "type": "string" },
+        "core_commit": { "type": "string" },
+        "extension_version": { "type": "string" },
+        "composed_graph_hash": { "type": "string" }
+      }
+    }
   }
 }

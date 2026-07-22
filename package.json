@@ -40,6 +40,8 @@
   "files": [
     "bin",
     "lib",
+    "extension",
+    "contracts",
     ".skills",
     ".specs",
     ".ralph",
@@ -69,6 +71,7 @@
     "budget": "node scripts/token-budget.mjs",
     "demo:asolaria": "node scripts/demo-asolaria-loop.mjs",
     "benchmark:reductions": "node scripts/reductions-benchmark.mjs",
+    "release:reconcile": "node --import tsx/esm scripts/reconcile-core-release.mjs",
     "router:check": "bash .ralph/provider-check.sh",
     "cli": "node bin/marketing-engine.mjs",
     "cli:init": "node bin/marketing-engine.mjs init",
