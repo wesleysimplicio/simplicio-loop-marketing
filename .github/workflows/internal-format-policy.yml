@@ -4,6 +4,8 @@ on:
   pull_request:
   push:
     branches: [main]
+  release:
+    types: [published]
 
 jobs:
   policy:
@@ -15,3 +17,6 @@ jobs:
           node-version: 20
       - name: Check internal format boundaries
         run: node scripts/check-internal-formats.mjs
+      - name: Enforce completed binary migration for releases
+        if: github.event_name == 'release'
+        run: node scripts/check-internal-formats.mjs --strict
