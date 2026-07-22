@@ -1,46 +1,12 @@
-### Checkpoint (2026-07-22, issue #94 — stage-overlay shadow contract)
-
-Status: blocked on upstream `simplicio-loop#557`
-
-Added the provider-neutral `loop.marketing` extension manifest, small core-context handlers,
-deterministic caption validation, fenced exactly-once effect boundary, contract/unit/integration
-tests, and a numeric sequential-vs-overlay benchmark. Focused coverage is 99.48% statements/lines
-and 89.09% branches. The existing standalone pipeline remains untouched because the authoritative
-Loop extension loader/composer/SDK and conformance suite are not yet published; replacing it now
-would create the parallel authority explicitly forbidden by #94. See
-`docs/evidence/issue-94-overlays.md`.
-
 # Progress Log
 
-## Checkpoint 10 (2026-07-22 — issue #95 Loop core release train)
+## Checkpoint 10 (2026-07-22 — issue #103 binary state slice)
 
-Status: implementation complete; upstream publication/remote CI promotion blocked externally.
-
-Result:
-- Added the official `loop.marketing` `simplicio.loop-extension/v1` instance and an immutable stable core lock without vendoring the upstream contract schema.
-- Added fail-closed compatibility, protocol/capability/graph diffs, deterministic canary promotion with rollback, migration-issue evidence, 15-minute reconciliation automation, doctor diagnostics, and campaign receipt identities.
-- Added unit/integration/E2E coverage plus a compatibility hot-path p95 benchmark.
-
-External blocker: Loop issue #558 does not yet publish a `simplicio.component-release/v1` asset, so a real upstream bump, three-mode official conformance, CI observation, and stable auto-promotion cannot honestly be demonstrated yet.
-
-## Checkpoint 10 (2026-07-22 — issue #87 extension contract)
-
-Status: implementation complete; upstream conformance remains blocked.
-
-Result:
-- Added the versioned `loop.marketing` manifest and lock, public-contract Python
-  capability probe, actionable version/hash/schema gating, deterministic core-receipt
-  reconciliation into disposable Yool projections, operator doctor JSON, ADR/ownership
-  matrix, recovery tests, and a numeric manifest-hash benchmark.
-- Critical missing core capabilities remain `BLOCKED`; optional execution modes alone
-  produce `DEGRADED`. No local coordinator, scheduler, queue, ledger, or completion
-  authority was introduced.
-- Upstream commit `b5ddbd6af76392198906e61d0911a236eca3bcf8` (v3.38.1) still does not publish
-  the requested TypeScript SDK, `probe_capabilities()`, receipt/reconciliation API, or
-  embedded/daemon/remote conformance runner. The doctor reports this as
-  `REQUIRED_CAPABILITY_MISSING`; those issue criteria cannot honestly be marked green.
-
-Validation: see `GOAL_RESULT.md` and the focused PR for issue #87.
+Implemented native, versioned HBP/HBI envelopes and migrated the run ledger,
+loop journal and piece manifest off JSON. Added a bounded, dry-run capable,
+backup-preserving and idempotent legacy migrator; moved mapper metadata to TOML;
+and added corruption/truncation/oversize regression tests plus a measured hot
+path benchmark. Runtime readers have no JSON fallback for the migrated paths.
 
 ## Checkpoint 9 (2026-07-14 — issue #78 closeout: deploy-ready assets + reproducible scripts)
 
@@ -259,17 +225,6 @@ Next:
 Commit on branch `claude/hyperframe-skills-S69hE`, push, open draft PR.
 
 ## Blockers
-
-### Issue #89 (2026-07-22) — BLOCKED on #87, #88, and upstream conformance
-
-Issue #89 was audited against Marketing `origin/main` at
-`61cf9e6a2f90d6c5743a7607d4460002c9295c46` and Loop at
-`b5ddbd6af76392198906e61d0911a236eca3bcf8`. The required Marketing manifest,
-TypeScript bridge, dedicated role registrations, and extension conformance
-entry point do not yet exist. Implementing local substitutes would violate
-the issue's explicit core-authority boundary and the instruction to implement
-only #89. Reproduction and unblock criteria are recorded in
-`docs/evidence/issue-89-blocker.md`; no success evidence was fabricated.
 
 No OpenAI API key was available locally, and the official OpenAI docs checked on 2026-05-18 did not list a `gpt-image-2` model name. The README visuals were therefore committed as repository-native SVG assets instead of generated API outputs.
 

@@ -3,6 +3,7 @@ import { join, resolve } from "node:path";
 import { readPiece } from "../pieces/store";
 import { loadSchemaRegistry } from "../contracts/registry";
 import { validateArtifact } from "../contracts/validate";
+import { readHbi } from "../formats/binary";
 
 export interface EvidenceGateResult {
   piece_id: string;
@@ -62,15 +63,16 @@ export function gateEvidence(root: string, pieceId: string, opts: EvidenceGateOp
     const piece = readPiece(pieceId, { piecesDir: opts.piecesDir ?? resolve(base, "pieces") });
     outputDir = resolve(opts.outputsDir ?? resolve(base, "outputs"), piece.frontmatter.client, piece.frontmatter.date.slice(0, 10), pieceId);
   } catch { addMissing(missing, "piece metadata"); }
-  const manifestPath = outputDir ? join(outputDir, "manifest.json") : "";
-  if (!manifestPath || !existsSync(manifestPath)) addMissing(missing, "manifest.json");
+  const manifestPath = outputDir ? join(outputDir, "manifest.hbi") : "";
+  if (!manifestPath || !existsSync(manifestPath)) addMissing(missing, "manifest.hbi");
   else {
-    const parsed = json(manifestPath);
-    if (!parsed || typeof parsed !== "object") addMissing(missing, "manifest.json (valid JSON)");
+    let parsed: unknown = null;
+    try { parsed = readHbi(manifestPath); } catch { /* fail closed below */ }
+    if (!parsed || typeof parsed !== "object") addMissing(missing, "manifest.hbi (valid HBI)");
     else {
       manifest = parsed as Record<string, unknown>;
       const valid = validateArtifact(manifest, loadSchemaRegistry());
-      if (!valid.ok) addMissing(missing, `manifest.json (schema: ${valid.errors.join("; ")})`);
+      if (!valid.ok) addMissing(missing, `manifest.hbi (schema: ${valid.errors.join("; ")})`);
     }
   }
   const compliancePath = join(outputDir, "compliance.json");
@@ -89,8 +91,8 @@ export function gateEvidence(root: string, pieceId: string, opts: EvidenceGateOp
   const watcher = watcherPath ? json(watcherPath) as { passed?: boolean } | null : null;
   if (!watcherPath || !existsSync(watcherPath)) addMissing(missing, "watcher_report_path");
   else if (!watcher || watcher.passed !== true) addMissing(missing, "watcher_report.passed=true");
-  const runLogs = [join(base, "data", "runs.jsonl"), join(base, "data", "llm-usage.jsonl")];
-  for (const path of runLogs) if (!existsSync(path) || readFileSync(path, "utf8").trim().length === 0) addMissing(missing, path.endsWith("runs.jsonl") ? "data/runs.jsonl" : "data/llm-usage.jsonl");
+  const runLogs = [join(base, "data", "runs.hbp"), join(base, "data", "llm-usage.jsonl")];
+  for (const path of runLogs) if (!existsSync(path) || readFileSync(path).byteLength === 0) addMissing(missing, path.endsWith("runs.hbp") ? "data/runs.hbp" : "data/llm-usage.jsonl");
   if (manifest) evidence_paths.push(...evidenceCandidates(base, outputDir, manifest));
   if (evidence_paths.length === 0) addMissing(missing, "evidence artifact (Playwright/watcher)");
   return { piece_id: pieceId, pass: missing.length === 0, missing, evidence_paths };

@@ -7,6 +7,7 @@ import { dirname, join, resolve } from "node:path";
 import { serializePiece, type PieceFrontmatter } from "../lib/pieces/frontmatter";
 import { gateEvidence } from "../lib/gate/evidence";
 import { runGenerateLoop } from "../lib/cli/generate";
+import { appendHbp, writeHbiAtomic } from "../lib/formats/binary";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -28,9 +29,9 @@ function fixture() {
   writeFileSync(join(out, "qa-tech-specs.json"), JSON.stringify({ pass: true, assets: [] }));
   writeFileSync(join(out, "captions.json"), JSON.stringify({ instagram: "a", tiktok: "b", linkedin: "c", x: "d" }));
   writeFileSync(join(out, "evidence.png"), "evidence");
-  writeFileSync(join(ws, "data", "runs.jsonl"), JSON.stringify({ piece_id: id, status: "success" }));
+  appendHbp(join(ws, "data", "runs.hbp"), { piece_id: id, status: "success" });
   writeFileSync(join(ws, "data", "llm-usage.jsonl"), JSON.stringify({ piece_id: id, ok: true }));
-  writeFileSync(join(out, "manifest.json"), JSON.stringify({ schema: "marketing-manifest/v1", generated_at: new Date().toISOString(), piece_id: id, client: "acme", date: "2026-05-08", providers: {}, prompts: {}, cost_estimate_usd: 0, compliance_report_path: join(out, "compliance.json"), qa_report_path: join(out, "qa-tech-specs.json"), watcher_report_path: watcher, outputs: [join(out, "evidence.png")] }));
+  writeHbiAtomic(join(out, "manifest.hbi"), { schema: "marketing-manifest/v1", generated_at: new Date().toISOString(), piece_id: id, client: "acme", date: "2026-05-08", providers: {}, prompts: {}, cost_estimate_usd: 0, compliance_report_path: join(out, "compliance.json"), qa_report_path: join(out, "qa-tech-specs.json"), watcher_report_path: watcher, outputs: [join(out, "evidence.png")] });
   return { root, id, out };
 }
 
@@ -39,7 +40,7 @@ test("evidence gate passes only with the complete artifact set", () => {
   expect(gateEvidence(f.root, f.id)).toMatchObject({ piece_id: f.id, pass: true, missing: [] });
 });
 
-for (const [file, label] of [["manifest.json", "manifest.json"], ["compliance.json", "compliance.json"], ["qa-tech-specs.json", "qa-tech-specs.json"], ["captions.json", "captions.json"]] as const) {
+for (const [file, label] of [["manifest.hbi", "manifest.hbi"], ["compliance.json", "compliance.json"], ["qa-tech-specs.json", "qa-tech-specs.json"], ["captions.json", "captions.json"]] as const) {
   test(`missing ${file} is named by the gate`, () => {
     const f = fixture();
     rmSync(join(f.out, file));
@@ -55,10 +56,10 @@ test("missing watcher report is named by the gate", () => {
 
 test("missing run logs are named by the gate", () => {
   const f = fixture();
-  rmSync(join(f.root, ".marketing-engine", "data", "runs.jsonl"));
+  rmSync(join(f.root, ".marketing-engine", "data", "runs.hbp"));
   rmSync(join(f.root, ".marketing-engine", "data", "llm-usage.jsonl"));
   expect(gateEvidence(f.root, f.id).missing).toEqual(
-    expect.arrayContaining(["data/runs.jsonl", "data/llm-usage.jsonl"]),
+    expect.arrayContaining(["data/runs.hbp", "data/llm-usage.jsonl"]),
   );
 });
 
