@@ -1,5 +1,25 @@
 # Progress Log
 
+## Checkpoint 10 (2026-07-22 — issue #86 dependency audit)
+
+Status: blocked; no production implementation attempted.
+
+Result:
+- Read issue #86, its complete ordered dependency list, and upstream Loop issues
+  #557/#568 through the GitHub API.
+- Confirmed all child issues #87–#96 remain open and no open PR exists in this
+  repository. Implementing their scopes on the epic would create the duplicate
+  work issue #86 explicitly asks the worker to avoid.
+- Confirmed the upstream extension contract issue #557 is closed, but the current
+  checkout has no `loop.marketing` manifest or `simplicio.loop-extension/v1`
+  registration and still has the pre-extension loop/journal/Yool authorities.
+- Recorded the evidence and precise unblock conditions in `GOAL_RESULT.md`; did
+  not claim coverage, benchmark, conformance, CI, or completion without code.
+
+Validation:
+- Documentation lint and diff secret scan only; production/coverage/benchmark
+  suites are not evidence for an implementation that does not yet exist.
+
 ## Checkpoint 9 (2026-07-14 — issue #78 closeout: deploy-ready assets + reproducible scripts)
 
 Status: completed, ready for PR against `main`.
